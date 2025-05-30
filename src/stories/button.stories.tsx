@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { Button } from './button';
+import { Button } from '../components/ui/button';
 
 import ArrowRight from '@/assets/icons/arrow-right.svg';
 const meta: Meta<typeof Button> = {
