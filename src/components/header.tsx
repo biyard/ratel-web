@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import Logo from '@/assets/icons/logo.svg';
 import HomeIcon from '@/assets/icons/home.svg';
@@ -13,17 +13,6 @@ import ProfileServerComponent from './profile-server';
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [notificationCount, setNotificationCount] = useState(0);
-
-  const onSearchSubmit = async (v: string) => {
-    if (v.trim()) {
-      try {
-        console.log('Search results:', v);
-      } catch (error) {
-        console.error('Search error:', error);
-      }
-    }
-  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -59,7 +48,7 @@ function Header() {
                   className:
                     'stroke-neutral-400 group-hover:stroke-white transition-colors',
                 })}
-                {item.name === 'Notification' && notificationCount > 0 && (
+                {item.name === 'Notification' && 0 && (
                   <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
                 )}
               </div>
