@@ -10,6 +10,7 @@ import RoundBubbleIcon from '@/assets/icons/round-bubble.svg';
 import BellIcon from '@/assets/icons/bell.svg';
 import SearchInput from './search-input';
 import ProfileServerComponent from './profile-server';
+import Link from 'next/link';
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,11 +20,11 @@ function Header() {
   };
 
   const navItems = [
-    { name: 'Home', icon: <HomeIcon />, route: '/home' },
-    { name: 'Explore', icon: <InternetIcon />, route: '/explore' },
-    { name: 'My Network', icon: <UserGroupIcon />, route: '/network' },
-    { name: 'Message', icon: <RoundBubbleIcon />, route: '/messages' },
-    { name: 'Notification', icon: <BellIcon />, route: '/notifications' },
+    { name: 'Home', icon: <HomeIcon />, href: '/' },
+    { name: 'Explore', icon: <InternetIcon />, href: '/explore' },
+    { name: 'My Network', icon: <UserGroupIcon />, href: '/my-network' },
+    { name: 'Message', icon: <RoundBubbleIcon />, href: '/messages' },
+    { name: 'Notification', icon: <BellIcon />, href: '/notifications' },
   ];
 
   return (
@@ -38,9 +39,9 @@ function Header() {
 
         <div className="flex items-center gap-2.5">
           {navItems.map((item, index) => (
-            <button
+            <Link
               key={index}
-              onClick={() => {}}
+              href={item.href}
               className="flex flex-col items-center justify-center px-2.5 py-2.5 hover:bg-neutral-800 rounded-lg transition-colors group"
             >
               <div className="relative">
@@ -55,7 +56,7 @@ function Header() {
               <span className="text-neutral-400 group-hover:text-white text-[15px] font-medium mt-1 transition-colors">
                 {item.name}
               </span>
-            </button>
+            </Link>
           ))}
 
           <ProfileServerComponent />
