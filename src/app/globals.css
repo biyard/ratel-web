@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import "tw-animate-css";
 
+html {
+  overflow-y: scroll;
+}
 
 @theme static {
   /* Tailwindcss variables */
