@@ -43,4 +43,7 @@ html {
   --breakpoint-sm-mobile:380px;
 
   --container-desktop: 1177px;
+  --container-tablet:900px;
+  --container-mobile:500px;
+  --container-sm-mobile:380px;
 }
