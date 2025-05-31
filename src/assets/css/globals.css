@@ -7,10 +7,40 @@ html {
 
 @theme static {
   /* Tailwindcss variables */
-  /* --spacing: 1px; */
+  --spacing: 1px;
   --color-background: #1A1A1A;
   --color-primary: #fcb300;
   --color-secondary: #777677;
-  --color-wg-70: #464646;
 
+  --color-c-wg-30: #aeaeae;
+  --color-c-wg-50: #777677;
+  --color-c-wg-70: #464646;
+  --color-c-wg-80: #323232;
+  --color-c-cg-30: #aeb8b8;
+  --color-footer: #191919;
+  --color-copyright: #9095a1;
+  --color-neutral-80: #6b6b6b;
+  --color-neutral-400: #a1a1a1;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-c-c-20: #6eedd8;
+  --color-c-p-20: #ff9eee;
+  --color-c-p-50: #db2780;
+  --color-c-p-50-10: #db27801a;
+  --color-supportive: #6eedd8;
+  --color-against: #ff9eee;
+  --color-bg: #1a1a1a;
+  --color-tab-hover: #282828;
+  --color-mission-title: #DEE1E6;
+  --color-tag: #DEE1E6;
+  --color-component-bg: #191919;
+
+  --breakpoint-desktop:1177px;
+  --breakpoint-tablet:900px;
+  --breakpoint-mobile:500px;
+  --breakpoint-sm-mobile:380px;
+
+  --container-desktop: 1177px;
 }
