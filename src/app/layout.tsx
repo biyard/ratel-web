@@ -22,11 +22,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/logos/favicon.ico" />
+      </head>
       <body className={`${raleway.variable} antialiased bg-bg`}>
         <Providers>
           <LayoutSwitch>{children}</LayoutSwitch>
-          {/* <Header />
-          {children} */}
         </Providers>
       </body>
     </html>

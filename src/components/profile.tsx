@@ -1,3 +1,4 @@
+'use client';
 import { getUserProfile } from '@/lib/api/get-user-profile';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
