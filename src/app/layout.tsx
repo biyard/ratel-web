@@ -3,6 +3,7 @@ import { Raleway } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/header';
 import Providers from './providers';
+import { Suspense } from 'react';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -21,10 +22,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/logos/favicon.ico" />
+      </head>
       <body className={`${raleway.variable} antialiased bg-bg`}>
         <Providers>
           <Header />
-          {children}
+          <Suspense>{children}</Suspense>
         </Providers>
       </body>
     </html>

@@ -3,6 +3,7 @@
 
 html {
   overflow-y: scroll;
+  background-color: var(--color-background);
 }
 
 @theme static {
