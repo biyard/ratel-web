@@ -8,6 +8,7 @@ import RoundBubbleIcon from '@/assets/icons/round-bubble.svg';
 import BellIcon from '@/assets/icons/bell.svg';
 import Hamburger from '@/assets/icons/hamburger.svg';
 import Link from 'next/link';
+import Profile from './profile';
 
 function Header() {
   const navItems = [
@@ -90,7 +91,7 @@ function Header() {
             </Link>
           ))}
 
-          {/* <Profile /> */}
+          <Profile />
         </div>
 
         <div className="hidden max-tablet:block">
