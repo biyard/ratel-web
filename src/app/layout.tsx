@@ -4,6 +4,7 @@ import './globals.css';
 import Header from '@/components/header';
 import Providers from './providers';
 import { Suspense } from 'react';
+import CookieProvider from './_providers/CookieProvider';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -26,10 +27,12 @@ export default function RootLayout({
         <link rel="icon" href="/logos/favicon.ico" />
       </head>
       <body className={`${raleway.variable} antialiased bg-bg`}>
-        <Providers>
-          <Header />
-          <Suspense>{children}</Suspense>
-        </Providers>
+        <CookieProvider>
+          <Providers>
+            <Header />
+            <Suspense>{children}</Suspense>
+          </Providers>
+        </CookieProvider>
       </body>
     </html>
   );
