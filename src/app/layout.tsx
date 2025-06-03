@@ -2,7 +2,6 @@ import { Raleway } from 'next/font/google';
 import Header from '@/components/header';
 import '@/assets/css/globals.css';
 import Providers from '@/providers/providers';
-import LayoutSwitch from '../components/layoutSwitch';
 import { Metadata } from 'next';
 import CookieProvider from './_providers/CookieProvider';
 import { Suspense } from 'react';
