@@ -179,8 +179,8 @@ export default function ViewThread() {
 
       <Sidebar />
 
-     <div className="flex-1 flex flex-col overflow-hidden"> 
-        <div className="flex-1 overflow-y-auto">
+     <div className="flex-1 flex flex-col overflow-hidden m-6"> 
+        <div className="flex-1 overflow-y-auto mx-6">
           <MainContent files={attachedFiles} links={externalLinks} />
           <div className="px-6 pb-6">
             <DiscussionSection initialComments={initialComments} />

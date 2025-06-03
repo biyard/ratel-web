@@ -19,7 +19,7 @@ export function MainContent({ files, links }: MainContentProps) {
           <h1 className="text-2xl font-bold">Crypto/Temporary Increase of Staking Rewards to 8% for 90 Days</h1>
           <Badge className="bg-green-600 hover:bg-green-600">Active</Badge>
         </div>
-        <Button className="bg-[#fcb300] hover:bg-[#fcb300]/80 text-black">
+        <Button className="bg-white p-12 hover:bg-[#fcb300]/80 text-black">
           <Plus className="w-4 h-4 mr-2" />
           Create a Space
         </Button>
@@ -83,19 +83,22 @@ export function MainContent({ files, links }: MainContentProps) {
           </div>
         </div>
       </div>
-      
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Attached Files</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+      <div className="mb-60 mt-24">
+        <h2 className="text-lg font-semibold mb-30">Attached Files</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {files.map((file) => (
             <FileAttachment key={file.id} file={file} />
           ))}
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 mb-16">
         {links.map((link, index) => (
-          <ExternalLink key={index} url={link.url} text={link.text} />
+          <div className="py-12 bg-[#262626] rounded-lg hover:bg-[#333333] transition-colors" key={index}>
+            <ExternalLink key={index} url={link.url} text={link.text} />
+            {/* <hr /> */}
+          </div>
         ))}
       </div>
     </div>
