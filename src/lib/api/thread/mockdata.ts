@@ -8,9 +8,9 @@ export const attachedFiles: AttachedFile[] = [
 ]
 
 export const externalLinks = [
-  { url: "#", text: "ldao.title! This is link for d109231" },
-  { url: "#", text: "ldao.title! This is link for d109231" },
-  { url: "#", text: "ldao.title! This is link for d109231" },
+  { url: "#", text: "[dao.title] This is link for d109231" },
+  { url: "#", text: "[dao.title] This is link for d109231" },
+  { url: "#", text: "[dao.title] This is link for d109231" },
 ]
 
 export const initialComments: Comment[] = [

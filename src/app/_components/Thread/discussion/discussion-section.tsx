@@ -94,7 +94,7 @@ export function DiscussionSection({ initialComments }: DiscussionSectionProps) {
     <div className="border-t border-[#404040] pt-6 mt-6">
       <h2 className="text-lg font-semibold mb-6">Discussion</h2>
 
-      <div className="space-y-8">
+      <div className="space-y-8 pt-12">
         {comments.map((comment) => (
           <Comment key={comment.id} comment={comment} onLike={handleLike} onReply={handleReply} />
         ))}

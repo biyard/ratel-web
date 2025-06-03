@@ -29,7 +29,7 @@ export function Comment({ comment, onLike, onReply, depth = 0, showReplyButton =
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 my-20">
       <div className="flex items-start gap-3">
         <Avatar className="w-8 h-8 mt-1">
           <AvatarImage src={comment.author.avatar || "/placeholder.svg"} />
@@ -37,19 +37,19 @@ export function Comment({ comment, onLike, onReply, depth = 0, showReplyButton =
         </Avatar>
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-4">
               <span className="font-medium">{comment.author.name}</span>
               <span className="text-xs text-[#a1a1a1]">{comment.timestamp}</span>
               {comment.percentage && <span className="text-xs text-[#a1a1a1] ml-2">{comment.percentage}%</span>}
             </div>
-            <Button variant="outline" size="sm" className="h-8 w-8 text-[#a1a1a1]">
+            <Button variant="outline" size="sm" className="h-8 w-8 my-12 text-[#a1a1a1]">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </div>
           <div className="mt-1 text-[#a1a1a1]">{comment.content}</div>
-          <div className="flex items-center gap-4 mt-2">
+          <div className="flex items-center gap-4 mt-12">
             <Button
-              variant="outline"
+              variant={null}
               size="sm"
               className="h-6 px-1 text-[#a1a1a1] hover:text-white"
               onClick={() => onLike(comment.id)}
@@ -59,7 +59,7 @@ export function Comment({ comment, onLike, onReply, depth = 0, showReplyButton =
             </Button>
             {showReplyButton && (
               <Button
-                variant="outline"
+                variant={null}
                 size="sm"
                 className="h-6 px-1 text-[#a1a1a1] hover:text-white"
                 onClick={() => setIsReplying(!isReplying)}
@@ -75,12 +75,12 @@ export function Comment({ comment, onLike, onReply, depth = 0, showReplyButton =
       {isReplying && <ReplyEditor onSubmit={handleReplySubmit} onCancel={() => setIsReplying(false)} />}
 
       {comment.replies && comment.replies.length > 0 && (
-        <div className="ml-10">
+        <div className="ml-10 mt-12">
           {showReplyButton && (
             <Button
               variant="outline"
               size="sm"
-              className="bg-[#fcb300] hover:bg-[#fcb300]/80 text-black border-none mb-3"
+              className="bg-[#fcb300] hover:bg-[#fcb300]/80 p-12 text-black border-none mt-12 mb-3"
               onClick={toggleReplies}
             >
               <span>{comment.replies.length} Reply</span>
@@ -98,7 +98,8 @@ export function Comment({ comment, onLike, onReply, depth = 0, showReplyButton =
                 depth={depth + 1}
                 showReplyButton={depth < 2}
               />
-            ))}
+            )
+            )}
         </div>
       )}
     </div>

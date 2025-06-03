@@ -1,4 +1,4 @@
-import { ExternalLinkIcon } from "lucide-react"
+import { LinkIcon } from "lucide-react"
 
 interface ExternalLinkProps {
   url: string
@@ -11,10 +11,11 @@ export function ExternalLink({ url, text }: ExternalLinkProps) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2 text-sm text-[#a1a1a1] hover:text-blue-400 transition-colors"
+      className="flex items-center gap-12 text-sm m-12 text-[#a1a1a1] hover:text-blue-400 transition-colors"
     >
-      <ExternalLinkIcon className="w-4 h-4" />
-      <span>{text}</span>
+      <LinkIcon className="w-24 h-24" />
+      <span className="text-xl">{text}</span>
+      {/* <hr className="m-2 h-4 w-12" /> */}
     </a>
   )
 }

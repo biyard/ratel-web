@@ -50,7 +50,7 @@ export function Sidebar() {
   ]
 
   return (
-    <div className="w-[300px] bg-[#1e1e1e] flex flex-col h-full">
+    <div className="w-[300px] bg-[#1e1e1e] flex flex-col h-full mx-8">
 
       <div className="p-4 border-b border-[#404040]">
         <div className="flex items-center gap-3 mb-2">
@@ -62,14 +62,14 @@ export function Sidebar() {
             <Crown className="w-4 h-4 text-yellow-500 absolute -top-1 -right-1" />
           </div>
           <div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 mx-16">
               <span className="font-medium">Hyejin Choi</span>
               <span className="text-yellow-500">👑</span>
             </div>
             <ChevronDown className="w-4 h-4 text-[#a1a1a1]" />
           </div>
         </div>
-        <div className="text-sm text-[#a1a1a1]">
+        <div className="text-sm text-[#a1a1a1] mx-16">
           <div>Owner Kim Hoyoung</div>
           <div className="mt-1">
             <span>Office of Rep.</span>
@@ -89,7 +89,7 @@ export function Sidebar() {
       </div>
 
 
-      <div className="p-4 space-y-2">
+      <div className="p-4 space-y-2 mx-16">
         {navItems.map((item) => (
           <NavItem key={item.id} item={item} isActive={activeNav === item.id} onClick={() => setActiveNav(item.id)} />
         ))}
@@ -98,10 +98,10 @@ export function Sidebar() {
       
       <div className="p-4 flex-1">
         <div className="flex items-center justify-between mb-3">
-          <span className="font-medium">Members</span>
+          <span className="font-medium mx-16">Members</span>
           <ChevronDown className="w-16 h-16" />
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 mx-16">
           {members.map((member) => (
             <MemberItem key={member.id} member={member} />
           ))}
@@ -112,7 +112,7 @@ export function Sidebar() {
       </div>
 
       
-      <div className="p-4 space-y-4 border-t border-[#404040]">
+      <div className="-pt-96 p-4 space-y-4 border-t border-[#404040] mx-16">
         {sections.map((section) => (
           <CollapsibleSection key={section.id} section={section} />
         ))}
