@@ -1,17 +1,15 @@
+import type { Metadata } from 'next';
 import { Raleway } from 'next/font/google';
-import Header from '@/components/header';
 import '@/assets/css/globals.css';
 import Providers from '@/providers/providers';
-import LayoutSwitch from "../components/layoutSwitch";
+import FeedHeader from '@/components/headers/feeds.header';
 
 const raleway = Raleway({
   variable: '--font-raleway',
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
 });
 
-
-
-export default function RootLayout({
+export default function FeedLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -20,9 +18,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${raleway.variable} antialiased`}>
         <Providers>
-        <LayoutSwitch>{children}</LayoutSwitch>
-          {/* <Header />
-          {children} */}
+          <FeedHeader />
+          {children}
         </Providers>
       </body>
     </html>
