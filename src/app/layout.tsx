@@ -4,6 +4,8 @@ import '@/assets/css/globals.css';
 import Providers from '@/providers/providers';
 import LayoutSwitch from '../components/layoutSwitch';
 import { Metadata } from 'next';
+import CookieProvider from './_providers/CookieProvider';
+import { Suspense } from 'react';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -26,9 +28,12 @@ export default function RootLayout({
         <link rel="icon" href="/logos/favicon.ico" />
       </head>
       <body className={`${raleway.variable} antialiased bg-bg`}>
-        <Providers>
-          <LayoutSwitch>{children}</LayoutSwitch>
-        </Providers>
+        <CookieProvider>
+          <Providers>
+            <Header />
+            <Suspense>{children}</Suspense>
+          </Providers>
+        </CookieProvider>
       </body>
     </html>
   );
