@@ -9,6 +9,7 @@ import { Suspense } from 'react';
 const raleway = Raleway({
   variable: '--font-raleway',
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
