@@ -3,8 +3,6 @@
 import Image from 'next/image';
 import {
   Award,
-  Users,
-  ChevronDown,
   MoreHorizontal,
   ChevronRight,
   Star,
