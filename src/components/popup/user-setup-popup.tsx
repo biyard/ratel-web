@@ -45,7 +45,18 @@ const UserSetupPopup = ({
   const handleSubmit = async () => {
     if (!agreed || !isUserNameValid) return;
 
+    // TODO: call subscribe api
+    // TODO: call sign up api (principal, email, nickname, profile, termAgreed, informedAgreed)
+    let nickname = displayName;
+    let profile = profileUrl;
+    let termAgreed = agreed;
+    let informedAgreed = announcementAgree;
+
+    // success to query api
     popup.open(<ConfirmPopup />);
+
+    // failed to query api
+    // popup.close();
   };
 
   useEffect(() => {

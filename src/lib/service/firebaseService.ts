@@ -11,15 +11,16 @@ import {
 import { getFile, listFiles, uploadFile } from '../api/drive';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { toHex } from '@dfinity/agent';
+import { config } from '@/config';
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey: config.firebase_api_key,
+  authDomain: config.firebase_auth_domain,
+  projectId: config.firebase_project_id,
+  storageBucket: config.firebase_storage_bucket,
+  messagingSenderId: config.firebase_messaging_sender_id,
+  appId: config.firebase_app_id,
+  measurementId: config.firebase_measurement_id,
 };
 
 const env = process.env.NEXT_PUBLIC_ENV;
@@ -85,10 +86,12 @@ export const loginWithGoogle = async (): Promise<AuthUserInfo> => {
     }
   }
 
-  //checking this logic
+  //TODO: checking icp logic
   let p = await trySetupFromPrivateKey(contents);
 
   console.log('principal: ', p?.principal);
+
+  //TODO: implement after icp logic (query check email api)
 
   return {
     principal: p?.principal ?? '',

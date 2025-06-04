@@ -7,6 +7,7 @@ import { LoaderPopup } from './loader-popup';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { loginWithGoogle } from '@/lib/service/firebaseService';
 import { LoginFailurePopup } from './login-failure-popup';
+import UserSetupPopup from './user-setup-popup';
 
 interface LoginModalProps {
   id?: string;
@@ -47,6 +48,19 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
               const user = await loginWithGoogle();
               loader.close();
               console.log('user info: ', user);
+
+              if (user.event == 'signup') {
+                popup.open(
+                  <UserSetupPopup
+                    email={user.email ?? ''}
+                    nickname={user.displayName ?? ''}
+                    profileUrl={user.photoURL ?? ''}
+                    principal={user.principal ?? ''}
+                  />,
+                );
+              } else if (user.event == 'login') {
+                popup.close();
+              }
             } catch (err) {
               popup.open(
                 <LoginFailurePopup
