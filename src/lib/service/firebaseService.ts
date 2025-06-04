@@ -12,6 +12,7 @@ import { getFile, listFiles, uploadFile } from '../api/drive';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { toHex } from '@dfinity/agent';
 import { config } from '@/config';
+import { logger } from '../logger';
 
 const firebaseConfig = {
   apiKey: config.firebase_api_key,
@@ -49,11 +50,11 @@ export const loginWithGoogle = async (): Promise<AuthUserInfo> => {
     GoogleAuthProvider.credentialFromResult(result)?.accessToken;
   const idToken = await user.getIdToken();
 
-  console.log('id Token: ', idToken, ', accessToken:', accessToken);
+  logger.debug('id Token: ', idToken, ', accessToken:', accessToken);
 
   let files = await listFiles(env ?? '', accessToken ?? '');
 
-  console.log('file data: ', files);
+  logger.debug('file data: ', files);
 
   let contents = '';
   let event = '';
@@ -65,7 +66,7 @@ export const loginWithGoogle = async (): Promise<AuthUserInfo> => {
       contents = res;
       event = 'login';
     } catch (e) {
-      console.warn('Failed to get file content', e);
+      logger.error('Failed to get file content', e);
       throw new Error('failed to get file');
     }
   } else {
@@ -77,11 +78,11 @@ export const loginWithGoogle = async (): Promise<AuthUserInfo> => {
     try {
       const res = await uploadFile(accessToken ?? '', privateKey);
 
-      console.log('upload data', res);
+      logger.debug('upload data', res);
       event = 'signup';
       contents = res.name;
     } catch (e) {
-      console.warn('Failed to upload file content', e);
+      logger.error('Failed to upload file content', e);
       throw new Error('failed to upload file');
     }
   }
@@ -89,7 +90,7 @@ export const loginWithGoogle = async (): Promise<AuthUserInfo> => {
   //TODO: checking icp logic
   let p = await trySetupFromPrivateKey(contents);
 
-  console.log('principal: ', p?.principal);
+  logger.debug('principal: ', p?.principal);
 
   //TODO: implement after icp logic (query check email api)
 
@@ -170,8 +171,8 @@ export const trySetupFromPrivateKey = async (privateKeyBase64: string) => {
     const principal = identity.getPrincipal().toText();
     const publicKeyHex = toHex(identity.getPublicKey().toDer());
 
-    console.log('Principal:', principal);
-    console.log('Public Key:', publicKeyHex);
+    logger.debug('Principal:', principal);
+    logger.debug('Public Key:', publicKeyHex);
 
     return {
       privateKeyBase64,
@@ -180,7 +181,7 @@ export const trySetupFromPrivateKey = async (privateKeyBase64: string) => {
       identity,
     };
   } catch (err) {
-    console.error('Failed to setup identity from private key:', err);
+    logger.error('Failed to setup identity from private key:', err);
     return null;
   }
 };

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logger } from '../logger';
 
 const BASE_URL = 'https://www.googleapis.com/drive/v3';
 const UPLOAD_URL =
@@ -25,7 +26,7 @@ export const listFiles = async (
     },
   );
 
-  console.log('Responses: ', response);
+  logger.debug('Responses: ', response);
 
   return response.data.files;
 };

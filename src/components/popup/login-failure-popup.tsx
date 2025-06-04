@@ -7,6 +7,7 @@ import { LoaderPopup } from './loader-popup';
 import { LoginPopupFooter } from './login-popup-footer';
 import { loginWithGoogle } from '@/lib/service/firebaseService';
 import UserSetupPopup from './user-setup-popup';
+import { logger } from '@/lib/logger';
 
 interface LoginFailurePopupProps {
   id?: string;
@@ -36,7 +37,7 @@ export const LoginFailurePopup = ({
         <div
           className="w-full flex flex-row pl-20 py-22 bg-black border-[1px] rounded-[10px] justify-start items-center gap-17 cursor-pointer border-c-p-50"
           onClick={async () => {
-            console.log('Google login button clicked');
+            logger.debug('Google login button clicked');
             const loader = popup.open(
               <LoaderPopup
                 title={title}
@@ -51,7 +52,7 @@ export const LoginFailurePopup = ({
             try {
               const user = await loginWithGoogle();
               loader.close();
-              console.log('user info: ', user);
+              logger.debug('user info: ', user);
 
               if (user.event == 'signup') {
                 popup.open(
@@ -76,7 +77,7 @@ export const LoginFailurePopup = ({
                   serviceName={serviceName}
                 />,
               );
-              console.log('failed to google sign in with error: ', err);
+              logger.debug('failed to google sign in with error: ', err);
             }
           }}
         >

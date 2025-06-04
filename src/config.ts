@@ -8,6 +8,8 @@ type Config = {
   firebase_app_id: string;
   firebase_measurement_id: string;
   api_url: string;
+
+  log_level: string;
 };
 
 export const config: Config = {
@@ -23,4 +25,6 @@ export const config: Config = {
   firebase_measurement_id:
     process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || '',
   api_url: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+
+  log_level: process.env.NEXT_PUBLIC_LOG_LEVEL || 'info',
 };

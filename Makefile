@@ -1,7 +1,6 @@
-
+.PHONY: run node_module
 node_module:
 	pnpm i
 
-.PHONY: run
 run: node_module
 	pnpm dev

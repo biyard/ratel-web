@@ -26,38 +26,23 @@ export const LoaderPopup = ({
   serviceName,
 }: LoaderPopupProps) => {
   const popup = usePopup();
-  useEffect(() => {
-    // popup
-    //   .open(
-    //     <LoginFailurePopup
-    //       logo={logo}
-    //       logoOrigin={logoOrigin}
-    //       title={title}
-    //       description={description}
-    //       msg={msg}
-    //       serviceName={serviceName}
-    //     />,
-    //   )
-    //   .withTitle(title);
-    // popup.open(<UserSetupPopup email="" />);
-  });
 
   return (
     <div
       id={id}
-      className="flex flex-col w-400 max-w-400 mx-5  max-mobile:!w-full max-mobile:!max-w-full  gap-35 mt-35"
+      className="flex flex-col w-100 max-w-100 mx-4.25  max-mobile:!w-full max-mobile:!max-w-full  gap-8.75 mt-8.75"
     >
       <div className="flex flex-col w-full justify-center items-center gap-35">
         {/* Spinner */}
-        <div className="border-6 border-t-6 w-82 h-82 border-primary border-t-background rounded-full animate-spin" />
-        <div className="absolute flex-row w-64 h-64 bg-white rounded-full justify-center items-center flex">
-          <div className="flex flex-row w-24 h-24 justify-center items-center">
+        <div className="border-6 border-t-6 w-20.5 h-20.5 border-primary border-t-background rounded-full animate-spin" />
+        <div className="absolute flex-row w-16 h-16 bg-white rounded-full justify-center items-center flex">
+          <div className="flex flex-row w-6 h-6 justify-center items-center">
             {logoOrigin}
           </div>
         </div>
       </div>
 
-      <div className="justify-center text-center text-white font-bold text-base/24">
+      <div className="justify-center text-center text-white font-bold text-base/6">
         {description}
       </div>
 
