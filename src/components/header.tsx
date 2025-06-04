@@ -10,11 +10,11 @@ import BellIcon from '@/assets/icons/bell.svg';
 import Hamburger from '@/assets/icons/hamburger.svg';
 import Link from 'next/link';
 import Profile from './profile';
-import { Modal } from './modal';
-import { LoginModal } from './modal/login-modal';
+import { LoginModal } from './popup/login-popup';
+import { usePopup } from '@/lib/contexts/popup-service';
 
 function Header() {
-  const [isModalOpen, setModalOpen] = useState(false);
+  const popup = usePopup();
 
   const navItems = [
     {
@@ -98,14 +98,12 @@ function Header() {
 
           <button
             className="cursor-pointer font-bold text-neutral-500 text-[15px]"
-            onClick={() => setModalOpen(true)}
+            onClick={() => {
+              popup.open(<LoginModal />).withTitle('Join the Movement');
+            }}
           >
             Sign In
           </button>
-          <LoginModal
-            isOpen={isModalOpen}
-            setModalOpen={setModalOpen}
-          ></LoginModal>
           {/* <Profile /> */}
         </div>
 

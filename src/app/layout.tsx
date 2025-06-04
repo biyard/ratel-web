@@ -5,6 +5,8 @@ import Providers from '@/providers/providers';
 import { Metadata } from 'next';
 import CookieProvider from './_providers/CookieProvider';
 import { Suspense } from 'react';
+import { PopupProvider } from '@/lib/contexts/popup-service';
+import { PopupZone } from '@/components/popupzone';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -18,23 +20,25 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <head>
         <link rel="icon" href="/logos/favicon.ico" />
       </head>
       <body className={`${raleway.variable} antialiased bg-bg`}>
-        <CookieProvider>
-          <Providers>
-            <Header />
-            <Suspense>{children}</Suspense>
-          </Providers>
-        </CookieProvider>
+        <PopupProvider>
+          <CookieProvider>
+            <Providers>
+              <Header />
+              <Suspense>{children}</Suspense>
+            </Providers>
+          </CookieProvider>
 
-        <div id="modal-root" />
+          <PopupZone />
+        </PopupProvider>
       </body>
     </html>
   );
