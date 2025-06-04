@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect } from 'react';
 import { LoginPopupFooter } from './login-popup-footer';
-import ArrowLeft from '@/assets/icons/arrow-left.svg';
-import { Modal } from '../modal';
+import { usePopup } from '@/lib/contexts/popup-service';
+import { LoginFailurePopup } from './login-failure-popup';
+import UserSetupPopup from './user-setup-popup';
 
 interface LoaderPopupProps {
   id?: string;
@@ -12,6 +13,7 @@ interface LoaderPopupProps {
   logo: React.ReactNode;
   logoOrigin: React.ReactNode;
   msg: string;
+  serviceName: string;
 }
 
 export const LoaderPopup = ({
@@ -21,7 +23,26 @@ export const LoaderPopup = ({
   logo,
   logoOrigin,
   msg,
+  serviceName,
 }: LoaderPopupProps) => {
+  const popup = usePopup();
+  useEffect(() => {
+    // popup
+    //   .open(
+    //     <LoginFailurePopup
+    //       logo={logo}
+    //       logoOrigin={logoOrigin}
+    //       title={title}
+    //       description={description}
+    //       msg={msg}
+    //       serviceName={serviceName}
+    //     />,
+    //   )
+    //   .withTitle(title);
+
+    popup.open(<UserSetupPopup email="" />);
+  });
+
   return (
     <div
       id={id}

@@ -17,7 +17,6 @@ interface LoginBoxProps {
 }
 
 export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
-  const [loaderModalOpen, setLoaderModalOpen] = useState(false);
   const popup = usePopup();
 
   return (
@@ -39,7 +38,8 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
                   logo={<GoogleIcon width="50" height="50" />}
                   logoOrigin={<GoogleIcon />}
                   msg="Continue with Google"
-                ></LoaderPopup>,
+                  serviceName="Google"
+                />,
               )
               .withTitle('Sign In');
           }}
