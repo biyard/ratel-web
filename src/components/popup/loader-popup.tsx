@@ -39,14 +39,13 @@ export const LoaderPopup = ({
     //     />,
     //   )
     //   .withTitle(title);
-
-    popup.open(<UserSetupPopup email="" />);
+    // popup.open(<UserSetupPopup email="" />);
   });
 
   return (
     <div
       id={id}
-      className="flex flex-col w-400 max-w-400 mx-5  max-mobile:!w-full max-mobile:!max-w-full  gap-35"
+      className="flex flex-col w-400 max-w-400 mx-5  max-mobile:!w-full max-mobile:!max-w-full  gap-35 mt-35"
     >
       <div className="flex flex-col w-full justify-center items-center gap-35">
         {/* Spinner */}

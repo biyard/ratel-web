@@ -5,6 +5,8 @@ import GoogleIcon from '@/assets/icons/google.svg';
 import { LoginPopupFooter } from './login-popup-footer';
 import { LoaderPopup } from './loader-popup';
 import { usePopup } from '@/lib/contexts/popup-service';
+import { loginWithGoogle } from '@/lib/service/firebaseService';
+import { LoginFailurePopup } from './login-failure-popup';
 
 interface LoginModalProps {
   id?: string;
@@ -28,20 +30,36 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
         <LoginBox
           icon={<GoogleIcon />}
           label="Continue With Google"
-          onClick={() => {
+          onClick={async () => {
             console.log('Google login button clicked');
-            popup
-              .open(
-                <LoaderPopup
-                  title="Sign in"
-                  description="Sign into your account in the pop-up"
-                  logo={<GoogleIcon width="50" height="50" />}
+            const loader = popup.open(
+              <LoaderPopup
+                title="Sign in"
+                description="Signing you in..."
+                logo={<GoogleIcon width="50" height="50" />}
+                logoOrigin={<GoogleIcon />}
+                msg="Continue with Google"
+                serviceName="Google"
+              />,
+            );
+
+            try {
+              const user = await loginWithGoogle();
+              loader.close();
+              console.log('user info: ', user);
+            } catch (err) {
+              popup.open(
+                <LoginFailurePopup
+                  logo={<GoogleIcon />}
                   logoOrigin={<GoogleIcon />}
-                  msg="Continue with Google"
+                  title="Login failed"
+                  description="Google authentication failed"
+                  msg="Try again later."
                   serviceName="Google"
                 />,
-              )
-              .withTitle('Sign In');
+              );
+              console.log('failed to google sign in with error: ', err);
+            }
           }}
         />
       </div>
