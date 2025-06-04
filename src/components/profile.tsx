@@ -14,7 +14,6 @@ export default function Profile({ onClick }: ProfileProps) {
     queryFn: getUserProfile,
   });
 
-  // 로딩 및 에러 상태에 대한 UI를 추가하는 것이 좋습니다.
   if (isLoading) {
     return (
       <div className="flex items-center gap-0.5 p-2 animate-pulse">
