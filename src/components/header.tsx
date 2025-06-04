@@ -11,10 +11,11 @@ import Hamburger from '@/assets/icons/hamburger.svg';
 import Link from 'next/link';
 import Profile from './profile';
 import { Modal } from './modal';
+import { LoginModal } from './modal/login-modal';
 
 function Header() {
   const [isModalOpen, setModalOpen] = useState(false);
-  
+
   const navItems = [
     {
       name: 'Home',
@@ -95,10 +96,16 @@ function Header() {
             </Link>
           ))}
 
-          <button className="font-bold text-neutral-500 text-[15px]" onClick={() => setModalOpen(true)}>Sign In</button>
-          <Modal title="Join the Movement" isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
-            <p>test</p>
-          </Modal>
+          <button
+            className="cursor-pointer font-bold text-neutral-500 text-[15px]"
+            onClick={() => setModalOpen(true)}
+          >
+            Sign In
+          </button>
+          <LoginModal
+            isOpen={isModalOpen}
+            setModalOpen={setModalOpen}
+          ></LoginModal>
           {/* <Profile /> */}
         </div>
 
