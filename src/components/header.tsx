@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 
 import Logo from '@/assets/icons/logo.svg';
 import HomeIcon from '@/assets/icons/home.svg';
@@ -9,8 +10,11 @@ import BellIcon from '@/assets/icons/bell.svg';
 import Hamburger from '@/assets/icons/hamburger.svg';
 import Link from 'next/link';
 import Profile from './profile';
+import { Modal } from './modal';
 
 function Header() {
+  const [isModalOpen, setModalOpen] = useState(false);
+  
   const navItems = [
     {
       name: 'Home',
@@ -91,7 +95,11 @@ function Header() {
             </Link>
           ))}
 
-          <Profile />
+          <button className="font-bold text-neutral-500 text-[15px]" onClick={() => setModalOpen(true)}>Sign In</button>
+          <Modal title="Join the Movement" isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
+            <p>test</p>
+          </Modal>
+          {/* <Profile /> */}
         </div>
 
         <div className="hidden max-tablet:block">

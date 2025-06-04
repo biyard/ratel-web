@@ -33,6 +33,8 @@ export default function RootLayout({
             <Suspense>{children}</Suspense>
           </Providers>
         </CookieProvider>
+
+        <div id="modal-root" />
       </body>
     </html>
   );
