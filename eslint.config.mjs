@@ -29,6 +29,12 @@ const eslintConfig = [
     rules: {
       ...prettierPlugin.configs.recommended.rules,
       'prettier/prettier': 'error',
+      'react/no-unescaped-entities': [
+        'error',
+        {
+          forbid: ['>', '}', '"'],
+        },
+      ],
     },
   },
 
