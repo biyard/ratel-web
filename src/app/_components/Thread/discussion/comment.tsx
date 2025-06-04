@@ -1,48 +1,71 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { ChevronDown, MessageSquare, MoreVertical, ThumbsUp } from "lucide-react"
-import type { Comment as CommentType } from "@/types"
-import { ReplyEditor } from "./reply-editor"
+import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import {
+  ChevronDown,
+  MessageSquare,
+  MoreVertical,
+  ThumbsUp,
+} from 'lucide-react';
+import type { Comment as CommentType } from '@/types';
+import { ReplyEditor } from './reply-editor';
 
 interface CommentProps {
-  comment: CommentType
-  onLike: (id: string) => void
-  onReply: (id: string, content: string) => void
-  depth?: number
-  showReplyButton?: boolean
+  comment: CommentType;
+  onLike: (id: string) => void;
+  onReply: (id: string, content: string) => void;
+  depth?: number;
+  showReplyButton?: boolean;
 }
 
-export function Comment({ comment, onLike, onReply, depth = 0, showReplyButton = true }: CommentProps) {
-  const [showReplies, setShowReplies] = useState(false)
-  const [isReplying, setIsReplying] = useState(false)
+export function Comment({
+  comment,
+  onLike,
+  onReply,
+  depth = 0,
+  showReplyButton = true,
+}: CommentProps) {
+  const [showReplies, setShowReplies] = useState(false);
+  const [isReplying, setIsReplying] = useState(false);
 
   const handleReplySubmit = (content: string) => {
-    onReply(comment.id, content)
-    setIsReplying(false)
-  }
+    onReply(comment.id, content);
+    setIsReplying(false);
+  };
 
   const toggleReplies = () => {
-    setShowReplies(!showReplies)
-  }
+    setShowReplies(!showReplies);
+  };
 
   return (
     <div className="space-y-4 my-20">
       <div className="flex items-start gap-3">
         <Avatar className="w-8 h-8 mt-1">
-          <AvatarImage src={comment.author.avatar || "/placeholder.svg"} />
-          <AvatarFallback className="bg-[#404040]">{comment.author.name.charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarImage src={comment.author.avatar || '/placeholder.svg'} />
+          <AvatarFallback className="bg-[#404040]">
+            {comment.author.name.charAt(0).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 mb-4">
               <span className="font-medium">{comment.author.name}</span>
-              <span className="text-xs text-[#a1a1a1]">{comment.timestamp}</span>
-              {comment.percentage && <span className="text-xs text-[#a1a1a1] ml-2">{comment.percentage}%</span>}
+              <span className="text-xs text-[#a1a1a1]">
+                {comment.timestamp}
+              </span>
+              {comment.percentage && (
+                <span className="text-xs text-[#a1a1a1] ml-2">
+                  {comment.percentage}%
+                </span>
+              )}
             </div>
-            <Button variant="outline" size="sm" className="h-8 w-8 my-12 text-[#a1a1a1]">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 my-12 text-[#a1a1a1]"
+            >
               <MoreVertical className="h-4 w-4" />
             </Button>
           </div>
@@ -72,7 +95,12 @@ export function Comment({ comment, onLike, onReply, depth = 0, showReplyButton =
         </div>
       </div>
 
-      {isReplying && <ReplyEditor onSubmit={handleReplySubmit} onCancel={() => setIsReplying(false)} />}
+      {isReplying && (
+        <ReplyEditor
+          onSubmit={handleReplySubmit}
+          onCancel={() => setIsReplying(false)}
+        />
+      )}
 
       {comment.replies && comment.replies.length > 0 && (
         <div className="ml-10 mt-12">
@@ -84,7 +112,9 @@ export function Comment({ comment, onLike, onReply, depth = 0, showReplyButton =
               onClick={toggleReplies}
             >
               <span>{comment.replies.length} Reply</span>
-              <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${showReplies ? "rotate-180" : ""}`} />
+              <ChevronDown
+                className={`ml-2 h-4 w-4 transition-transform ${showReplies ? 'rotate-180' : ''}`}
+              />
             </Button>
           )}
 
@@ -98,10 +128,9 @@ export function Comment({ comment, onLike, onReply, depth = 0, showReplyButton =
                 depth={depth + 1}
                 showReplyButton={depth < 2}
               />
-            )
-            )}
+            ))}
         </div>
       )}
     </div>
-  )
+  );
 }

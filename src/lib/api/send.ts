@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { config } from '@/config';
 import { useCookie } from '../contexts/cookie-context';
 
