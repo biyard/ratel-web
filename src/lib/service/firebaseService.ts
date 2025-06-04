@@ -140,33 +140,19 @@ function base64ToUint8Array(base64: string): Uint8Array {
   }
   return bytes;
 }
-
-function extractEd25519RawKey(pkcs8: Uint8Array): Uint8Array {
-  const len = pkcs8.length;
-  if (len < 34) throw new Error('Invalid PKCS#8 data length');
-
-  return pkcs8.slice(len - 32);
-}
-
 export const trySetupFromPrivateKey = async (privateKeyBase64: string) => {
   try {
-    const privateKeyBytes = base64ToUint8Array(privateKeyBase64);
+    const pkcs8 = base64ToUint8Array(privateKeyBase64);
 
-    let rawKey: Uint8Array;
+    logger.debug('private key bytes after base64 decoding: ', pkcs8);
 
-    if (privateKeyBytes.length === 32) {
-      rawKey = privateKeyBytes;
-    } else if (privateKeyBytes.length === 83 || privateKeyBytes.length > 32) {
-      rawKey = extractEd25519RawKey(privateKeyBytes);
-    } else {
-      throw new Error(
-        `Unsupported key format: got ${privateKeyBytes.length} bytes`,
-      );
-    }
+    let privateKey = pkcs8.buffer.slice(19, 51) as ArrayBuffer;
+    let publicKey = pkcs8.buffer.slice(51, 83) as ArrayBuffer;
 
-    const identity = Ed25519KeyIdentity.fromSecretKey(
-      rawKey.buffer.slice(0) as ArrayBuffer,
-    );
+    logger.debug('Private Key:', privateKey);
+    logger.debug('Public Key:', publicKey);
+
+    const identity = Ed25519KeyIdentity.fromKeyPair(publicKey, privateKey);
 
     const principal = identity.getPrincipal().toText();
     const publicKeyHex = toHex(identity.getPublicKey().toDer());
