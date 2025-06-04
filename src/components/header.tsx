@@ -70,18 +70,18 @@ function Header() {
   ];
 
   return (
-    <header className="border-b border-neutral-800 px-10 py-10 flex items-center justify-center !bg-bg">
-      <nav className="flex items-center justify-between mx-10 gap-50 w-full max-w-desktop">
-        <div className="flex items-center gap-20">
+    <header className="border-b border-neutral-800 px-2.5 py-2.5 flex items-center justify-center !bg-bg">
+      <nav className="flex items-center justify-between mx-2.5 gap-12.5 w-full max-w-desktop">
+        <div className="flex items-center gap-5">
           <Logo width="54" height="54" />
         </div>
 
-        <div className="flex items-center gap-10 max-tablet:hidden">
+        <div className="flex items-center gap-2.5 max-tablet:hidden">
           {navItems.map((item, index) => (
             <Link
               key={`nav-item-${index}`}
               href={item.href}
-              className="flex flex-col items-center justify-center group p-10"
+              className="flex flex-col items-center justify-center group p-2.5"
             >
               {item.icon}
               <span className="whitespace-nowrap text-neutral-500 group-hover:text-white text-[15px] font-medium transition-all">

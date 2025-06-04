@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
+@import 'tw-animate-css';
 
 html {
   overflow-y: scroll;
@@ -9,8 +9,7 @@ html {
 
 @theme static {
   /* Tailwindcss variables */
-  --spacing: 1px;
-  --color-background: #1A1A1A;
+  --color-background: #1a1a1a;
   --color-primary: #fcb300;
   --color-secondary: #777677;
 
@@ -35,17 +34,17 @@ html {
   --color-against: #ff9eee;
   --color-bg: #1a1a1a;
   --color-tab-hover: #282828;
-  --color-mission-title: #DEE1E6;
-  --color-tag: #DEE1E6;
+  --color-mission-title: #dee1e6;
+  --color-tag: #dee1e6;
   --color-component-bg: #191919;
 
-  --breakpoint-desktop:1177px;
-  --breakpoint-tablet:900px;
-  --breakpoint-mobile:500px;
-  --breakpoint-sm-mobile:380px;
+  --breakpoint-desktop: 1177px;
+  --breakpoint-tablet: 900px;
+  --breakpoint-mobile: 500px;
+  --breakpoint-sm-mobile: 380px;
 
   --container-desktop: 1177px;
-  --container-tablet:900px;
-  --container-mobile:500px;
-  --container-sm-mobile:380px;
+  --container-tablet: 900px;
+  --container-mobile: 500px;
+  --container-sm-mobile: 380px;
 }
