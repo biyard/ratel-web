@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 
 import Logo from '@/assets/icons/logo.svg';
 import HomeIcon from '@/assets/icons/home.svg';
@@ -9,8 +10,12 @@ import BellIcon from '@/assets/icons/bell.svg';
 import Hamburger from '@/assets/icons/hamburger.svg';
 import Link from 'next/link';
 import Profile from './profile';
+import { LoginModal } from './popup/login-popup';
+import { usePopup } from '@/lib/contexts/popup-service';
 
 function Header() {
+  const popup = usePopup();
+
   const navItems = [
     {
       name: 'Home',
@@ -91,7 +96,15 @@ function Header() {
             </Link>
           ))}
 
-          <Profile />
+          <button
+            className="cursor-pointer font-bold text-neutral-500 text-[15px]"
+            onClick={() => {
+              popup.open(<LoginModal />).withTitle('Join the Movement');
+            }}
+          >
+            Sign In
+          </button>
+          {/* <Profile /> */}
         </div>
 
         <div className="hidden max-tablet:block">
