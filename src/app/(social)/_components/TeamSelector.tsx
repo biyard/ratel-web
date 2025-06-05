@@ -1,7 +1,19 @@
+import { Group } from '@/lib/api/models/user';
+import { logger } from '@/lib/logger';
 import { ChevronDown } from 'lucide-react';
 import React from 'react';
 
-export default function TeamSelector() {
+export interface TeamSelectorProps {
+  groups: Group[];
+}
+
+export default function TeamSelector({ groups }: TeamSelectorProps) {
+  const teams = Array.from(
+    new Map(groups.map((group) => [group.user_id, group])).values(),
+  );
+
+  logger.debug('TeamSelector groups:', teams);
+
   return (
     <div className="w-full flex items-center justify-between">
       <div className="flex items-center gap-2">
