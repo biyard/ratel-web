@@ -8,9 +8,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Group, User } from '@/lib/api/models/user';
+import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { ChevronDown } from 'lucide-react';
 import React, { useState } from 'react';
+import TeamCreationPopup from '../_popups/TeamCreationPopup';
 
 export interface TeamSelectorProps {
   user: User;
@@ -32,6 +34,7 @@ export default function TeamSelector({ user }: TeamSelectorProps) {
   ]);
 
   const [selectedTeam, setSelectedTeam] = useState(0);
+  const popup = usePopup();
 
   const teams_ids = Array.from(
     new Map(user.groups.map((group) => [group.user_id, group])).values(),
@@ -72,6 +75,7 @@ export default function TeamSelector({ user }: TeamSelectorProps) {
           <DropdownMenuItem
             onClick={() => {
               logger.debug('Create team clicked');
+              popup.open(<TeamCreationPopup />).withTitle('Create a new team');
             }}
           >
             <span>Create a team</span>

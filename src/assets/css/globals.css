@@ -26,6 +26,7 @@ a {
   --color-primary: #fcb300;
   --color-secondary: #777677;
 
+
   --color-c-wg-30: #aeaeae;
   --color-c-wg-50: #777677;
   --color-c-wg-70: #464646;
@@ -60,4 +61,9 @@ a {
   --container-tablet: 900px;
   --container-mobile: 500px;
   --container-sm-mobile: 380px;
+
+
+  /* Shadcn variables */
+  --color-input: var(--color-c-wg-80);
+  --color-ring: var(--color-primary);
 }
