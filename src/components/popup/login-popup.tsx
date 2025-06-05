@@ -8,6 +8,7 @@ import { usePopup } from '@/lib/contexts/popup-service';
 import { loginWithGoogle } from '@/lib/service/firebaseService';
 import { LoginFailurePopup } from './login-failure-popup';
 import UserSetupPopup from './user-setup-popup';
+import { logger } from '@/lib/logger';
 
 interface LoginModalProps {
   id?: string;
@@ -25,14 +26,14 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
   return (
     <div
       id={id}
-      className="flex flex-col w-400 max-w-400 mx-5 max-mobile:!w-full max-mobile:!max-w-full gap-35"
+      className="flex flex-col w-100 max-w-100 mx-1.25 max-mobile:!w-full max-mobile:!max-w-full gap-8.75"
     >
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-2.5">
         <LoginBox
           icon={<GoogleIcon />}
           label="Continue With Google"
           onClick={async () => {
-            console.log('Google login button clicked');
+            logger.debug('Google login button clicked');
             const loader = popup.open(
               <LoaderPopup
                 title="Sign in"
@@ -47,7 +48,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
             try {
               const user = await loginWithGoogle();
               loader.close();
-              console.log('user info: ', user);
+              logger.debug('user info: ', user);
 
               if (user.event == 'signup') {
                 popup.open(
@@ -72,7 +73,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
                   serviceName="Google"
                 />,
               );
-              console.log('failed to google sign in with error: ', err);
+              logger.debug('failed to google sign in with error: ', err);
             }
           }}
         />
@@ -86,7 +87,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
 export const LoginBox = ({ icon, label, onClick }: LoginBoxProps) => {
   return (
     <button
-      className="flex flex-row w-full rounded-[10px] bg-[#000203] px-20 py-22 gap-20 cursor-pointer items-center"
+      className="flex flex-row w-full rounded-[10px] bg-[#000203] px-5 py-5.5 gap-5 cursor-pointer items-center"
       onClick={onClick}
     >
       {icon}

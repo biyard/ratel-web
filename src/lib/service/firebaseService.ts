@@ -12,6 +12,7 @@ import { getFile, listFiles, uploadFile } from '../api/drive';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { toHex } from '@dfinity/agent';
 import { config } from '@/config';
+import { logger } from '../logger';
 
 const firebaseConfig = {
   apiKey: config.firebase_api_key,
@@ -49,11 +50,11 @@ export const loginWithGoogle = async (): Promise<AuthUserInfo> => {
     GoogleAuthProvider.credentialFromResult(result)?.accessToken;
   const idToken = await user.getIdToken();
 
-  console.log('id Token: ', idToken, ', accessToken:', accessToken);
+  logger.debug('id Token: ', idToken, ', accessToken:', accessToken);
 
   let files = await listFiles(env ?? '', accessToken ?? '');
 
-  console.log('file data: ', files);
+  logger.debug('file data: ', files);
 
   let contents = '';
   let event = '';
@@ -65,7 +66,7 @@ export const loginWithGoogle = async (): Promise<AuthUserInfo> => {
       contents = res;
       event = 'login';
     } catch (e) {
-      console.warn('Failed to get file content', e);
+      logger.error('Failed to get file content', e);
       throw new Error('failed to get file');
     }
   } else {
@@ -77,11 +78,11 @@ export const loginWithGoogle = async (): Promise<AuthUserInfo> => {
     try {
       const res = await uploadFile(accessToken ?? '', privateKey);
 
-      console.log('upload data', res);
+      logger.debug('upload data', res);
       event = 'signup';
       contents = res.name;
     } catch (e) {
-      console.warn('Failed to upload file content', e);
+      logger.error('Failed to upload file content', e);
       throw new Error('failed to upload file');
     }
   }
@@ -89,7 +90,7 @@ export const loginWithGoogle = async (): Promise<AuthUserInfo> => {
   //TODO: checking icp logic
   let p = await trySetupFromPrivateKey(contents);
 
-  console.log('principal: ', p?.principal);
+  logger.debug('principal: ', p?.principal);
 
   //TODO: implement after icp logic (query check email api)
 
@@ -139,39 +140,25 @@ function base64ToUint8Array(base64: string): Uint8Array {
   }
   return bytes;
 }
-
-function extractEd25519RawKey(pkcs8: Uint8Array): Uint8Array {
-  const len = pkcs8.length;
-  if (len < 34) throw new Error('Invalid PKCS#8 data length');
-
-  return pkcs8.slice(len - 32);
-}
-
 export const trySetupFromPrivateKey = async (privateKeyBase64: string) => {
   try {
-    const privateKeyBytes = base64ToUint8Array(privateKeyBase64);
+    const pkcs8 = base64ToUint8Array(privateKeyBase64);
 
-    let rawKey: Uint8Array;
+    logger.debug('private key bytes after base64 decoding: ', pkcs8);
 
-    if (privateKeyBytes.length === 32) {
-      rawKey = privateKeyBytes;
-    } else if (privateKeyBytes.length === 83 || privateKeyBytes.length > 32) {
-      rawKey = extractEd25519RawKey(privateKeyBytes);
-    } else {
-      throw new Error(
-        `Unsupported key format: got ${privateKeyBytes.length} bytes`,
-      );
-    }
+    let privateKey = pkcs8.buffer.slice(19, 51) as ArrayBuffer;
+    let publicKey = pkcs8.buffer.slice(51, 83) as ArrayBuffer;
 
-    const identity = Ed25519KeyIdentity.fromSecretKey(
-      rawKey.buffer.slice(0) as ArrayBuffer,
-    );
+    logger.debug('Private Key:', privateKey);
+    logger.debug('Public Key:', publicKey);
+
+    const identity = Ed25519KeyIdentity.fromKeyPair(publicKey, privateKey);
 
     const principal = identity.getPrincipal().toText();
     const publicKeyHex = toHex(identity.getPublicKey().toDer());
 
-    console.log('Principal:', principal);
-    console.log('Public Key:', publicKeyHex);
+    logger.debug('Principal:', principal);
+    logger.debug('Public Key:', publicKeyHex);
 
     return {
       privateKeyBase64,
@@ -180,7 +167,7 @@ export const trySetupFromPrivateKey = async (privateKeyBase64: string) => {
       identity,
     };
   } catch (err) {
-    console.error('Failed to setup identity from private key:', err);
+    logger.error('Failed to setup identity from private key:', err);
     return null;
   }
 };

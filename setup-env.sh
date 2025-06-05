@@ -2,8 +2,15 @@
 
 echo "Generating .env.local from environment variables..."
 
+# check if the file exists
+if [ -f .env.local ]; then
+    echo ".env.local already exists. Please remove it before running this script if you want to refresh."
+    exit 0
+fi
+
 cat > .env.local <<EOL
-NEXT_PUBLIC_ENV=${ENV}
+NEXT_PUBLIC_ENV=local
+NEXT_PUBLIC_LOG_LEVEL=debug
 NEXT_PUBLIC_FIREBASE_API_KEY=${FIREBASE_API_KEY}
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN}
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
