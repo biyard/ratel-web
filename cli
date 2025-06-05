@@ -25,10 +25,12 @@ function cli_component {
         exit 1
     fi
 
-    case $1 in
-        add)
+    local cmd=$1
+
+    case $cmd in
+        add | list)
             shift
-            cli_generate_component "$@"
+            cli_component_$cmd "$@"
             ;;
         *)
             echo "Unknown subcommand: $1"
@@ -38,7 +40,7 @@ function cli_component {
     esac
 }
 
-function cli_generate_component {
+function cli_component_add {
     if [ $# -lt 1 ]; then
         echo "Error: No component name provided."
         echo "Usage: $0 generate component [name]"
@@ -49,6 +51,11 @@ function cli_generate_component {
     echo "Generating component template for '$component_name'..."
 
     pnpm dlx shadcn add $component_name
+}
+
+function cli_component_list {
+    echo "Listing all available components..."
+    pnpm dlx shadcn list
 }
 
 function cli {
