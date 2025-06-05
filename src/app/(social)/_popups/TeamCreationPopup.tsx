@@ -17,7 +17,18 @@ export default function TeamCreationPopup() {
       </div>
 
       <Col className="w-full gap-2.5">
-        <Input type="text" name="team_name" placeholder="Team name" />
+        <Input type="text" name="team_name" placeholder="Team display name" />
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 ">
+            @
+          </span>
+          <Input
+            type="text"
+            name="username"
+            className="pl-8"
+            placeholder="Team ID (ex. biyard)"
+          />
+        </div>
         <Textarea placeholder="Please type description of your team." />
       </Col>
       <Row className="w-full grid grid-cols-2">
