@@ -13,6 +13,11 @@ import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { toHex } from '@dfinity/agent';
 import { config } from '@/config';
 import { logger } from '../logger';
+import { useAuth, useEd25519KeyPair } from '../contexts/auth-context';
+import {
+  encodeEd25519PrivateKeyToPkcs8Base64,
+  restoreEd25519KeyPair,
+} from '../wallet/ed25519';
 
 const firebaseConfig = {
   apiKey: config.firebase_api_key,
@@ -23,8 +28,6 @@ const firebaseConfig = {
   appId: config.firebase_app_id,
   measurementId: config.firebase_measurement_id,
 };
-
-const env = process.env.NEXT_PUBLIC_ENV;
 
 export interface AuthUserInfo {
   principal: string | null;
@@ -42,68 +45,70 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-export const loginWithGoogle = async (): Promise<AuthUserInfo> => {
+export enum EventType {
+  Login = 1,
+  SignUp = 2,
+}
+export type GoogleLoginInfo = {
+  eventType: EventType;
+  keyPair: Ed25519KeyIdentity;
+  contents: string;
+};
+
+export const loginWithGoogle = async (): Promise<GoogleLoginInfo> => {
   provider.addScope('https://www.googleapis.com/auth/drive.appdata');
   const result = await signInWithPopup(auth, provider);
   const user = result.user;
   const accessToken =
-    GoogleAuthProvider.credentialFromResult(result)?.accessToken;
+    GoogleAuthProvider.credentialFromResult(result)?.accessToken ?? '';
   const idToken = await user.getIdToken();
 
   logger.debug('id Token: ', idToken, ', accessToken:', accessToken);
 
-  let files = await listFiles(env ?? '', accessToken ?? '');
+  let files = await listFiles(config.env, accessToken);
 
   logger.debug('file data: ', files);
 
-  let contents = '';
-  let event = '';
+  let eventType = EventType.Login;
+  let keyPair;
+  let contents;
 
   if (files.length > 0) {
     const file = files[0];
     try {
-      const res = await getFile(accessToken ?? '', file.id);
-      contents = res;
-      event = 'login';
+      contents = await getFile(accessToken, file.id);
+      keyPair = restoreEd25519KeyPair(contents);
     } catch (e) {
       logger.error('Failed to get file content', e);
       throw new Error('failed to get file');
     }
   } else {
-    const arr = new Uint8Array(32);
-    //random private key
-    crypto.getRandomValues(arr);
+    const anonKeyPair = useEd25519KeyPair();
+    logger.debug('key pair: ', anonKeyPair);
 
-    let privateKey = encodeEd25519PrivateKeyToPkcs8Base64(arr);
+    contents = encodeEd25519PrivateKeyToPkcs8Base64(anonKeyPair);
+
     try {
-      const res = await uploadFile(accessToken ?? '', privateKey);
+      const res = await uploadFile(accessToken, contents);
 
       logger.debug('upload data', res);
-      event = 'signup';
-      contents = res.name;
+      eventType = EventType.SignUp;
+      keyPair = anonKeyPair;
     } catch (e) {
       logger.error('Failed to upload file content', e);
       throw new Error('failed to upload file');
     }
   }
 
-  //TODO: checking icp logic
-  let p = await trySetupFromPrivateKey(contents);
-
-  logger.debug('principal: ', p?.principal);
-
-  //TODO: implement after icp logic (query check email api)
+  logger.debug(
+    'principal(google signed in): ',
+    keyPair.getPrincipal().toText(),
+  );
 
   return {
-    principal: p?.principal ?? '',
-    event,
+    keyPair,
+    eventType,
     contents,
-    user,
-    idToken,
-    accessToken,
-    displayName: user.displayName,
-    email: user.email,
-    photoURL: user.photoURL,
   };
 };
 
@@ -116,21 +121,6 @@ export const onUserChanged = (
 };
 
 export const getAuthInstance = () => auth;
-
-function encodeEd25519PrivateKeyToPkcs8Base64(secretKey: Uint8Array): string {
-  if (secretKey.length !== 32) throw new Error('Invalid secret key length');
-
-  const pkcs8Prefix = Uint8Array.from([
-    0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70,
-    0x04, 0x22, 0x04, 0x20,
-  ]);
-
-  const pkcs8Key = new Uint8Array(pkcs8Prefix.length + 32);
-  pkcs8Key.set(pkcs8Prefix, 0);
-  pkcs8Key.set(secretKey, pkcs8Prefix.length);
-
-  return btoa(String.fromCharCode(...pkcs8Key));
-}
 
 function base64ToUint8Array(base64: string): Uint8Array {
   const binary = atob(base64);

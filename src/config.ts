@@ -10,6 +10,8 @@ type Config = {
   api_url: string;
 
   log_level: string;
+  sign_domain: string;
+  experiment: boolean;
 };
 
 export const config: Config = {
@@ -24,7 +26,10 @@ export const config: Config = {
   firebase_app_id: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
   firebase_measurement_id:
     process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || '',
-  api_url: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+  api_url:
+    process.env.NEXT_PUBLIC_API_URL || 'https://api.dev.ratel.foundation',
 
   log_level: process.env.NEXT_PUBLIC_LOG_LEVEL || 'info',
+  sign_domain: process.env.NEXT_PUBLIC_SIGN_DOMAIN || 'dev.ratel.foundation',
+  experiment: process.env.NEXT_PUBLIC_EXPERIMENT === 'true',
 };

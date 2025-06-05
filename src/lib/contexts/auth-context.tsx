@@ -22,3 +22,11 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const useAuth = () => useContext(AuthContext);
+
+export function useEd25519KeyPair(): Ed25519KeyIdentity {
+  const { ed25519KeyPair } = useAuth();
+
+  if (!ed25519KeyPair) throw NoEd25519KeyPair;
+
+  ed25519KeyPair!;
+}

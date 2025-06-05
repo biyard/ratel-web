@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { logger } from '../logger';
+import { config } from '@/config';
 
 const BASE_URL = 'https://www.googleapis.com/drive/v3';
 const UPLOAD_URL =
@@ -14,17 +15,15 @@ export const listFiles = async (
   key: string,
   accessToken: string,
 ): Promise<DriveFile[]> => {
-  const response = await axios.get(
-    `${BASE_URL}/files?q=${encodeURIComponent(`name='dev'`)}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      params: {
-        spaces: 'appDataFolder',
-      },
+  const q = encodeURIComponent(`name='${key}'`);
+  const response = await axios.get(`${BASE_URL}/files?q=${q}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
     },
-  );
+    params: {
+      spaces: 'appDataFolder',
+    },
+  });
 
   logger.debug('Responses: ', response);
 
@@ -36,7 +35,7 @@ export const uploadFile = async (
   content: string,
 ): Promise<DriveFile> => {
   const metadata = {
-    name: process.env.NEXT_PUBLIC_ENV || 'local',
+    name: config.env,
     parents: ['appDataFolder'],
   };
 

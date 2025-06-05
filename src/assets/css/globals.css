@@ -7,6 +7,14 @@ html {
   color: var(--color-neutral-400);
 }
 
+button {
+  @apply cursor-pointer;
+}
+
+a {
+  @apply cursor-pointer;
+}
+
 @theme static {
   /* Tailwindcss variables */
   --color-background: #1a1a1a;

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 
 import Logo from '@/assets/icons/logo.svg';
 import HomeIcon from '@/assets/icons/home.svg';
@@ -12,9 +12,27 @@ import Link from 'next/link';
 import Profile from './profile';
 import { LoginModal } from './popup/login-popup';
 import { usePopup } from '@/lib/contexts/popup-service';
+import { useSend } from '@/lib/api/useSend';
+import { useQuery } from '@tanstack/react-query';
+import { QK_USERS_GET_INFO } from '@/constants';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { logger } from '@/lib/logger';
+import { User } from '@/lib/api/models/user';
+import { route } from '@/route';
+import { config } from '@/config';
 
 function Header() {
   const popup = usePopup();
+  const send = useSend();
+
+  const { data, isLoading }: { data: User | undefined; isLoading: boolean } =
+    useQuery({
+      queryKey: [QK_USERS_GET_INFO],
+      queryFn: () => send(ratelApi.users.getUserInfo()),
+      refetchOnWindowFocus: false,
+    });
+
+  logger.debug('Header data:', data);
 
   const navItems = [
     {
@@ -26,7 +44,8 @@ function Header() {
           height="24"
         />
       ),
-      href: '/',
+      visible: true,
+      href: route.home(),
     },
     {
       name: 'Explore',
@@ -37,7 +56,8 @@ function Header() {
           height="24"
         />
       ),
-      href: '/explore',
+      visible: config.experiment,
+      href: route.explore(),
     },
     {
       name: 'My Network',
@@ -48,7 +68,8 @@ function Header() {
           height="24"
         />
       ),
-      href: '/my-network',
+      visible: config.experiment,
+      href: route.myNetwork(),
     },
     {
       name: 'Message',
@@ -59,7 +80,8 @@ function Header() {
           height="24"
         />
       ),
-      href: '/messages',
+      visible: config.experiment,
+      href: route.messages(),
     },
     {
       name: 'Notification',
@@ -70,7 +92,8 @@ function Header() {
           height="24"
         />
       ),
-      href: '/notifications',
+      visible: config.experiment,
+      href: route.notifications(),
     },
   ];
 
@@ -87,6 +110,7 @@ function Header() {
               key={`nav-item-${index}`}
               href={item.href}
               className="flex flex-col items-center justify-center group p-2.5"
+              hidden={!item.visible}
             >
               {item.icon}
               <span className="whitespace-nowrap text-neutral-500 group-hover:text-white text-[15px] font-medium transition-all">
@@ -96,15 +120,18 @@ function Header() {
             </Link>
           ))}
 
-          <button
-            className="cursor-pointer font-bold text-neutral-500 text-[15px]"
-            onClick={() => {
-              popup.open(<LoginModal />).withTitle('Join the Movement');
-            }}
-          >
-            Sign In
-          </button>
-          {/* <Profile /> */}
+          {!isLoading && data ? (
+            <Profile profileUrl={data.profile_url} name={data.nickname} />
+          ) : (
+            <button
+              className="cursor-pointer font-bold text-neutral-500 text-[15px]"
+              onClick={() => {
+                popup.open(<LoginModal />).withTitle('Join the Movement');
+              }}
+            >
+              Sign In
+            </button>
+          )}
         </div>
 
         <div className="hidden max-tablet:block">

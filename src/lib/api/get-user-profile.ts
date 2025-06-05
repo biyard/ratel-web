@@ -1,4 +1,6 @@
-import { send } from './send';
+'use client';
+
+import { useSend } from './useSend';
 
 export interface UserProfile {
   name: string;
@@ -7,5 +9,7 @@ export interface UserProfile {
 }
 
 export async function getUserProfile(): Promise<UserProfile> {
+  const send = useSend();
+
   return await send('/v1/user/profile');
 }
