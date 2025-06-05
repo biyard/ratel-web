@@ -47,14 +47,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
 
   return (
-    <AuthProvider>
-      {/* <KeyPairProvider> */}
-      <PopupProvider>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </PopupProvider>
-      {/* </KeyPairProvider> */}
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        {/* <KeyPairProvider> */}
+        <PopupProvider>{children}</PopupProvider>
+        {/* </KeyPairProvider> */}
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }

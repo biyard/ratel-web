@@ -3,6 +3,7 @@ import { getUserProfile } from '@/lib/api/get-user-profile';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import Image from 'next/image';
+import { QK_USERS_PROFILE } from '@/constants';
 
 interface ProfileProps {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -10,7 +11,7 @@ interface ProfileProps {
 
 export default function Profile({ onClick }: ProfileProps) {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['user_profile'],
+    queryKey: [QK_USERS_PROFILE],
     queryFn: getUserProfile,
   });
 

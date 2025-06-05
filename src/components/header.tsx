@@ -12,9 +12,22 @@ import Link from 'next/link';
 import Profile from './profile';
 import { LoginModal } from './popup/login-popup';
 import { usePopup } from '@/lib/contexts/popup-service';
+import { useSend } from '@/lib/api/useSend';
+import { useQuery } from '@tanstack/react-query';
+import { QK_USERS_GET_INFO } from '@/constants';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { logger } from '@/lib/logger';
+import Loading from '@/app/loading';
 
 function Header() {
   const popup = usePopup();
+  const send = useSend();
+
+  const { data, isLoading } = useQuery({
+    queryKey: [QK_USERS_GET_INFO],
+    queryFn: () => send(ratelApi.users.getUserInfo()),
+    refetchOnWindowFocus: false,
+  });
 
   const navItems = [
     {
@@ -102,7 +115,7 @@ function Header() {
               popup.open(<LoginModal />).withTitle('Join the Movement');
             }}
           >
-            Sign In
+            {isLoading && data ? <div> profile </div> : <div>Sign In</div>}
           </button>
           {/* <Profile /> */}
         </div>

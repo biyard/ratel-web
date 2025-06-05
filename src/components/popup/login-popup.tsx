@@ -9,6 +9,7 @@ import { loginWithGoogle } from '@/lib/service/firebaseService';
 import { LoginFailurePopup } from './login-failure-popup';
 import UserSetupPopup from './user-setup-popup';
 import { logger } from '@/lib/logger';
+import { useAuth } from '@/lib/contexts/auth-context';
 
 interface LoginModalProps {
   id?: string;
@@ -22,6 +23,7 @@ interface LoginBoxProps {
 
 export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
   const popup = usePopup();
+  const { login, authUser } = useAuth();
 
   return (
     <div
@@ -46,20 +48,20 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
             );
 
             try {
-              const user = await loginWithGoogle();
+              await login();
               loader.close();
-              logger.debug('user info: ', user);
+              logger.debug('user info: ', authUser);
 
-              if (user.event == 'signup') {
+              if (authUser?.event == 'signup') {
                 popup.open(
                   <UserSetupPopup
-                    email={user.email ?? ''}
-                    nickname={user.displayName ?? ''}
-                    profileUrl={user.photoURL ?? ''}
-                    principal={user.principal ?? ''}
+                    email={authUser.email ?? ''}
+                    nickname={authUser.displayName ?? ''}
+                    profileUrl={authUser.photoURL ?? ''}
+                    principal={authUser.principal ?? ''}
                   />,
                 );
-              } else if (user.event == 'login') {
+              } else if (authUser?.event == 'login') {
                 popup.close();
               }
             } catch (err) {
