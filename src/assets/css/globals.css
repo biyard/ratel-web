@@ -2,9 +2,14 @@
 @import 'tw-animate-css';
 
 html {
-  overflow-y: scroll;
   background-color: var(--color-background);
   color: var(--color-neutral-400);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+-webkit-scrollbar {
+  display: none;
 }
 
 button {
