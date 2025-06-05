@@ -12,25 +12,15 @@ import Link from 'next/link';
 import Profile from './profile';
 import { LoginModal } from './popup/login-popup';
 import { usePopup } from '@/lib/contexts/popup-service';
-import { useSend } from '@/lib/api/useSend';
-import { useQuery } from '@tanstack/react-query';
-import { QK_USERS_GET_INFO } from '@/constants';
-import { ratelApi } from '@/lib/api/ratel_api';
 import { logger } from '@/lib/logger';
-import { User } from '@/lib/api/models/user';
 import { route } from '@/route';
 import { config } from '@/config';
+import { getUserInfo } from '@/lib/api/hooks/users';
 
 function Header() {
   const popup = usePopup();
-  const send = useSend();
 
-  const { data, isLoading }: { data: User | undefined; isLoading: boolean } =
-    useQuery({
-      queryKey: [QK_USERS_GET_INFO],
-      queryFn: () => send(ratelApi.users.getUserInfo()),
-      refetchOnWindowFocus: false,
-    });
+  const { data, isLoading } = getUserInfo();
 
   logger.debug('Header data:', data);
 

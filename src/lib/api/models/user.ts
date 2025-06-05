@@ -15,7 +15,6 @@ export interface User {
   parent_id?: number;
   username: string;
 
-  followers: Follower[];
   groups: Group[];
 
   html_contents: string;
