@@ -5,9 +5,7 @@ import Providers from '@/providers/providers';
 import { Metadata } from 'next';
 import CookieProvider from './_providers/CookieProvider';
 import { Suspense } from 'react';
-import { PopupProvider } from '@/lib/contexts/popup-service';
 import { PopupZone } from '@/components/popupzone';
-import { AuthProvider } from '@/lib/contexts/auth-context';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -31,18 +29,13 @@ export default function RootLayout({
         <link rel="icon" href="/logos/favicon.ico" />
       </head>
       <body className={`${raleway.variable} antialiased bg-bg`}>
-        <AuthProvider>
-          <PopupProvider>
-            <CookieProvider>
-              <Providers>
-                <Header />
-                <Suspense>{children}</Suspense>
-              </Providers>
-            </CookieProvider>
-
+        <CookieProvider>
+          <Providers>
+            <Header />
+            <Suspense>{children}</Suspense>
             <PopupZone />
-          </PopupProvider>
-        </AuthProvider>
+          </Providers>
+        </CookieProvider>
       </body>
     </html>
   );
