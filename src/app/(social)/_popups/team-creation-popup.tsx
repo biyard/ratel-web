@@ -18,7 +18,7 @@ export default function TeamCreationPopup() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const handleUpload = async () => {
-    inputRef.current?.click(); // 파일 선택창 열기
+    inputRef.current?.click();
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +29,7 @@ export default function TeamCreationPopup() {
     }
 
     if (!file.type.startsWith('image/')) {
-      alert('이미지 파일만 업로드할 수 있습니다.');
+      alert('Only image type is supported');
       return;
     }
 
@@ -40,7 +40,12 @@ export default function TeamCreationPopup() {
       ratelApi.assets.getPresignedUrl(fileType),
     );
     logger.debug('Presigned URL response:', res);
-    if (!res.presigned_uris || res.presigned_uris.length === 0) {
+    if (
+      !res.presigned_uris ||
+      res.presigned_uris.length === 0 ||
+      !res.uris ||
+      res.uris.length === 0
+    ) {
       logger.error('No presigned URL received');
       return;
     }
@@ -61,7 +66,7 @@ export default function TeamCreationPopup() {
         throw new Error('File upload failed');
       }
       logger.debug('File uploaded successfully:', file.name);
-      setPreviewUrl(presignedUrl);
+      setPreviewUrl(res.uris[0]);
     } catch (error) {
       logger.error('Error uploading file:', error);
       return;
