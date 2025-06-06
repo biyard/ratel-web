@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { User } from '@/lib/api/models/user';
+import { User } from '@/lib/api/models/User';
 import TeamSelector from './team-selector';
 import UserTier from './UserTier';
 import UserBadges from './user-badges';

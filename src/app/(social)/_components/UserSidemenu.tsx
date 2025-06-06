@@ -2,7 +2,7 @@
 import React from 'react';
 import ProfileSection from './profile-section';
 import { Users, MessageSquare } from 'lucide-react';
-import { User } from '@/lib/api/models/user';
+import { User } from '@/lib/api/models/User';
 import RecentActivities from './RecentActivities';
 import Spaces from './Spaces';
 import Saved from './Saved';

@@ -66,4 +66,5 @@ a {
   /* Shadcn variables */
   --color-input: var(--color-c-wg-80);
   --color-ring: var(--color-primary);
+  --color-error: var(--color-c-p-50)
 }

@@ -1,113 +1,124 @@
+import FileUploader from '@/components/file-uploader';
 import { Button } from '@/components/ui/button';
 import { Col } from '@/components/ui/col';
 import { Input } from '@/components/ui/input';
 import { Row } from '@/components/ui/row';
 import { Textarea } from '@/components/ui/textarea';
-import { AssetPresignedUris } from '@/lib/api/models/asset-presigned-uris';
+import {
+  InvalidDuplicatedUsername,
+  InvalidLowerAlphaNumeric,
+  InvalidTooShort,
+} from '@/errors';
+import { createTeamRequest } from '@/lib/api/models/team';
 import { ratelApi } from '@/lib/api/ratel_api';
-import { useSend } from '@/lib/api/useSend';
+import { useApiCall } from '@/lib/api/useSend';
 import { usePopup } from '@/lib/contexts/popup-service';
-import { getFileType } from '@/lib/file-utils';
 import { logger } from '@/lib/logger';
-import React, { useRef, useState } from 'react';
+import { checkLowerAlphaNumeric } from '@/lib/valid-utils';
+import { useApolloClient } from '@apollo/client';
+import React, { useState } from 'react';
 
 export default function TeamCreationPopup() {
   const popup = usePopup();
-  const send = useSend();
+  const { post } = useApiCall();
+  const client = useApolloClient();
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const handleUpload = async () => {
-    inputRef.current?.click(); // 파일 선택창 열기
+  const [profileUrl, setProfileUrl] = useState('');
+  const [username, setUsername] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [invalid, setInvalid] = useState<Error | undefined>(undefined);
+  const [htmlContents, setHtmlContents] = useState('');
+
+  const handleContents = (evt: React.FormEvent<HTMLTextAreaElement>) => {
+    setHtmlContents(evt.currentTarget.value);
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) {
-      logger.debug('No file selected');
-      return;
-    }
-
-    if (!file.type.startsWith('image/')) {
-      alert('이미지 파일만 업로드할 수 있습니다.');
-      return;
-    }
-
-    const fileType = getFileType(file);
-    logger.debug('FileType:', fileType);
-
-    const res: AssetPresignedUris = await send(
-      ratelApi.assets.getPresignedUrl(fileType),
+  const handleCreate = async () => {
+    logger.debug('Team creation button clicked');
+    await post(
+      ratelApi.teams.createTeam(),
+      createTeamRequest(profileUrl, username, nickname, htmlContents),
     );
-    logger.debug('Presigned URL response:', res);
-    if (!res.presigned_uris || res.presigned_uris.length === 0) {
-      logger.error('No presigned URL received');
-      return;
-    }
-    const presignedUrl = res.presigned_uris[0];
-    logger.debug('Presigned URL:', presignedUrl);
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('file_type', fileType);
-    formData.append('presigned_url', presignedUrl);
-    logger.debug('FormData prepared for upload:', formData);
 
-    try {
-      const uploadResponse = await fetch(presignedUrl, {
-        method: 'PUT',
-        body: formData,
-      });
-      if (!uploadResponse.ok) {
-        throw new Error('File upload failed');
-      }
-      logger.debug('File uploaded successfully:', file.name);
-      setPreviewUrl(presignedUrl);
-    } catch (error) {
-      logger.error('Error uploading file:', error);
+    popup.close();
+  };
+
+  const handleUsername = async (evt: React.FormEvent<HTMLInputElement>) => {
+    const username = evt.currentTarget.value;
+    logger.debug('username', username);
+    if (username.length < 3) {
+      setInvalid(InvalidTooShort);
       return;
     }
+
+    if (!checkLowerAlphaNumeric(username)) {
+      setInvalid(InvalidLowerAlphaNumeric);
+      return;
+    }
+
+    const {
+      data: { users },
+    } = await client.query(ratelApi.graphql.getUserByUsername(username));
+    logger.debug('graphql respons: ', users);
+
+    if (users.length > 0) {
+      setInvalid(InvalidDuplicatedUsername);
+      return;
+    }
+
+    setInvalid(undefined);
+    setUsername(username);
+  };
+
+  const handleNickname = (evt: React.FormEvent<HTMLInputElement>) => {
+    setNickname(evt.currentTarget.value);
   };
 
   return (
     <div className="w-100 max-tablet:w-full flex flex-col gap-10 items-center">
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleFileChange}
-      />
-
-      {previewUrl ? (
-        <img
-          src={previewUrl}
-          alt="Team Logo"
-          className="w-40 h-40 rounded-full object-cover cursor-pointer"
-          onClick={handleUpload}
-        />
-      ) : (
-        <button
-          className="w-40 h-40 rounded-full bg-c-wg-80 text-sm font-semibold flex items-center justify-center text-c-wg-50"
-          onClick={handleUpload}
-        >
-          Upload logo
-        </button>
-      )}
+      <FileUploader onUploadSuccess={setProfileUrl}>
+        {profileUrl ? (
+          <img
+            src={profileUrl}
+            alt="Team Logo"
+            className="w-40 h-40 rounded-full object-cover cursor-pointer"
+          />
+        ) : (
+          <button className="w-40 h-40 rounded-full bg-c-wg-80 text-sm font-semibold flex items-center justify-center text-c-wg-50">
+            Upload logo
+          </button>
+        )}
+      </FileUploader>
 
       <Col className="w-full gap-2.5">
-        <Input type="text" name="team_name" placeholder="Team display name" />
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 ">
-            @
-          </span>
-          <Input
-            type="text"
-            name="username"
-            className="pl-8"
-            placeholder="Team ID (ex. biyard)"
-          />
-        </div>
-        <Textarea placeholder="Please type description of your team." />
+        <Input
+          type="text"
+          placeholder="Team display name"
+          onInput={handleNickname}
+        />
+        <Col className="gap-0.25">
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 ">
+              @
+            </span>
+            <Input
+              type="text"
+              className="pl-8"
+              placeholder="Team ID (ex. biyard)"
+              onInput={handleUsername}
+              aria-invalid={invalid !== undefined}
+            />
+          </div>
+          {invalid && (
+            <div className="text-error text-sm font-light">
+              {invalid.message}
+            </div>
+          )}
+        </Col>
+        <Textarea
+          placeholder="Please type description of your team."
+          onChange={handleContents}
+        />
       </Col>
       <Row className="w-full grid grid-cols-2">
         <Button
@@ -120,10 +131,7 @@ export default function TeamCreationPopup() {
         <Button
           variant="rounded_primary"
           className="w-full"
-          onClick={() => {
-            logger.debug('Team creation button clicked');
-            popup.close();
-          }}
+          onClick={handleCreate}
         >
           Create
         </Button>

@@ -1,4 +1,4 @@
-import { Team } from './team';
+import { UserType, Group } from './user';
 
 export interface User {
   id: number;
@@ -21,22 +21,4 @@ export interface User {
   teams: Team[];
 
   html_contents: string;
-}
-
-export enum UserType {
-  Individual = 1,
-  Team = 2,
-  Bot = 3,
-  Anonymous = 99,
-}
-
-export interface Group {
-  id: number;
-  created_at: number;
-  updated_at: number;
-
-  name: string;
-  user_id: number;
-
-  permissions: number;
 }
