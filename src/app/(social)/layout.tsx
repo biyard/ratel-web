@@ -2,6 +2,7 @@
 import { Suspense } from 'react';
 import { useUserInfo } from '@/lib/api/hooks/users';
 import UserSidemenu from './_components/UserSidemenu';
+import Loading from '../loading';
 
 export default function SocialLayout({
   children,
@@ -15,7 +16,7 @@ export default function SocialLayout({
       {!isLoading && user && <UserSidemenu />}
 
       <div className="flex-1 flex">
-        <Suspense>{children}</Suspense>
+        <Suspense fallback={<Loading />}>{children}</Suspense>
       </div>
     </div>
   );

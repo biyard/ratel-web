@@ -107,8 +107,8 @@ export default function TeamCreationPopup() {
             <Input
               type="text"
               className="pl-8"
-              placeholder="Team ID (ex. biyard)"
-              onInput={handleUsername}
+              placeholder="Team ID (ex. ratel)"
+              onChange={handleUsername}
               aria-invalid={invalid !== undefined}
             />
           </div>

@@ -16,16 +16,20 @@ import { useUserInfo } from '@/lib/api/hooks/users';
 import { Team } from '@/lib/api/models/team';
 import Link from 'next/link';
 import { route } from '@/route';
+import { useAuth } from '@/lib/contexts/auth-context';
 
 export interface TeamSelectorProps {
   onSelect?: (index: number) => void;
 }
 
 export default function TeamSelector({ onSelect }: TeamSelectorProps) {
-  const { data: user, isLoading } = useUserInfo();
+  const userInfo = useUserInfo();
+  const { data: user, isLoading } = userInfo;
   if (isLoading || !user) {
     return <div />;
   }
+
+  const { logout } = useAuth();
 
   const teams: Team[] = [
     {
@@ -58,7 +62,11 @@ export default function TeamSelector({ onSelect }: TeamSelectorProps) {
               asChild
             >
               <Link
-                href={route.teamByUsername(team.username)}
+                href={
+                  index === 0
+                    ? route.home()
+                    : route.teamByUsername(team.username)
+                }
                 className="flex items-center gap-2"
                 onClick={() => {
                   setSelectedTeam(index);
@@ -89,6 +97,8 @@ export default function TeamSelector({ onSelect }: TeamSelectorProps) {
           <DropdownMenuItem
             onClick={() => {
               logger.debug('Create team clicked');
+              logout();
+              userInfo.refetch();
             }}
           >
             <span>Log out</span>

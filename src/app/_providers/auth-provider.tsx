@@ -85,6 +85,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthUser(null);
     localStorage.removeItem(SK_IDENTITY_KEY);
     localStorage.removeItem(SK_ANONYMOUS_IDENTITY_KEY);
+
+    const identity = createEd25519KeyPair();
+
+    logger.debug('Created new principal:', identity.getPrincipal().toText());
+
+    setEd25519KeyPair(identity);
+    const encoded_identity = encodeEd25519PrivateKeyToPkcs8Base64(identity);
+
+    localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
   };
 
   return (

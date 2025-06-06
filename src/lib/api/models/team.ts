@@ -1,3 +1,5 @@
+import { UserType } from './user';
+
 export interface CreateTeamRequest {
   create: {
     profile_url: string;
@@ -31,6 +33,7 @@ export interface Team {
   nickname: string;
   email: string;
   profile_url?: string;
+  user_type: UserType;
 
   parent_id?: number;
   username: string;
