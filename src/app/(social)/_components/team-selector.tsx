@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Group, User } from '@/lib/api/models/user';
+import { User } from '@/lib/api/models/user';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { ChevronDown } from 'lucide-react';
@@ -25,7 +25,7 @@ export interface TeamItem {
 }
 
 export default function TeamSelector({ user }: TeamSelectorProps) {
-  const [teams, setTeams] = React.useState<TeamItem[]>([
+  const [teams] = React.useState<TeamItem[]>([
     {
       id: user.id,
       name: user.nickname,
@@ -36,9 +36,9 @@ export default function TeamSelector({ user }: TeamSelectorProps) {
   const [selectedTeam, setSelectedTeam] = useState(0);
   const popup = usePopup();
 
-  const teams_ids = Array.from(
-    new Map(user.groups.map((group) => [group.user_id, group])).values(),
-  );
+  /* const _teams_ids = Array.from(
+   *   new Map(user.groups.map((group) => [group.user_id, group])).values(),
+   * ); */
 
   logger.debug('TeamSelector groups:', teams);
 

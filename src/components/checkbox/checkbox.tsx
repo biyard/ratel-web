@@ -18,7 +18,7 @@ export const Checkbox = ({ id, onChange, children }: CheckboxProps) => {
           type="checkbox"
           className="peer hidden"
           checked={checked}
-          onChange={(_) => {
+          onChange={() => {
             const check = checked;
             setChecked(!check);
             onChange(!check);

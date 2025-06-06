@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import RemoveIcon from '@/assets/icons/remove.svg';
 
 interface ModalProps {
-  title: String;
+  title: string;
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
@@ -22,12 +22,17 @@ export const Modal = ({ title, isOpen, onClose, children }: ModalProps) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-row w-full justify-between items-center mb-35">
-            <div className="font-bold text-white text-[20px]">{title}</div>
-            <RemoveIcon className="[&>path]:stroke-neutral-80 cursor-pointer" width="24" height="24" onClick={onClose}></RemoveIcon>
+          <div className="font-bold text-white text-[20px]">{title}</div>
+          <RemoveIcon
+            className="[&>path]:stroke-neutral-80 cursor-pointer"
+            width="24"
+            height="24"
+            onClick={onClose}
+          ></RemoveIcon>
         </div>
         {children}
       </div>
     </div>,
-    document.getElementById('modal-root') as HTMLElement
+    document.getElementById('modal-root') as HTMLElement,
   );
 };

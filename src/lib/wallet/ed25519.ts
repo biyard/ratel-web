@@ -45,7 +45,9 @@ export function restoreV2Ed25519KeyPair(
 
   logger.debug('secret key bytes after base64 decoding: ', secret);
 
-  const identity = Ed25519KeyIdentity.fromSecretKey(secret.buffer);
+  const identity = Ed25519KeyIdentity.fromSecretKey(
+    secret.buffer as ArrayBuffer,
+  );
 
   logger.debug('Principal:', identity.getPrincipal());
 
@@ -59,8 +61,8 @@ export function restoreLegacyEd25519KeyPair(
 
   logger.debug('private key bytes after base64 decoding: ', pkcs8);
 
-  let privateKey = pkcs8.buffer.slice(16, 48) as ArrayBuffer;
-  let publicKey = pkcs8.buffer.slice(51, 83) as ArrayBuffer;
+  const privateKey = pkcs8.buffer.slice(16, 48) as ArrayBuffer;
+  const publicKey = pkcs8.buffer.slice(51, 83) as ArrayBuffer;
 
   logger.debug('Private Key:', privateKey);
   logger.debug('Public Key:', publicKey);

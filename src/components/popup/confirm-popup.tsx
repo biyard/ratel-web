@@ -6,6 +6,7 @@ import { WelcomeHeader } from './welcome-header';
 import { PrimaryButton } from '../button/primary-button';
 import { LoginPopupFooter } from './login-popup-footer';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface ConfirmPopupProps {}
 
 export const ConfirmPopup = ({}: ConfirmPopupProps) => {

@@ -1,15 +1,13 @@
 'use client';
-import React, { useState } from 'react';
-import { Modal } from '../modal';
+import React from 'react';
 import GoogleIcon from '@/assets/icons/google.svg';
 import { LoginPopupFooter } from './login-popup-footer';
 import { LoaderPopup } from './loader-popup';
 import { usePopup } from '@/lib/contexts/popup-service';
-import { loginWithGoogle } from '@/lib/service/firebaseService';
 import { LoginFailurePopup } from './login-failure-popup';
 import UserSetupPopup from './user-setup-popup';
 import { logger } from '@/lib/logger';
-import { useAuth } from '@/lib/contexts/auth-context';
+import { useAuth, useEd25519KeyPair } from '@/lib/contexts/auth-context';
 
 interface LoginModalProps {
   id?: string;
@@ -17,12 +15,13 @@ interface LoginModalProps {
 
 interface LoginBoxProps {
   icon: React.ReactNode;
-  label: String;
+  label: string;
   onClick: () => void;
 }
 
 export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
   const popup = usePopup();
+  const anonKeyPair = useEd25519KeyPair();
   const { login, authUser } = useAuth();
 
   return (
@@ -48,7 +47,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
             );
 
             try {
-              await login();
+              await login(anonKeyPair);
               loader.close();
               logger.debug('user info: ', authUser);
 

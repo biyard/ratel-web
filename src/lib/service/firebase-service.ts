@@ -13,7 +13,6 @@ import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { toHex } from '@dfinity/agent';
 import { config } from '@/config';
 import { logger } from '../logger';
-import { useAuth, useEd25519KeyPair } from '../contexts/auth-context';
 import {
   encodeEd25519PrivateKeyToPkcs8Base64,
   restoreEd25519KeyPair,
@@ -53,9 +52,16 @@ export type GoogleLoginInfo = {
   eventType: EventType;
   keyPair: Ed25519KeyIdentity;
   contents: string;
+
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  principal: string | null;
 };
 
-export const loginWithGoogle = async (): Promise<GoogleLoginInfo> => {
+export const loginWithGoogle = async (
+  anonKeyPair: Ed25519KeyIdentity,
+): Promise<GoogleLoginInfo> => {
   provider.addScope('https://www.googleapis.com/auth/drive.appdata');
   const result = await signInWithPopup(auth, provider);
   const user = result.user;
@@ -65,7 +71,7 @@ export const loginWithGoogle = async (): Promise<GoogleLoginInfo> => {
 
   logger.debug('id Token: ', idToken, ', accessToken:', accessToken);
 
-  let files = await listFiles(config.env, accessToken);
+  const files = await listFiles(config.env, accessToken);
 
   logger.debug('file data: ', files);
 
@@ -83,7 +89,6 @@ export const loginWithGoogle = async (): Promise<GoogleLoginInfo> => {
       throw new Error('failed to get file');
     }
   } else {
-    const anonKeyPair = useEd25519KeyPair();
     logger.debug('key pair: ', anonKeyPair);
 
     contents = encodeEd25519PrivateKeyToPkcs8Base64(anonKeyPair);
@@ -109,6 +114,10 @@ export const loginWithGoogle = async (): Promise<GoogleLoginInfo> => {
     keyPair,
     eventType,
     contents,
+    email: user.email,
+    photoURL: user.photoURL,
+    displayName: user.displayName,
+    principal: keyPair.getPrincipal().toText(),
   };
 };
 
@@ -136,8 +145,8 @@ export const trySetupFromPrivateKey = async (privateKeyBase64: string) => {
 
     logger.debug('private key bytes after base64 decoding: ', pkcs8);
 
-    let privateKey = pkcs8.buffer.slice(19, 51) as ArrayBuffer;
-    let publicKey = pkcs8.buffer.slice(51, 83) as ArrayBuffer;
+    const privateKey = pkcs8.buffer.slice(19, 51) as ArrayBuffer;
+    const publicKey = pkcs8.buffer.slice(51, 83) as ArrayBuffer;
 
     logger.debug('Private Key:', privateKey);
     logger.debug('Public Key:', publicKey);

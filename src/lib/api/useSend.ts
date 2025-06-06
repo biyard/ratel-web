@@ -3,17 +3,20 @@
 import { config } from '@/config';
 import { useCookie } from '../contexts/cookie-context';
 import { useAuth } from '../contexts/auth-context';
-import { toHex } from '@dfinity/agent';
 import { logger } from '../logger';
 import { encode_base64 } from '../base64';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 
-export function useSend() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SendFn = (path: string) => Promise<any>;
+
+export function useSend(): SendFn {
   const auth = useAuth();
   const cookie = useCookie();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return async function send(path: string): Promise<any> {
-    const apiBaseUrl = config.api_url;
+    const apiBaseUrl: string = config.api_url;
     let token = cookie?.token;
     let token_type = '';
 
@@ -37,6 +40,7 @@ export function useSend() {
       token = `${timestamp}:eddsa:${publicKey}:${s}`;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const headers: any = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `${token_type} ${token}`;
 

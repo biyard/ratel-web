@@ -5,7 +5,7 @@ import { QK_USERS_GET_INFO } from '@/constants';
 import { ratelApi } from '../ratel_api';
 import { useAuth } from '@/lib/contexts/auth-context';
 
-export function getUserInfo(): UseQueryResult<User | undefined> {
+export function useUserInfo(): UseQueryResult<User | undefined> {
   const send = useSend();
   const auth = useAuth();
 

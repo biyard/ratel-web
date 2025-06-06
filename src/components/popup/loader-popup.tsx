@@ -1,10 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { LoginPopupFooter } from './login-popup-footer';
-import { usePopup } from '@/lib/contexts/popup-service';
-import { LoginFailurePopup } from './login-failure-popup';
-import UserSetupPopup from './user-setup-popup';
 
 interface LoaderPopupProps {
   id?: string;
@@ -18,15 +15,9 @@ interface LoaderPopupProps {
 
 export const LoaderPopup = ({
   id = 'loader_popup',
-  title,
   description,
-  logo,
   logoOrigin,
-  msg,
-  serviceName,
 }: LoaderPopupProps) => {
-  const popup = usePopup();
-
   return (
     <div
       id={id}

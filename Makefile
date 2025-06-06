@@ -4,3 +4,6 @@ node_module:
 
 run: node_module
 	pnpm dev
+
+build: node_module
+	pnpm build

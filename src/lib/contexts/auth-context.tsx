@@ -2,14 +2,15 @@
 
 import { createContext, useContext } from 'react';
 import { User } from 'firebase/auth';
-import { AuthUserInfo } from '../service/firebaseService';
+import { AuthUserInfo } from '../service/firebase-service';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
+import { NoEd25519KeyPair } from '@/errors';
 
 interface AuthContextType {
   ed25519KeyPair: Ed25519KeyIdentity | null;
   user: User | null;
   authUser: AuthUserInfo | null;
-  login: () => Promise<void>;
+  login: (keyPair: Ed25519KeyIdentity) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -28,5 +29,5 @@ export function useEd25519KeyPair(): Ed25519KeyIdentity {
 
   if (!ed25519KeyPair) throw NoEd25519KeyPair;
 
-  ed25519KeyPair!;
+  return ed25519KeyPair!;
 }
