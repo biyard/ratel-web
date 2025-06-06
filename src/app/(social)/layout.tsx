@@ -12,7 +12,7 @@ export default function SocialLayout({
   const { data: user, isLoading } = useUserInfo();
 
   return (
-    <div className="flex min-h-screen justify-between max-w-6xl mx-auto text-white pt-3">
+    <div className="flex min-h-screen gap-5 justify-between max-w-6xl mx-auto text-white pt-3">
       {!isLoading && user && <UserSidemenu />}
 
       <div className="flex-1 flex">

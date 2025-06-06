@@ -16,7 +16,7 @@ export const ratelApi = {
     getUserByUsername: (username: string) => {
       return {
         query: gql`
-          query GetUserByEmail($username: String!) {
+          query GetUserByUsername($username: String!) {
             users(where: { username: { _eq: $username } }) {
               id
             }
@@ -24,6 +24,29 @@ export const ratelApi = {
         `,
         variables: {
           username,
+        },
+      };
+    },
+
+    getTeamByTeamname: (teamname: string) => {
+      return {
+        query: gql`
+          query GetTeamByTeamname($teamname: String!) {
+            users(where: { username: { _eq: $teamname } }) {
+              id
+              html_contents
+              email
+              created_at
+              nickname
+              parent_id
+              profile_url
+              user_type
+              username
+            }
+          }
+        `,
+        variables: {
+          teamname,
         },
       };
     },

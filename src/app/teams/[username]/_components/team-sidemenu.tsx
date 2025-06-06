@@ -1,23 +1,17 @@
-'use client';
 import React from 'react';
-import ProfileSection from './profile-section';
 import { Users, MessageSquare } from 'lucide-react';
-import RecentActivities from './RecentActivities';
-import Spaces from './Spaces';
-import Saved from './Saved';
-import { useUserInfo } from '@/lib/api/hooks/users';
+import { Team } from '@/lib/api/models/team';
+import TeamProfile from './team-profile';
 
-export default function UserSidemenu() {
-  const { data: user, isLoading } = useUserInfo();
-  if (isLoading || !user) {
-    return <div />;
-  }
+export interface TeamSidemenuProps {
+  team: Team;
+}
 
+export default function TeamSidemenu({ team }: TeamSidemenuProps) {
   return (
     <div className="w-64 flex flex-col">
-      <ProfileSection />
+      <TeamProfile team={team} />
 
-      {/* Navigation */}
       <nav className="mt-4 px-2">
         <div className="flex items-center gap-3 px-2 py-2 rounded-md hover:bg-gray-800">
           <div className="w-5 h-5 rounded-full border border-gray-500 flex items-center justify-center">
@@ -44,12 +38,6 @@ export default function UserSidemenu() {
           <span className="text-sm">Settings</span>
         </div>
       </nav>
-
-      <RecentActivities />
-
-      <Spaces />
-
-      <Saved />
     </div>
   );
 }

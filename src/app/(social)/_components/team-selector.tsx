@@ -1,3 +1,5 @@
+'use client';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +12,7 @@ import {
 import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { ChevronDown } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TeamCreationPopup from '../_popups/team-creation-popup';
 import { useUserInfo } from '@/lib/api/hooks/users';
 import { Team } from '@/lib/api/models/team';
@@ -20,26 +22,39 @@ import { useAuth } from '@/lib/contexts/auth-context';
 
 export interface TeamSelectorProps {
   onSelect?: (index: number) => void;
+  team?: Team;
 }
 
-export default function TeamSelector({ onSelect }: TeamSelectorProps) {
+export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
   const userInfo = useUserInfo();
+  const { logout } = useAuth();
+  const [selectedTeam, setSelectedTeam] = useState(0);
+  const popup = usePopup();
   const { data: user, isLoading } = userInfo;
+
+  let teams: Team[] = [];
+
+  if (user) {
+    teams = [
+      {
+        ...user,
+      },
+      ...user.teams,
+    ];
+  }
+
+  useEffect(() => {
+    for (let i = 0; i < teams.length; i++) {
+      if (team && team.id === teams[i].id) {
+        setSelectedTeam(i);
+        return;
+      }
+    }
+  }, [team, userInfo]);
+
   if (isLoading || !user) {
     return <div />;
   }
-
-  const { logout } = useAuth();
-
-  const teams: Team[] = [
-    {
-      ...user,
-    },
-    ...user.teams,
-  ];
-
-  const [selectedTeam, setSelectedTeam] = useState(0);
-  const popup = usePopup();
 
   logger.debug('TeamSelector groups:', teams);
 
