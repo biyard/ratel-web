@@ -59,8 +59,8 @@ export function restoreLegacyEd25519KeyPair(
 
   logger.debug('private key bytes after base64 decoding: ', pkcs8);
 
-  let privateKey = pkcs8.buffer.slice(16, 48) as ArrayBuffer;
-  let publicKey = pkcs8.buffer.slice(51, 83) as ArrayBuffer;
+  const privateKey = pkcs8.buffer.slice(16, 48) as ArrayBuffer;
+  const publicKey = pkcs8.buffer.slice(51, 83) as ArrayBuffer;
 
   logger.debug('Private Key:', privateKey);
   logger.debug('Public Key:', publicKey);

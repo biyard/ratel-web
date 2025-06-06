@@ -15,12 +15,12 @@ import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { route } from '@/route';
 import { config } from '@/config';
-import { getUserInfo } from '@/lib/api/hooks/users';
+import { useUserInfo } from '@/lib/api/hooks/users';
 
 function Header() {
   const popup = usePopup();
 
-  const { data, isLoading } = getUserInfo();
+  const { data, isLoading } = useUserInfo();
 
   logger.debug('Header data:', data);
 

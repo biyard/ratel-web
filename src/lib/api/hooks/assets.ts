@@ -5,7 +5,7 @@ import { ratelApi } from '../ratel_api';
 import { FileType } from '../models/file-type';
 import { AssetPresignedUris } from '../models/asset-presigned-uris';
 
-export function getPresignedUrl(
+export function usePresignedUrl(
   file_type: FileType,
 ): UseQueryResult<AssetPresignedUris | undefined> {
   const send = useSend();

@@ -2,7 +2,6 @@
 'use client';
 
 import { AuthProvider } from '@/app/_providers/auth-provider';
-import { KeyPairProvider } from '@/app/_providers/KeyPairProvider';
 import { PopupProvider } from '@/lib/contexts/popup-service';
 // Since QueryClientProvider relies on useContext under the hood, we have to put 'use client' on top
 import {

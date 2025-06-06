@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import ProfileSection from './ProfileSection';
+import ProfileSection from './profile-section';
 import { Users, MessageSquare } from 'lucide-react';
 import { User } from '@/lib/api/models/user';
 import RecentActivities from './RecentActivities';

@@ -5,7 +5,7 @@ export interface UserBadgesProps {
 }
 
 export default function UserBadges() {
-  let badges = [
+  const badges = [
     '/images/digitalact-sol2.gif',
     '/images/digitalact-dog2.gif',
     '/images/digitalact-kaia2.gif',

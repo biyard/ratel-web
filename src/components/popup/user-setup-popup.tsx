@@ -27,16 +27,13 @@ interface LabeledInputProps {
 
 const UserSetupPopup = ({
   id = 'user_setup_popup',
-  nickname = '',
-  profileUrl = '',
   email = 'test',
-  principal = '',
 }: UserSetupPopupProps) => {
   const popup = usePopup();
   const [displayName, setDisplayName] = useState('');
   const [userName, setUserName] = useState('');
   const [agreed, setAgreed] = useState(false);
-  const [announcementAgree, setAnnouncementAgree] = useState(false);
+  const [, setAnnouncementAgree] = useState(false);
   const [isUserNameValid, setIsUserNameValid] = useState(false);
 
   const isValidUsername = (username: string) =>
@@ -47,10 +44,6 @@ const UserSetupPopup = ({
 
     // TODO: call subscribe api
     // TODO: call sign up api (principal, email, nickname, profile, termAgreed, informedAgreed)
-    let nickname = displayName;
-    let profile = profileUrl;
-    let termAgreed = agreed;
-    let informedAgreed = announcementAgree;
 
     // success to query api
     popup.open(<ConfirmPopup />);

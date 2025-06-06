@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import {
   AuthUserInfo,
-  loginWithGoogle,
+  loginWithGoogle as loginWithGoogle,
   logout,
   onUserChanged,
-} from '@/lib/service/firebaseService';
+} from '@/lib/service/firebase-service';
 import { SK_ANONYMOUS_IDENTITY_KEY, SK_IDENTITY_KEY } from '@/constants';
 import { AuthContext } from '@/lib/contexts/auth-context';
 import { logger } from '@/lib/logger';
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (stored) {
       // for our users
-      let identity = restoreEd25519KeyPair(stored);
+      const identity = restoreEd25519KeyPair(stored);
       logger.debug('Restored principal:', identity.getPrincipal().toText());
 
       setEd25519KeyPair(identity);
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (stored) {
         // previousely visited
-        let identity = restoreEd25519KeyPair(stored);
+        const identity = restoreEd25519KeyPair(stored);
         setEd25519KeyPair(identity);
 
         logger.debug(
@@ -70,9 +70,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  const login = async () => {
+  const login = async (keyPair: Ed25519KeyIdentity) => {
     logger.debug('login');
-    const info = await loginWithGoogle();
+    const info = await loginWithGoogle(keyPair);
     localStorage.setItem(SK_IDENTITY_KEY, info.contents);
     localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, info.contents);
 

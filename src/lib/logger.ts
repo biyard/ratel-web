@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { config } from '@/config';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';

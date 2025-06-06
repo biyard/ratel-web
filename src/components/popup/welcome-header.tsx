@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React from 'react';
 import CharacterWithCircle from '@/assets/icons/character.svg';
 
 interface WelcomeHeaderProps {
