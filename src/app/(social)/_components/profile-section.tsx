@@ -1,10 +1,9 @@
-import { Star } from 'lucide-react';
 import React from 'react';
 import Image from 'next/image';
 import { User } from '@/lib/api/models/user';
 import TeamSelector from './team-selector';
 import UserTier from './UserTier';
-import UserBadges from './UserBadges';
+import UserBadges from './UserBadges.1';
 
 interface ProfileSectionProps {
   user: User;

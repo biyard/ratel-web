@@ -5,7 +5,7 @@ import AlertCircle from '@/assets/icons/alert-circle.svg';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { LoaderPopup } from './loader-popup';
 import { LoginPopupFooter } from './login-popup-footer';
-import { loginWithGoogle } from '@/lib/service/firebaseService';
+import { loginWithGoogle } from '@/lib/service/firebase-service';
 import UserSetupPopup from './user-setup-popup';
 import { logger } from '@/lib/logger';
 

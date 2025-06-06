@@ -1,13 +1,6 @@
 'use client';
 import { Suspense } from 'react';
-import {
-  Users,
-  ChevronDown,
-  ChevronRight,
-  MessageSquare,
-  Building,
-} from 'lucide-react';
-import { getUserInfo } from '@/lib/api/hooks/users';
+import { useUserInfo } from '@/lib/api/hooks/users';
 import UserSidemenu from './_components/UserSidemenu';
 
 export default function SocialLayout({
@@ -15,7 +8,7 @@ export default function SocialLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { data: user, isLoading } = getUserInfo();
+  const { data: user, isLoading } = useUserInfo();
 
   return (
     <div className="flex min-h-screen justify-between max-w-6xl mx-auto text-white pt-3">
