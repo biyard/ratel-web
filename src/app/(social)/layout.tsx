@@ -12,7 +12,7 @@ export default function SocialLayout({
 
   return (
     <div className="flex min-h-screen justify-between max-w-6xl mx-auto text-white pt-3">
-      {!isLoading && user && <UserSidemenu user={user} />}
+      {!isLoading && user && <UserSidemenu />}
 
       <div className="flex-1 flex">
         <Suspense>{children}</Suspense>

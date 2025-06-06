@@ -6,4 +6,5 @@ export const route = {
   myNetwork: () => '/my-network',
   messages: () => '/messages',
   notifications: () => '/notifications',
+  teamByUsername: (username: string) => `/teams/${username}`,
 };

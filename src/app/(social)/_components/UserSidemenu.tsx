@@ -2,16 +2,17 @@
 import React from 'react';
 import ProfileSection from './profile-section';
 import { Users, MessageSquare } from 'lucide-react';
-import { User } from '@/lib/api/models/User';
 import RecentActivities from './RecentActivities';
 import Spaces from './Spaces';
 import Saved from './Saved';
+import { useUserInfo } from '@/lib/api/hooks/users';
 
-export interface UserSidemenuProps {
-  user: User;
-}
+export default function UserSidemenu() {
+  const { data: user, isLoading } = useUserInfo();
+  if (isLoading || !user) {
+    return <div />;
+  }
 
-export default function UserSidemenu({ user }: UserSidemenuProps) {
   return (
     <div className="w-64 border-r border-gray-800 flex flex-col">
       <ProfileSection user={user} />

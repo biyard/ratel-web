@@ -1,35 +1,52 @@
 import React from 'react';
 import Image from 'next/image';
-import { User } from '@/lib/api/models/User';
 import TeamSelector from './team-selector';
 import UserTier from './UserTier';
 import UserBadges from './user-badges';
+import { useUserInfo } from '@/lib/api/hooks/users';
+import { Team } from '@/lib/api/models/team';
 
-interface ProfileSectionProps {
-  user: User;
-}
+export default function ProfileSection() {
+  const { data: user, isLoading } = useUserInfo();
+  if (isLoading || !user) {
+    return <div />;
+  }
 
-export default function ProfileSection({ user }: ProfileSectionProps) {
+  const teams: Team[] = [
+    {
+      ...user,
+    },
+    ...user.teams,
+  ];
+
+  const [selectedTeam, setSelectedTeam] = React.useState(0);
+  const team = teams[selectedTeam];
+
+  const handleTeamSelect = (i: number) => {
+    console.log('Selected team:', i);
+    setSelectedTeam(i);
+  };
+
   return (
     <div className="flex flex-col gap-5 px-4 py-5 rounded-[10px] bg-component-bg">
-      <TeamSelector />
+      <TeamSelector onSelect={handleTeamSelect} />
 
       <div className="relative">
         <Image
-          src={user.profile_url || '/default-profile.png'}
-          alt={user.nickname}
+          src={team.profile_url || '/default-profile.png'}
+          alt={team.nickname}
           width={80}
           height={80}
           className="rounded-full border-2 border-primary object-cover object-top"
         />
       </div>
 
-      <div className="font-medium">{user?.nickname}</div>
+      <div className="font-medium">{team.nickname}</div>
 
       <div
         id="user-profile-description"
         className="text-xs text-gray-400"
-        dangerouslySetInnerHTML={{ __html: user.html_contents }}
+        dangerouslySetInnerHTML={{ __html: team.html_contents }}
       />
 
       <UserTier />
