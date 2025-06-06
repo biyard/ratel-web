@@ -111,6 +111,9 @@ importers:
       eslint-plugin-storybook:
         specifier: 9.0.0
         version: 9.0.0(eslint@9.27.0(jiti@2.4.2))(storybook@9.0.0(@testing-library/dom@10.4.0)(prettier@3.5.3))(typescript@5.8.3)
+      husky:
+        specifier: ^8.0.0
+        version: 8.0.3
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -3508,6 +3511,11 @@ packages:
 
   https-browserify@1.0.0:
     resolution: {integrity: sha512-J+FkSdyD+0mA0N+81tMotaRMfSL9SGi+xpD3T6YApKsc3bGSXJlfXri3VyFOeYkfLRQisDk1W+jIFFKBeUBbBg==}
+
+  husky@8.0.3:
+    resolution: {integrity: sha512-+dQSyqPh4x1hlO1swXBiNb2HzTDN1I2IGLQx1GrBuiqFJfoMrnZWwVmatvSiO+Iz8fBUnf+lekwNo4c2LlXItg==}
+    engines: {node: '>=14'}
+    hasBin: true
 
   icss-utils@5.1.0:
     resolution: {integrity: sha512-soFhflCVWLfRNOPU3iv5Z9VUdT44xFRbzjLsEzSr5AQmgqPMTHdU3PMT1Cf1ssx8fLNJDA1juftYl+PUcv3MqA==}
@@ -9013,6 +9021,8 @@ snapshots:
   http-parser-js@0.5.10: {}
 
   https-browserify@1.0.0: {}
+
+  husky@8.0.3: {}
 
   icss-utils@5.1.0(postcss@8.5.4):
     dependencies:
