@@ -6,6 +6,7 @@ import { Metadata } from 'next';
 import CookieProvider from './_providers/CookieProvider';
 import { Suspense } from 'react';
 import { PopupZone } from '@/components/popupzone';
+import Loading from './loading';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -32,7 +33,15 @@ export default function RootLayout({
         <CookieProvider>
           <Providers>
             <Header />
-            <Suspense>{children}</Suspense>
+            <Suspense
+              fallback={
+                <div className="w-full h-full flex items-center justify-center">
+                  <Loading />
+                </div>
+              }
+            >
+              {children}
+            </Suspense>
             <PopupZone />
           </Providers>
         </CookieProvider>

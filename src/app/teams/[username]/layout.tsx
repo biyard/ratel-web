@@ -30,7 +30,15 @@ export default async function TeamLayout({
     <div className="flex min-h-screen justify-between max-w-6xl mx-auto text-white pt-3">
       <TeamSidemenu team={team} />
       <div className="flex-1 flex">
-        <Suspense fallback={<Loading />}>{children}</Suspense>
+        <Suspense
+          fallback={
+            <div className="w-full h-full flex items-center justify-center">
+              <Loading />
+            </div>
+          }
+        >
+          {children}
+        </Suspense>
       </div>
     </div>
   );

@@ -16,7 +16,15 @@ export default function SocialLayout({
       {!isLoading && user && <UserSidemenu />}
 
       <div className="flex-1 flex">
-        <Suspense fallback={<Loading />}>{children}</Suspense>
+        <Suspense
+          fallback={
+            <div className="w-full h-full flex items-center justify-center">
+              <Loading />
+            </div>
+          }
+        >
+          {children}
+        </Suspense>
       </div>
     </div>
   );
