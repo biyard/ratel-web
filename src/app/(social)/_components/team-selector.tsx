@@ -7,38 +7,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User } from '@/lib/api/models/User';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { ChevronDown } from 'lucide-react';
 import React, { useState } from 'react';
 import TeamCreationPopup from '../_popups/team-creation-popup';
+import { useUserInfo } from '@/lib/api/hooks/users';
 import { Team } from '@/lib/api/models/team';
 
-export interface TeamSelectorProps {
-  user: User;
-}
+export default function TeamSelector() {
+  const { data: user, isLoading } = useUserInfo();
+  if (isLoading || !user) {
+    return <div />;
+  }
 
-export interface TeamItem {
-  id: number;
-  name: string;
-  profile_url: string;
-}
-
-export default function TeamSelector({ user }: TeamSelectorProps) {
-  const [teams] = React.useState<Team[]>([
+  const teams: Team[] = [
     {
       ...user,
     },
     ...user.teams,
-  ]);
+  ];
 
   const [selectedTeam, setSelectedTeam] = useState(0);
   const popup = usePopup();
-
-  /* const _teams_ids = Array.from(
-   *   new Map(user.groups.map((group) => [group.user_id, group])).values(),
-   * ); */
 
   logger.debug('TeamSelector groups:', teams);
 

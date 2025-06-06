@@ -9,6 +9,7 @@ import {
   InvalidLowerAlphaNumeric,
   InvalidTooShort,
 } from '@/errors';
+import { useUserInfo } from '@/lib/api/hooks/users';
 import { createTeamRequest } from '@/lib/api/models/team';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useApiCall } from '@/lib/api/useSend';
@@ -22,6 +23,7 @@ export default function TeamCreationPopup() {
   const popup = usePopup();
   const { post } = useApiCall();
   const client = useApolloClient();
+  const userInfo = useUserInfo();
 
   const [profileUrl, setProfileUrl] = useState('');
   const [username, setUsername] = useState('');
@@ -39,6 +41,7 @@ export default function TeamCreationPopup() {
       ratelApi.teams.createTeam(),
       createTeamRequest(profileUrl, username, nickname, htmlContents),
     );
+    userInfo.refetch();
 
     popup.close();
   };

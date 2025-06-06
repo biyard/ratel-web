@@ -12,7 +12,7 @@ interface ProfileSectionProps {
 export default function ProfileSection({ user }: ProfileSectionProps) {
   return (
     <div className="flex flex-col gap-5 px-4 py-5 rounded-[10px] bg-component-bg">
-      <TeamSelector user={user} />
+      <TeamSelector />
 
       <div className="relative">
         <Image
