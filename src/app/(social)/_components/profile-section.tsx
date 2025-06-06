@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { User } from '@/lib/api/models/user';
 import TeamSelector from './team-selector';
 import UserTier from './UserTier';
-import UserBadges from './UserBadges.1';
+import UserBadges from './user-badges';
 
 interface ProfileSectionProps {
   user: User;
