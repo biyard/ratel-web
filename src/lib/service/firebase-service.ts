@@ -52,6 +52,11 @@ export type GoogleLoginInfo = {
   eventType: EventType;
   keyPair: Ed25519KeyIdentity;
   contents: string;
+
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  principal: string | null;
 };
 
 export const loginWithGoogle = async (
@@ -109,6 +114,10 @@ export const loginWithGoogle = async (
     keyPair,
     eventType,
     contents,
+    email: user.email,
+    photoURL: user.photoURL,
+    displayName: user.displayName,
+    principal: keyPair.getPrincipal().toText(),
   };
 };
 
