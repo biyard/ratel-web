@@ -45,7 +45,9 @@ export function restoreV2Ed25519KeyPair(
 
   logger.debug('secret key bytes after base64 decoding: ', secret);
 
-  const identity = Ed25519KeyIdentity.fromSecretKey(secret.buffer);
+  const identity = Ed25519KeyIdentity.fromSecretKey(
+    secret.buffer as ArrayBuffer,
+  );
 
   logger.debug('Principal:', identity.getPrincipal());
 

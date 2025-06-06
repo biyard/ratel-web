@@ -5,9 +5,10 @@ import AlertCircle from '@/assets/icons/alert-circle.svg';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { LoaderPopup } from './loader-popup';
 import { LoginPopupFooter } from './login-popup-footer';
-import { loginWithGoogle } from '@/lib/service/firebase-service';
+import { EventType, loginWithGoogle } from '@/lib/service/firebase-service';
 import UserSetupPopup from './user-setup-popup';
 import { logger } from '@/lib/logger';
+import { useEd25519KeyPair } from '@/lib/contexts/auth-context';
 
 interface LoginFailurePopupProps {
   id?: string;
@@ -29,6 +30,7 @@ export const LoginFailurePopup = ({
   serviceName,
 }: LoginFailurePopupProps) => {
   const popup = usePopup();
+  const keyPair = useEd25519KeyPair();
   const failureMsg = `Failed to connect to ${serviceName}.\nWould you like to try again?`;
 
   return (
@@ -50,11 +52,11 @@ export const LoginFailurePopup = ({
             );
 
             try {
-              const user = await loginWithGoogle();
+              const user = await loginWithGoogle(keyPair);
               loader.close();
               logger.debug('user info: ', user);
 
-              if (user.event == 'signup') {
+              if (user.eventType == EventType.SignUp) {
                 popup.open(
                   <UserSetupPopup
                     email={user.email ?? ''}
@@ -63,7 +65,7 @@ export const LoginFailurePopup = ({
                     principal={user.principal ?? ''}
                   />,
                 );
-              } else if (user.event == 'login') {
+              } else if (user.eventType == EventType.Login) {
                 popup.close();
               }
             } catch (err) {
