@@ -1,3 +1,5 @@
+import { Team } from './team';
+
 export interface User {
   id: number;
   created_at: number;
@@ -16,6 +18,7 @@ export interface User {
   username: string;
 
   groups: Group[];
+  teams: Team[];
 
   html_contents: string;
 }

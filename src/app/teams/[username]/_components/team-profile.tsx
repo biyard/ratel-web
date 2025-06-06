@@ -1,36 +1,16 @@
 import React from 'react';
 import Image from 'next/image';
-import TeamSelector from './team-selector';
-import UserTier from './UserTier';
-import UserBadges from './user-badges';
-import { useUserInfo } from '@/lib/api/hooks/users';
 import { Team } from '@/lib/api/models/team';
+import TeamSelector from '@/app/(social)/_components/team-selector';
 
-export default function ProfileSection() {
-  const { data: user, isLoading } = useUserInfo();
-  if (isLoading || !user) {
-    return <div />;
-  }
+export interface TeamProfileProps {
+  team: Team;
+}
 
-  const teams: Team[] = [
-    {
-      ...user,
-    },
-    ...user.teams,
-  ];
-
-  const [selectedTeam, setSelectedTeam] = React.useState(0);
-  const team = teams[selectedTeam];
-
-  const handleTeamSelect = (i: number) => {
-    console.log('Selected team:', i);
-    setSelectedTeam(i);
-  };
-
+export default function TeamProfile({ team }: TeamProfileProps) {
   return (
     <div className="flex flex-col gap-5 px-4 py-5 rounded-[10px] bg-component-bg">
-      <TeamSelector onSelect={handleTeamSelect} />
-
+      <TeamSelector team={team} />
       <div className="relative">
         <Image
           src={team.profile_url || '/default-profile.png'}
@@ -48,9 +28,6 @@ export default function ProfileSection() {
         className="text-xs text-gray-400"
         dangerouslySetInnerHTML={{ __html: team.html_contents }}
       />
-
-      <UserTier />
-      <UserBadges />
     </div>
   );
 }
