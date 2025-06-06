@@ -1,13 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-pnpm lint || {
-    echo "❌ Linting failed. Please fix the issues before pushing. by `pnpm lint`"
-    exit 1
-}
-
-pnpm build || {
-    echo "❌ Build failed. Please fix the issues before pushing. by `pnpm build`"
-    exit 1
-}
-
+pnpm lint
+pnpm build
