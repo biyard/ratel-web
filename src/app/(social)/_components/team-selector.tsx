@@ -12,7 +12,7 @@ import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { ChevronDown } from 'lucide-react';
 import React, { useState } from 'react';
-import TeamCreationPopup from '../_popups/TeamCreationPopup';
+import TeamCreationPopup from '../_popups/team-creation-popup';
 
 export interface TeamSelectorProps {
   user: User;

@@ -1,4 +1,4 @@
-import { FileType } from './file-type'; // FileType enum이 정의된 파일에서 import
+import { FileType } from './file-type';
 
 export interface AssetPresignedUris {
   presigned_uris: string[];

@@ -2,7 +2,7 @@ import { Star } from 'lucide-react';
 import React from 'react';
 import Image from 'next/image';
 import { User } from '@/lib/api/models/user';
-import TeamSelector from './TeamSelector';
+import TeamSelector from './team-selector';
 import UserTier from './UserTier';
 import UserBadges from './UserBadges';
 

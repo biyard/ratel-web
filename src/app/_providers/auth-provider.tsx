@@ -77,7 +77,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, info.contents);
 
     setEd25519KeyPair(info.keyPair);
-    q.refetch();
   };
 
   const logoutUser = async () => {

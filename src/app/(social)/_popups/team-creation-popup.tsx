@@ -3,6 +3,7 @@ import { Col } from '@/components/ui/col';
 import { Input } from '@/components/ui/input';
 import { Row } from '@/components/ui/row';
 import { Textarea } from '@/components/ui/textarea';
+import { AssetPresignedUris } from '@/lib/api/models/asset-presigned-uris';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useSend } from '@/lib/api/useSend';
 import { usePopup } from '@/lib/contexts/popup-service';
@@ -35,12 +36,36 @@ export default function TeamCreationPopup() {
     const fileType = getFileType(file);
     logger.debug('FileType:', fileType);
 
-    const res = await send(ratelApi.assets.getPresignedUrl(fileType));
+    const res: AssetPresignedUris = await send(
+      ratelApi.assets.getPresignedUrl(fileType),
+    );
     logger.debug('Presigned URL response:', res);
-    /* const url = URL.createObjectURL(file); */
-    /* setPreviewUrl(url); */
-    /* logger.debug('Selected logo file:', file.name); */
-    // 필요시 FormData 로 업로드 가능
+    if (!res.presigned_uris || res.presigned_uris.length === 0) {
+      logger.error('No presigned URL received');
+      return;
+    }
+    const presignedUrl = res.presigned_uris[0];
+    logger.debug('Presigned URL:', presignedUrl);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('file_type', fileType);
+    formData.append('presigned_url', presignedUrl);
+    logger.debug('FormData prepared for upload:', formData);
+
+    try {
+      const uploadResponse = await fetch(presignedUrl, {
+        method: 'PUT',
+        body: formData,
+      });
+      if (!uploadResponse.ok) {
+        throw new Error('File upload failed');
+      }
+      logger.debug('File uploaded successfully:', file.name);
+      setPreviewUrl(presignedUrl);
+    } catch (error) {
+      logger.error('Error uploading file:', error);
+      return;
+    }
   };
 
   return (
@@ -53,12 +78,21 @@ export default function TeamCreationPopup() {
         onChange={handleFileChange}
       />
 
-      <div
-        className="w-40 h-40 rounded-full bg-c-wg-80 text-sm font-semibold flex items-center justify-center text-c-wg-50"
-        onClick={handleUpload}
-      >
-        Upload logo
-      </div>
+      {previewUrl ? (
+        <img
+          src={previewUrl}
+          alt="Team Logo"
+          className="w-40 h-40 rounded-full object-cover cursor-pointer"
+          onClick={handleUpload}
+        />
+      ) : (
+        <button
+          className="w-40 h-40 rounded-full bg-c-wg-80 text-sm font-semibold flex items-center justify-center text-c-wg-50"
+          onClick={handleUpload}
+        >
+          Upload logo
+        </button>
+      )}
 
       <Col className="w-full gap-2.5">
         <Input type="text" name="team_name" placeholder="Team display name" />
