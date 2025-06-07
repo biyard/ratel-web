@@ -1,6 +1,5 @@
 'use client';
 
-import Loading from '@/app/loading';
 import FileUploader from '@/components/file-uploader';
 import { Button } from '@/components/ui/button';
 import { Col } from '@/components/ui/col';
@@ -16,12 +15,15 @@ import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { userEditProfileRequest } from '@/lib/api/models/user';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useApiCall } from '@/lib/api/useSend';
+import { route } from '@/route';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 export default function MyProfilePage() {
   const { post } = useApiCall();
   const userinfo = useSuspenseUserInfo();
   const { data: user } = userinfo;
+  const router = useRouter();
 
   const [profileUrl, setProfileUrl] = useState(user?.profile_url || '');
   const [nickname, setNickname] = useState(user?.nickname);
@@ -45,6 +47,7 @@ export default function MyProfilePage() {
       userEditProfileRequest(nickname!, htmlContents!, profileUrl),
     );
     userinfo.refetch();
+    router.push(route.home());
   };
 
   return (

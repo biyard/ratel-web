@@ -16,3 +16,4 @@ export { default as RoundBubble } from '@/assets/icons/round-bubble.svg';
 export { default as Search } from '@/assets/icons/search.svg';
 export { default as Settings } from '@/assets/icons/settings.svg';
 export { default as UserGroup } from '@/assets/icons/user-group.svg';
+export { default as Post } from '@/assets/icons/post.svg';
