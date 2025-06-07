@@ -27,40 +27,56 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const stored = localStorage.getItem(SK_IDENTITY_KEY);
 
-    if (stored) {
-      // for our users
-      const identity = restoreEd25519KeyPair(stored);
-      logger.debug('Restored principal:', identity.getPrincipal().toText());
+    try {
+      if (stored) {
+        // for our users
+        const identity = restoreEd25519KeyPair(stored);
+        logger.debug('Restored principal:', identity.getPrincipal().toText());
+
+        setEd25519KeyPair(identity);
+        localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, stored);
+      } else {
+        // for guests
+        const stored = localStorage.getItem(SK_ANONYMOUS_IDENTITY_KEY);
+
+        if (stored) {
+          // previousely visited
+          const identity = restoreEd25519KeyPair(stored);
+          setEd25519KeyPair(identity);
+
+          logger.debug(
+            'Restored anonymous principal:',
+            identity.getPrincipal().toText(),
+          );
+        } else {
+          // first visited
+          const identity = createEd25519KeyPair();
+
+          logger.debug(
+            'Created new principal:',
+            identity.getPrincipal().toText(),
+          );
+
+          setEd25519KeyPair(identity);
+          const encoded_identity =
+            encodeEd25519PrivateKeyToPkcs8Base64(identity);
+
+          localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
+        }
+      }
+    } catch (error) {
+      logger.error('Failed to restore identity:', error);
+      localStorage.removeItem(SK_IDENTITY_KEY);
+      localStorage.removeItem(SK_ANONYMOUS_IDENTITY_KEY);
+
+      const identity = createEd25519KeyPair();
+
+      logger.debug('Created new principal:', identity.getPrincipal().toText());
 
       setEd25519KeyPair(identity);
-      localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, stored);
-    } else {
-      // for guests
-      const stored = localStorage.getItem(SK_ANONYMOUS_IDENTITY_KEY);
+      const encoded_identity = encodeEd25519PrivateKeyToPkcs8Base64(identity);
 
-      if (stored) {
-        // previousely visited
-        const identity = restoreEd25519KeyPair(stored);
-        setEd25519KeyPair(identity);
-
-        logger.debug(
-          'Restored anonymous principal:',
-          identity.getPrincipal().toText(),
-        );
-      } else {
-        // first visited
-        const identity = createEd25519KeyPair();
-
-        logger.debug(
-          'Created new principal:',
-          identity.getPrincipal().toText(),
-        );
-
-        setEd25519KeyPair(identity);
-        const encoded_identity = encodeEd25519PrivateKeyToPkcs8Base64(identity);
-
-        localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
-      }
+      localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
     }
 
     const unsubscribe = onUserChanged((user) => {
@@ -85,6 +101,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthUser(null);
     localStorage.removeItem(SK_IDENTITY_KEY);
     localStorage.removeItem(SK_ANONYMOUS_IDENTITY_KEY);
+
+    const identity = createEd25519KeyPair();
+
+    logger.debug('Created new principal:', identity.getPrincipal().toText());
+
+    setEd25519KeyPair(identity);
+    const encoded_identity = encodeEd25519PrivateKeyToPkcs8Base64(identity);
+
+    localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
   };
 
   return (

@@ -12,6 +12,7 @@ type Config = {
   log_level: string;
   sign_domain: string;
   experiment: boolean;
+  graphql_url: string;
 };
 
 export const config: Config = {
@@ -32,4 +33,7 @@ export const config: Config = {
   log_level: process.env.NEXT_PUBLIC_LOG_LEVEL || 'info',
   sign_domain: process.env.NEXT_PUBLIC_SIGN_DOMAIN || 'dev.ratel.foundation',
   experiment: process.env.NEXT_PUBLIC_EXPERIMENT === 'true',
+  graphql_url:
+    process.env.NEXT_PUBLIC_GRAPHQL_URL ||
+    'https://graphql.dev.ratel.foundation/v1/graphql',
 };

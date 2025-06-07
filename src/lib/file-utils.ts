@@ -37,3 +37,38 @@ export function getFileType(file: File): FileType {
 
   return FileType.None;
 }
+
+export function toContentType(fileType: FileType): string {
+  switch (fileType) {
+    case FileType.PNG:
+      return 'image/png';
+    case FileType.JPG:
+      return 'image/jpeg';
+    case FileType.GIF:
+      return 'image/gif';
+    case FileType.WEBM:
+      return 'image/webp';
+    case FileType.SVG:
+      return 'image/svg+xml';
+    case FileType.AI:
+      return 'application/postscript';
+    case FileType.PDF:
+      return 'application/pdf';
+    case FileType.XLSX:
+      return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    case FileType.GLB:
+      return 'model/gltf-binary';
+    case FileType.GLTF:
+      return 'model/gltf+json';
+    case FileType.MP3:
+      return 'audio/mpeg';
+    case FileType.WAV:
+      return 'audio/wav';
+    case FileType.MP4:
+      return 'video/mp4';
+    case FileType.PPTX:
+      return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+    default:
+      return '';
+  }
+}
