@@ -1,5 +1,5 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { useApiCall } from '../useSend';
+import { useApiCall } from '../use-send';
 import { QK_ASSETS_GET_PRESIGNED_URL } from '@/constants';
 import { ratelApi } from '../ratel_api';
 import { FileType } from '../models/file-type';
