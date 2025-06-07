@@ -1,0 +1,49 @@
+name: Dev deploy
+
+on:
+  push:
+    branches:
+      - dev
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: true
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+  create-release-pr:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    needs: [lint-and-build]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          ssh-key: ${{ secrets.PULL_KEY_REPO }}
+      - name: Git pr release action
+        uses: grassedge/git-pr-release-action@v1.0
+        with:
+          base: stage
+          head: dev
+          token: ${{ secrets.GITHUB_TOKEN }}

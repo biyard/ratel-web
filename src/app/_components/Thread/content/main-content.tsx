@@ -1,22 +1,23 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
-import type { AttachedFile } from "@/types"
-import { ExternalLink } from "./external-link"
-import { FileAttachment } from "./file-attachment"
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import type { AttachedFile } from '@/types';
+import { ExternalLink } from './external-link';
+import { FileAttachment } from './file-attachment';
 
 interface MainContentProps {
-  files: AttachedFile[]
-  links: { url: string; text: string }[]
+  files: AttachedFile[];
+  links: { url: string; text: string }[];
 }
 
 export function MainContent({ files, links }: MainContentProps) {
   return (
     <div className="flex-1 p-6 overflow-y-auto">
-
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold">Crypto/Temporary Increase of Staking Rewards to 8% for 90 Days</h1>
+          <h1 className="text-2xl font-bold">
+            Crypto/Temporary Increase of Staking Rewards to 8% for 90 Days
+          </h1>
           <Badge className="bg-green-600 hover:bg-green-600">Active</Badge>
         </div>
         <Button className="bg-white p-12 hover:bg-[#fcb300]/80 text-black">
@@ -28,9 +29,11 @@ export function MainContent({ files, links }: MainContentProps) {
       <div className="mb-6">
         <h2 className="text-lg font-semibold mb-3">Summary</h2>
         <p className="text-[#a1a1a1] text-sm leading-relaxed">
-          This proposal suggests a temporary increase of the staking rewards from 6% to 8% APR for a trial period of 90
-          days. The goal is to boost staking participation, enhance long-term commitment from token holders, and assess
-          how a slightly more generous reward structure impacts token velocity, treasury health, and user behavior.
+          This proposal suggests a temporary increase of the staking rewards
+          from 6% to 8% APR for a trial period of 90 days. The goal is to boost
+          staking participation, enhance long-term commitment from token
+          holders, and assess how a slightly more generous reward structure
+          impacts token velocity, treasury health, and user behavior.
         </p>
       </div>
 
@@ -38,16 +41,19 @@ export function MainContent({ files, links }: MainContentProps) {
         <h2 className="text-lg font-semibold mb-3">Motivation</h2>
         <div className="text-[#a1a1a1] text-sm leading-relaxed space-y-3">
           <p>
-            Over the past month, staking participation has declined by approximately 12%. This downward trend may be
-            partially due to the low competitiveness of our current APR compared to similar projects in the ecosystem.
+            Over the past month, staking participation has declined by
+            approximately 12%. This downward trend may be partially due to the
+            low competitiveness of our current APR compared to similar projects
+            in the ecosystem.
           </p>
           <p>
-            This proposal aims to test whether a modest increase in rewards can reverse this trend and promote deeper
-            engagement.
+            This proposal aims to test whether a modest increase in rewards can
+            reverse this trend and promote deeper engagement.
           </p>
           <p>
-            We believe this is a data-driven opportunity to improve DAO growth, especially if paired with UI
-            enhancements that improve staking visibility and clarity.
+            We believe this is a data-driven opportunity to improve DAO growth,
+            especially if paired with UI enhancements that improve staking
+            visibility and clarity.
           </p>
         </div>
       </div>
@@ -95,12 +101,15 @@ export function MainContent({ files, links }: MainContentProps) {
 
       <div className="space-y-2 mb-16">
         {links.map((link, index) => (
-          <div className="py-12 bg-[#262626] rounded-lg hover:bg-[#333333] transition-colors" key={index}>
+          <div
+            className="py-12 bg-[#262626] rounded-lg hover:bg-[#333333] transition-colors"
+            key={index}
+          >
             <ExternalLink key={index} url={link.url} text={link.text} />
             {/* <hr /> */}
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }

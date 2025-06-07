@@ -1,6 +1,10 @@
 // In Next.js, this file would be called: app/providers.tsx
 'use client';
 
+import { AuthProvider } from '@/app/_providers/auth-provider';
+import { client } from '@/lib/apollo';
+import { PopupProvider } from '@/lib/contexts/popup-service';
+import { ApolloProvider } from '@apollo/client';
 // Since QueryClientProvider relies on useContext under the hood, we have to put 'use client' on top
 import {
   isServer,
@@ -44,6 +48,14 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <ApolloProvider client={client}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          {/* <KeyPairProvider> */}
+          <PopupProvider>{children}</PopupProvider>
+          {/* </KeyPairProvider> */}
+        </AuthProvider>
+      </QueryClientProvider>
+    </ApolloProvider>
   );
 }

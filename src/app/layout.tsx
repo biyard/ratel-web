@@ -2,14 +2,18 @@ import { Raleway } from 'next/font/google';
 import Header from '@/components/header';
 import '@/assets/css/globals.css';
 import Providers from '@/providers/providers';
-import LayoutSwitch from '../components/layoutSwitch';
 import { Metadata } from 'next';
 import CookieProvider from './_providers/CookieProvider';
 import { Suspense } from 'react';
+import { PopupZone } from '@/components/popupzone';
+import Loading from './loading';
+import { logger } from '@/lib/logger';
+import { config } from '@/config';
 
 const raleway = Raleway({
   variable: '--font-raleway',
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
@@ -19,9 +23,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  logger.debug('Config: ', config);
+
   return (
     <html lang="en">
       <head>
@@ -31,7 +37,16 @@ export default function RootLayout({
         <CookieProvider>
           <Providers>
             <Header />
-            <Suspense>{children}</Suspense>
+            <Suspense
+              fallback={
+                <div className="w-full h-full flex items-center justify-center">
+                  <Loading />
+                </div>
+              }
+            >
+              {children}
+            </Suspense>
+            <PopupZone />
           </Providers>
         </CookieProvider>
       </body>

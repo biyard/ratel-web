@@ -1,20 +1,39 @@
+'use client';
+
 import { config } from '@/config';
-import { useCookie } from '../contexts/cookie-context';
+import { logger } from '../logger';
+import { getCookieContext } from '@/app/_providers/CookieProvider';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function send(path: string): Promise<any> {
+  logger.debug('sending request', path);
   const apiBaseUrl = config.api_url;
-  const token = useCookie()?.token;
+  const c = await getCookieContext();
+  const token = c.token || '';
+  const token_type = 'Bearer';
+  logger.debug('send', token, apiBaseUrl);
 
-  var req: any = {
+  logger.debug(
+    'Sending request to:',
+    `${apiBaseUrl}${path}`,
+    'with token:',
+    token_type,
+    token,
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const req: any = {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   };
 
-  if (token) {
-    req.headers['Authorization'] = `Bearer ${token}`;
+  if (token !== '') {
+    req.headers['Authorization'] = `${token_type} ${token}`;
   }
+
+  logger.debug(`${apiBaseUrl}${path}`, req);
 
   const response = await fetch(`${apiBaseUrl}${path}`, req);
 

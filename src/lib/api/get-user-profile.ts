@@ -1,3 +1,5 @@
+'use client';
+
 import { send } from './send';
 
 export interface UserProfile {

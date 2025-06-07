@@ -1,57 +1,105 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { ChevronDown, Crown, Hash, Users, Settings } from "lucide-react"
-import { Member, NavItemType, SectionType } from "@/types"
-import { CollapsibleSection } from "./collapsible-section"
-import { MemberItem } from "./member-item"
-import { NavItem } from "./nav-item"
+import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { ChevronDown, Crown, Hash, Users, Settings } from 'lucide-react';
+import { Member, NavItemType, SectionType } from '@/types';
+import { CollapsibleSection } from './collapsible-section';
+import { MemberItem } from './member-item';
+import { NavItem } from './nav-item';
 
 export function Sidebar() {
-  const [activeNav, setActiveNav] = useState<string>("threads")
-  const [searchTerm, setSearchTerm] = useState<string>("")
+  const [activeNav, setActiveNav] = useState<string>('threads');
+  // const [searchTerm, setSearchTerm] = useState<string>('');
 
   const members: Member[] = [
-    { id: "1", name: "[Nickname]", avatar: "/placeholder.svg?height=24&width=24", status: "online" },
-    { id: "2", name: "[Nickname]", avatar: "/placeholder.svg?height=24&width=24", status: "away" },
-    { id: "3", name: "[Nickname]", avatar: "/placeholder.svg?height=24&width=24", status: "online" },
-    { id: "4", name: "[Nickname]", avatar: "/placeholder.svg?height=24&width=24", status: "offline" },
-    { id: "5", name: "[Nickname]", avatar: "/placeholder.svg?height=24&width=24", status: "online" },
-  ]
+    {
+      id: '1',
+      name: '[Nickname]',
+      avatar: '/placeholder.svg?height=24&width=24',
+      status: 'online',
+    },
+    {
+      id: '2',
+      name: '[Nickname]',
+      avatar: '/placeholder.svg?height=24&width=24',
+      status: 'away',
+    },
+    {
+      id: '3',
+      name: '[Nickname]',
+      avatar: '/placeholder.svg?height=24&width=24',
+      status: 'online',
+    },
+    {
+      id: '4',
+      name: '[Nickname]',
+      avatar: '/placeholder.svg?height=24&width=24',
+      status: 'offline',
+    },
+    {
+      id: '5',
+      name: '[Nickname]',
+      avatar: '/placeholder.svg?height=24&width=24',
+      status: 'online',
+    },
+  ];
 
   const navItems: NavItemType[] = [
-    { id: "profile", label: "Profile", icon: <div className="w-4 h-4 bg-[#a1a1a1] rounded-full"></div> },
-    { id: "threads", label: "Threads", icon: <Hash className="w-4 h-4" /> },
-    { id: "manage", label: "Manage Group", icon: <Users className="w-4 h-4" /> },
-    { id: "settings", label: "Settings", icon: <Settings className="w-4 h-4" /> },
-  ]
+    {
+      id: 'profile',
+      label: 'Profile',
+      icon: <div className="w-4 h-4 bg-[#a1a1a1] rounded-full"></div>,
+    },
+    { id: 'threads', label: 'Threads', icon: <Hash className="w-4 h-4" /> },
+    {
+      id: 'manage',
+      label: 'Manage Group',
+      icon: <Users className="w-4 h-4" />,
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: <Settings className="w-4 h-4" />,
+    },
+  ];
 
   const sections: SectionType[] = [
     {
-      id: "recent",
-      title: "Recent",
+      id: 'recent',
+      title: 'Recent',
       isOpen: true,
-      items: ["Crypto/DAO Treasury Transpe...", "Crypto/DAO Act Inventor", "Crypto/DAO Welcome to Protec..."],
+      items: [
+        'Crypto/DAO Treasury Transpe...',
+        'Crypto/DAO Act Inventor',
+        'Crypto/DAO Welcome to Protec...',
+      ],
     },
     {
-      id: "spaces",
-      title: "Spaces",
+      id: 'spaces',
+      title: 'Spaces',
       isOpen: true,
-      items: ["Crypto/DAO Treasury Transpe...", "Crypto/DAO Act Inventor", "Crypto/DAO Welcome to Protec..."],
+      items: [
+        'Crypto/DAO Treasury Transpe...',
+        'Crypto/DAO Act Inventor',
+        'Crypto/DAO Welcome to Protec...',
+      ],
     },
     {
-      id: "saved",
-      title: "Saved",
+      id: 'saved',
+      title: 'Saved',
       isOpen: true,
-      items: ["Crypto/DAO Treasury Transpe...", "Crypto/DAO Act Inventor", "Crypto/DAO Welcome to Protec..."],
+      items: [
+        'Crypto/DAO Treasury Transpe...',
+        'Crypto/DAO Act Inventor',
+        'Crypto/DAO Welcome to Protec...',
+      ],
     },
-  ]
+  ];
 
   return (
     <div className="w-[300px] bg-[#1e1e1e] flex flex-col h-full mx-8">
-
       <div className="p-4 border-b border-[#404040]">
         <div className="flex items-center gap-3 mb-2">
           <div className="relative">
@@ -88,14 +136,17 @@ export function Sidebar() {
         </div>
       </div>
 
-
       <div className="p-4 space-y-2 mx-16">
         {navItems.map((item) => (
-          <NavItem key={item.id} item={item} isActive={activeNav === item.id} onClick={() => setActiveNav(item.id)} />
+          <NavItem
+            key={item.id}
+            item={item}
+            isActive={activeNav === item.id}
+            onClick={() => setActiveNav(item.id)}
+          />
         ))}
       </div>
 
-      
       <div className="p-4 flex-1">
         <div className="flex items-center justify-between mb-3">
           <span className="font-medium mx-16">Members</span>
@@ -111,12 +162,11 @@ export function Sidebar() {
         </Button>
       </div>
 
-      
       <div className="-pt-96 p-4 space-y-4 border-t border-[#404040] mx-16">
         {sections.map((section) => (
           <CollapsibleSection key={section.id} section={section} />
         ))}
       </div>
     </div>
-  )
+  );
 }
