@@ -1,4 +1,9 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import {
+  useQuery,
+  UseQueryResult,
+  useSuspenseQuery,
+  UseSuspenseQueryResult,
+} from '@tanstack/react-query';
 import { User } from '../models/user';
 import { useApiCall } from '../useSend';
 import { QK_USERS_GET_INFO } from '@/constants';
@@ -17,6 +22,24 @@ export function useUserInfo(): UseQueryResult<User | undefined> {
     queryKey: [QK_USERS_GET_INFO, principalText],
     queryFn: () => get(ratelApi.users.getUserInfo()),
     enabled: !!principalText,
+    refetchOnWindowFocus: false,
+  });
+
+  return query;
+}
+
+export function useSuspenseUserInfo(): UseSuspenseQueryResult<
+  User | undefined
+> {
+  const { get } = useApiCall();
+  const auth = useAuth();
+  const principalText = auth.ed25519KeyPair?.getPrincipal().toText();
+
+  logger.debug('useUserInfo', [QK_USERS_GET_INFO, principalText]);
+
+  const query = useSuspenseQuery({
+    queryKey: [QK_USERS_GET_INFO, principalText],
+    queryFn: () => get(ratelApi.users.getUserInfo()),
     refetchOnWindowFocus: false,
   });
 

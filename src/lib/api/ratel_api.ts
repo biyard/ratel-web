@@ -4,6 +4,7 @@ import { gql } from '@apollo/client';
 export const ratelApi = {
   users: {
     getUserInfo: () => '/v1/users?action=user-info',
+    editProfile: (user_id: number) => `/v1/users/${user_id}`,
   },
   assets: {
     getPresignedUrl: (file_type: FileType) =>

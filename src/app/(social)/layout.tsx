@@ -1,7 +1,7 @@
 'use client';
 import { Suspense } from 'react';
 import { useUserInfo } from '@/lib/api/hooks/users';
-import UserSidemenu from './_components/UserSidemenu';
+import UserSidemenu from './_components/user-sidemenu';
 import Loading from '../loading';
 
 export default function SocialLayout({
@@ -12,7 +12,7 @@ export default function SocialLayout({
   const { data: user, isLoading } = useUserInfo();
 
   return (
-    <div className="flex min-h-screen gap-5 justify-between max-w-6xl mx-auto text-white pt-3">
+    <div className="flex min-h-screen gap-5 justify-between max-w-6xl mx-auto text-white py-3 px-2.5">
       {!isLoading && user && <UserSidemenu />}
 
       <div className="flex-1 flex">

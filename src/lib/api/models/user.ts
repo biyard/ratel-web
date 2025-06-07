@@ -40,3 +40,25 @@ export interface Group {
 
   permissions: number;
 }
+
+export interface UserEditProfileRequest {
+  edit_profile: {
+    nickname: string;
+    html_contents: string;
+    profile_url: string;
+  };
+}
+
+export function userEditProfileRequest(
+  nickname: string,
+  html_contents: string,
+  profile_url: string,
+): UserEditProfileRequest {
+  return {
+    edit_profile: {
+      nickname,
+      html_contents,
+      profile_url,
+    },
+  };
+}
