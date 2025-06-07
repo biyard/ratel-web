@@ -14,6 +14,18 @@ export const ratelApi = {
     createTeam: () => '/v1/teams',
   },
   graphql: {
+    listIndustries: () => {
+      return {
+        query: gql`
+          query ListIndustries {
+            industries {
+              id
+              name
+            }
+          }
+        `,
+      };
+    },
     getUserByUsername: (username: string) => {
       return {
         query: gql`
