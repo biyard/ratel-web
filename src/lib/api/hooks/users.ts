@@ -5,7 +5,7 @@ import {
   UseSuspenseQueryResult,
 } from '@tanstack/react-query';
 import { User } from '../models/user';
-import { useApiCall } from '../useSend';
+import { useApiCall } from '../use-send';
 import { QK_USERS_GET_INFO } from '@/constants';
 import { ratelApi } from '../ratel_api';
 import { useAuth } from '@/lib/contexts/auth-context';

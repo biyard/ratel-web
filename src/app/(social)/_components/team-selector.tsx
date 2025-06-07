@@ -50,7 +50,7 @@ export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
         return;
       }
     }
-  }, [team, userInfo]);
+  }, [teams, team, userInfo]);
 
   if (isLoading || !user) {
     return <div />;
@@ -85,7 +85,7 @@ export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
                 className="flex items-center gap-2"
                 onClick={() => {
                   setSelectedTeam(index);
-                  onSelect && onSelect(index);
+                  if (onSelect) onSelect(index);
                 }}
               >
                 <img

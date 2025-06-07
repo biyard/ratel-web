@@ -1,6 +1,6 @@
 import { AssetPresignedUris } from '@/lib/api/models/asset-presigned-uris';
 import { ratelApi } from '@/lib/api/ratel_api';
-import { useApiCall } from '@/lib/api/useSend';
+import { useApiCall } from '@/lib/api/use-send';
 import { getFileType, toContentType } from '@/lib/file-utils';
 import { logger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
@@ -16,7 +16,7 @@ export default function FileUploader({
   ...props
 }: React.ComponentProps<'div'> & FileUploaderProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { get, post } = useApiCall();
+  const { get } = useApiCall();
   const handleUpload = async () => {
     inputRef.current?.click();
   };

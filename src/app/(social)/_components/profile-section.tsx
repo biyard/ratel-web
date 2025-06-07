@@ -3,14 +3,12 @@ import Image from 'next/image';
 import TeamSelector from './team-selector';
 import UserTier from './UserTier';
 import UserBadges from './user-badges';
-import { useUserInfo } from '@/lib/api/hooks/users';
+import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { Team } from '@/lib/api/models/team';
 
 export default function ProfileSection() {
-  const { data: user, isLoading } = useUserInfo();
-  if (isLoading || !user) {
-    return <div />;
-  }
+  const { data } = useSuspenseUserInfo();
+  const user = data!;
 
   const teams: Team[] = [
     {

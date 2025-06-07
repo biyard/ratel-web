@@ -6,15 +6,10 @@ import { Col } from '@/components/ui/col';
 import { Input } from '@/components/ui/input';
 import { Row } from '@/components/ui/row';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  InvalidDuplicatedUsername,
-  InvalidLowerAlphaNumeric,
-  InvalidTooShort,
-} from '@/errors';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { userEditProfileRequest } from '@/lib/api/models/user';
 import { ratelApi } from '@/lib/api/ratel_api';
-import { useApiCall } from '@/lib/api/useSend';
+import { useApiCall } from '@/lib/api/use-send';
 import { route } from '@/route';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
