@@ -11,8 +11,29 @@ import {
   Eye,
   Repeat,
 } from 'lucide-react';
+import FeedCard from '@/components/feed-card';
 
 export default function Home() {
+  const feeds = [
+    {
+      id: 1,
+      industry: 'Crypto',
+      title: 'DAO Treasury Transparency Act & Crypto Investor Protection Act',
+      contents:
+        'Explore powerful artworks that amplify voices for equality, diversity, and justice. This collection brings...',
+      url: '/post-placeholder.jpg?height=300&width=500',
+      author_profile_url:
+        'https://metadata.ratel.foundation/metadata/0faf45ec-35e1-40e9-bff2-c61bb52c7d19',
+      author_name: 'Miner Choi',
+
+      likes: 10,
+      comments: 100,
+      rewards: 221000,
+      shares: 403,
+      created_at: 0,
+    },
+  ];
+
   return (
     <div className="flex-1 flex">
       {/* Feed */}
@@ -45,85 +66,8 @@ export default function Home() {
         </div>
 
         {/* Posts */}
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="border-b border-gray-800 p-4">
-            <div className="flex justify-between">
-              <div className="flex gap-2 items-center">
-                <div className="uppercase text-xs font-medium bg-gray-800 px-2 py-0.5 rounded">
-                  Crypto
-                </div>
-                {i === 1 && (
-                  <div className="uppercase text-xs font-medium bg-[#fcb300] text-black px-2 py-0.5 rounded">
-                    Active
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="bg-[#fcb300] text-black text-xs px-2 py-0.5 rounded">
-                  New
-                </div>
-                <button>
-                  <MessageSquare size={16} />
-                </button>
-                <button>
-                  <MoreHorizontal size={16} />
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-2">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-5 h-5 bg-gray-700 rounded"></div>
-                <div className="text-sm font-medium">Space name</div>
-                <div className="w-2 h-2 rounded-full bg-[#fcb300]"></div>
-              </div>
-              <h2 className="text-lg font-medium">
-                DAO Treasury Transparency Act & Crypto Investor Protection Act
-              </h2>
-              <p className="text-sm text-gray-400 mt-1">
-                Explore powerful artworks that amplify voices for equality,
-                diversity, and justice. This collection brings...
-                <span className="text-[#fcb300]"> See more</span>
-              </p>
-            </div>
-
-            <div className="mt-3">
-              <div className="rounded-md overflow-hidden">
-                <Image
-                  src="/post-placeholder.jpg?height=300&width=500"
-                  alt="Post image"
-                  width={500}
-                  height={300}
-                  className="w-full object-cover"
-                />
-              </div>
-            </div>
-
-            <div className="mt-3 flex justify-between text-sm text-gray-400">
-              <div className="flex items-center gap-1">
-                <Eye size={16} />
-                <span>{i === 1 ? '705' : '212'}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Building size={16} />
-                <span>Space</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Eye size={16} />
-                <span>201</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Star size={16} />
-                <span>221K</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Repeat size={16} />
-                <span>403</span>
-              </div>
-            </div>
-
-            <div className="mt-2 text-xs text-gray-500 text-right">1w ago</div>
-          </div>
+        {feeds.map((props) => (
+          <FeedCard {...props}> </FeedCard>
         ))}
       </div>
 
