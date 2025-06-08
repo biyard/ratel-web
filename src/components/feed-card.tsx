@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 import { Col } from './ui/col';
 import { Row } from './ui/row';
 import { CommentIcon, Rewards, Shares, ThumbUp } from './icons';
@@ -98,12 +97,12 @@ export function UserBadge({
 }) {
   return (
     <Row className="w-fit items-center med-16 text-white">
-      <Image
+      <img
         src={profile_url}
         alt="User Profile"
         width={24}
         height={24}
-        className="rounded-sm object-cover"
+        className="w-6 h-6 rounded-sm object-cover"
       />
       <span>{name}</span>
     </Row>

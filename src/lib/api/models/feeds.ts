@@ -1,4 +1,6 @@
 import { UrlType } from './feeds/write-post-request';
+import { Industry } from './industry';
+import { User } from './user';
 
 export interface Feed {
   id: number;
@@ -29,6 +31,9 @@ export interface Feed {
 
   url?: string;
   url_type: UrlType;
+
+  author: [User];
+  industry: [Industry];
 }
 
 export enum FeedType {

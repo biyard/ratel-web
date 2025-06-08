@@ -24,16 +24,16 @@ export interface Post {
 export default function Home() {
   const { data } = usePost(1, 20);
   logger.debug('query response of posts', data);
+
   const feeds: Post[] = data.items.map((item) => ({
     id: item.id,
-    industry: 'Crypto', // FIXME:replace with actual industry
+    industry: item.industry[0].name, // FIXME:replace with actual industry
     title: item.title!,
     contents: item.html_contents,
     url: item.url,
-    // FIXME:replace with actual author profile URL
-    author_profile_url:
-      'https://metadata.ratel.foundation/metadata/0faf45ec-35e1-40e9-bff2-c61bb52c7d19',
-    author_name: 'Miner Choi',
+    // FIXME: default image
+    author_profile_url: item.author[0].profile_url!,
+    author_name: item.author[0].nickname,
 
     likes: item.likes,
     comments: item.comments,
