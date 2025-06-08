@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const unsubscribe = onUserChanged((user) => {
-      setUser(user);
+      setUser(user || undefined);
     });
 
     return () => unsubscribe();

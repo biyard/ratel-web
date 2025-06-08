@@ -124,7 +124,7 @@ export const loginWithGoogle = async (
 export const logout = async () => await signOut(auth);
 
 export const onUserChanged = (
-  cb: (user: User | undefined) => void,
+  cb: (user: User | null) => void,
 ): (() => void) => {
   return onAuthStateChanged(auth, cb);
 };
