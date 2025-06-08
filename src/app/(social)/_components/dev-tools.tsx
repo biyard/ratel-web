@@ -1,6 +1,7 @@
 'use client';
 import { config, Env } from '@/config';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
+import { FileInfo } from '@/lib/api/models/feeds';
 import {
   UrlType,
   writePostRequest,
@@ -25,7 +26,7 @@ export default function DevTools() {
     const user_id = user.id;
     const industry_id = 1;
     const quote_feed_id = null;
-    const files = [];
+    const files: FileInfo[] = [];
     const url =
       'https://metadata.ratel.foundation/metadata/0faf45ec-35e1-40e9-bff2-c61bb52c7d19';
 
