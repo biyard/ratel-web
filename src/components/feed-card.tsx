@@ -2,6 +2,9 @@ import React from 'react';
 import Image from 'next/image';
 import { Col } from './ui/col';
 import { Row } from './ui/row';
+import { CommentIcon, Rewards, Shares, ThumbUp } from './icons';
+import { convertNumberToString } from '@/lib/number-utils';
+import TimeAgo from './time-ago';
 
 export interface FeedCardProps {
   id: number;
@@ -37,6 +40,7 @@ export function FeedBody({
   author_name,
   author_profile_url,
   url,
+  created_at,
 }: FeedCardProps) {
   return (
     <Col className="pt-5 px-5 pb-2.5">
@@ -46,7 +50,10 @@ export function FeedBody({
       <h2 className="w-full line-clamp-2 font-bold text-xl/[25px] tracking-[0.5px] align-middle text-white">
         {title}
       </h2>
-      <UserBadge profile_url={author_profile_url} name={author_name} />
+      <Row className="justify-between items-center">
+        <UserBadge profile_url={author_profile_url} name={author_name} />
+        <TimeAgo timestamp={created_at} />
+      </Row>
       <Row className="justify-between"></Row>
       <FeedContents contents={contents} url={url} />
     </Col>
@@ -70,6 +77,14 @@ export function FeedContents({
   );
 }
 
+export function IconText({ children }: { children: React.ReactNode }) {
+  return (
+    <Row className="justify-center items-center gap-1.25 text-white font-normal text-[15px] px-4 py-5">
+      {children}
+    </Row>
+  );
+}
+
 export function UserBadge({
   profile_url,
   name,
@@ -78,7 +93,7 @@ export function UserBadge({
   name: string;
 }) {
   return (
-    <Row className="items-center med-16 text-white">
+    <Row className="w-fit items-center med-16 text-white">
       <Image
         src={profile_url}
         alt="User Profile"
@@ -105,5 +120,24 @@ export function FeedFooter({
   rewards,
   shares,
 }: FeedCardProps) {
-  return <Col> </Col>;
+  return (
+    <Row className="items-center justify-around border-t w-full border-neutral-800">
+      <IconText>
+        <ThumbUp />
+        {convertNumberToString(likes)}
+      </IconText>
+      <IconText>
+        <CommentIcon />
+        {convertNumberToString(comments)}
+      </IconText>
+      <IconText>
+        <Rewards />
+        {convertNumberToString(rewards)}
+      </IconText>
+      <IconText>
+        <Shares />
+        {convertNumberToString(shares)}
+      </IconText>
+    </Row>
+  );
 }

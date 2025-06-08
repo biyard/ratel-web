@@ -1,6 +1,7 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import storybook from 'eslint-plugin-storybook';
 import prettierPlugin from 'eslint-plugin-prettier'; // Added import
+import unusedImports from 'eslint-plugin-unused-imports';
 
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -25,6 +26,7 @@ const eslintConfig = [
     files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
       prettier: prettierPlugin,
+      'unused-imports': unusedImports,
     },
     rules: {
       ...prettierPlugin.configs.recommended.rules,
@@ -33,6 +35,17 @@ const eslintConfig = [
         'error',
         {
           forbid: ['>', '}', '"'],
+        },
+      ],
+      'no-unused-vars': 'off', // or "@typescript-eslint/no-unused-vars": "off",
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
         },
       ],
     },
