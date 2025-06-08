@@ -1,3 +1,5 @@
+import { UrlType } from './feeds/write-post-request';
+
 export interface Feed {
   id: number;
   created_at: number;
@@ -21,9 +23,12 @@ export interface Feed {
   likes: number;
   comments: number;
 
-  files: File[];
+  files: FileInfo[];
   rewards: number;
   shares: number;
+
+  url?: string;
+  url_type: UrlType;
 }
 
 export enum FeedType {
@@ -33,7 +38,7 @@ export enum FeedType {
   DocReview = 4,
 }
 
-export interface File {
+export interface FileInfo {
   name: string;
   size: string;
   ext: FileExtension;

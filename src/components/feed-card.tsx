@@ -5,6 +5,7 @@ import { Row } from './ui/row';
 import { CommentIcon, Rewards, Shares, ThumbUp } from './icons';
 import { convertNumberToString } from '@/lib/number-utils';
 import TimeAgo from './time-ago';
+import DOMPurify from 'dompurify';
 
 export interface FeedCardProps {
   id: number;
@@ -67,11 +68,14 @@ export function FeedContents({
   contents: string;
   url?: string;
 }) {
+  const c = DOMPurify.sanitize(contents);
+
   return (
     <Col className="text-white">
-      <p className="font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30">
-        {contents}
-      </p>
+      <p
+        className="font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30"
+        dangerouslySetInnerHTML={{ __html: c }}
+      ></p>
       {url && <img className="w-full rounded-[8px]" src={url} />}
     </Col>
   );

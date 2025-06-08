@@ -1,5 +1,5 @@
 type Config = {
-  env: string;
+  env: Env;
   firebase_api_key: string;
   firebase_auth_domain: string;
   firebase_project_id: string;
@@ -15,8 +15,15 @@ type Config = {
   graphql_url: string;
 };
 
+export enum Env {
+  Local = 'local',
+  Dev = 'dev',
+  Staging = 'stg',
+  Prod = 'prod',
+}
+
 export const config: Config = {
-  env: process.env.NEXT_PUBLIC_ENV || 'dev',
+  env: (process.env.NEXT_PUBLIC_ENV || 'dev') as Env,
   firebase_api_key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
   firebase_auth_domain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
   firebase_project_id: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
