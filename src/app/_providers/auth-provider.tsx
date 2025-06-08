@@ -19,8 +19,8 @@ import {
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [authUser, setAuthUser] = useState<AuthUserInfo | null>(null);
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [authUser, setAuthUser] = useState<AuthUserInfo | undefined>(undefined);
   const [ed25519KeyPair, setEd25519KeyPair] =
     useState<Ed25519KeyIdentity | null>(null);
 
@@ -97,8 +97,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logoutUser = async () => {
     await logout();
-    setUser(null);
-    setAuthUser(null);
+    setUser(undefined);
+    setAuthUser(undefined);
     localStorage.removeItem(SK_IDENTITY_KEY);
     localStorage.removeItem(SK_ANONYMOUS_IDENTITY_KEY);
 
