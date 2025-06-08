@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import { Col } from './ui/col';
 import { Row } from './ui/row';
@@ -5,6 +6,7 @@ import { CommentIcon, Rewards, Shares, ThumbUp } from './icons';
 import { convertNumberToString } from '@/lib/number-utils';
 import TimeAgo from './time-ago';
 import DOMPurify from 'dompurify';
+import { Button } from './ui/button';
 
 export interface FeedCardProps {
   id: number;
@@ -22,6 +24,8 @@ export interface FeedCardProps {
   shares: number;
 
   spaceId?: number;
+  author_id: number;
+  user_id: number;
 }
 
 export default function FeedCard(props: FeedCardProps) {
@@ -41,11 +45,22 @@ export function FeedBody({
   author_profile_url,
   url,
   created_at,
+  user_id,
+  author_id,
+  spaceId,
 }: FeedCardProps) {
   return (
     <Col className="pt-5 px-5 pb-2.5">
       <Row className="justify-between">
         <IndustryTag industry={industry} />
+        {user_id === author_id && !spaceId && (
+          <Button
+            variant="rounded_primary"
+            className="text-[10px] font-semibold align-middle uppercase py-1 px-3"
+          >
+            Create a Space
+          </Button>
+        )}
       </Row>
       <h2 className="w-full line-clamp-2 font-bold text-xl/[25px] tracking-[0.5px] align-middle text-white">
         {title}
@@ -75,7 +90,12 @@ export function FeedContents({
         className="font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30"
         dangerouslySetInnerHTML={{ __html: c }}
       ></p>
-      {url && <img className="w-full rounded-[8px]" src={url} />}
+      {url && (
+        <img
+          className="w-full max-h-80 object-contain rounded-[8px]"
+          src={url}
+        />
+      )}
     </Col>
   );
 }

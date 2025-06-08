@@ -5,6 +5,9 @@ import FeedCard from '@/components/feed-card';
 import { usePost } from './_hooks/use-posts';
 import { logger } from '@/lib/logger';
 import { Col } from '@/components/ui/col';
+import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
+import { config } from '@/config';
+import News from './_components/News';
 
 export interface Post {
   id: number;
@@ -12,6 +15,7 @@ export interface Post {
   title: string;
   contents: string;
   url?: string;
+  author_id: number;
   author_profile_url: string;
   author_name: string;
   likes: number;
@@ -23,15 +27,17 @@ export interface Post {
 
 export default function Home() {
   const { data } = usePost(1, 20);
+  const { data: userInfo } = useSuspenseUserInfo();
+  const user_id = userInfo.id || 0;
   logger.debug('query response of posts', data);
 
   const feeds: Post[] = data.items.map((item) => ({
     id: item.id,
-    industry: item.industry[0].name, // FIXME:replace with actual industry
+    industry: item.industry[0].name,
     title: item.title!,
     contents: item.html_contents,
     url: item.url,
-    // FIXME: default image
+    author_id: item.author[0].id,
     author_profile_url: item.author[0].profile_url!,
     author_name: item.author[0].nickname,
 
@@ -44,9 +50,9 @@ export default function Home() {
 
   return (
     <div className="flex-1 flex">
-      <Col className="flex-1 border-r border-gray-800">
+      <Col className="flex-1">
         {feeds.map((props) => (
-          <FeedCard key={`feed-${props.id}`} {...props} />
+          <FeedCard key={`feed-${props.id}`} user_id={user_id} {...props} />
         ))}
       </Col>
 
@@ -71,58 +77,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* News */}
-        <div className="mt-6">
-          <h3 className="font-medium mb-3">News</h3>
-
-          <div className="mb-4">
-            <h4 className="font-medium text-sm">
-              Ratel' Launches Digital Asset Policy Comparison Feature Ahead of
-              2025 Election
-            </h4>
-            <p className="text-xs text-gray-400 mt-1">
-              Ratel, a blockchain-based legislative social media platform, has
-              introduced a new feature that allows voters to...
-            </p>
-            <div className="mt-1 text-xs text-gray-400 flex items-center">
-              <span>View Detail</span>
-              <ChevronRight size={14} />
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <h4 className="font-medium text-sm">
-              Legislative Platform 'Ratel' Records Public Opinion on Election
-              Pledges via Blockchain
-            </h4>
-            <p className="text-xs text-gray-400 mt-1">
-              Ratel, a blockchain-based social media platform, has launched a
-              new feature ahead of South Korea's 2025...
-            </p>
-            <div className="mt-1 text-xs text-gray-400 flex items-center">
-              <span>View Detail</span>
-              <ChevronRight size={14} />
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <h4 className="font-medium text-sm">
-              Decentralized Legislative Platform 'RATEL' Leads Crypto Regulatory
-              Reform in South Korea
-            </h4>
-            <p className="text-xs text-gray-400 mt-1">
-              RATEL is the world's first decentralized legislative DAO platform
-              empowering communities to propose and monitor...
-            </p>
-            <div className="mt-1 text-xs text-gray-400 flex items-center">
-              <span>View Detail</span>
-              <ChevronRight size={14} />
-            </div>
-          </div>
-        </div>
+        <News />
 
         {/* Add to your feed */}
-        <div className="mt-6">
+        <div
+          className="mt-6 hidden aria-show:block"
+          aria-show={config.experiment}
+        >
           <h3 className="font-medium mb-3">Add to your feed</h3>
 
           <div className="mb-3 flex items-center gap-3">

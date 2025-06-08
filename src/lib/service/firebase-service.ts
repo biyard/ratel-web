@@ -32,7 +32,7 @@ export interface AuthUserInfo {
   principal: string | null;
   event: string | null;
   contents: string | null;
-  user: User | null;
+  user?: User;
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
