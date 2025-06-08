@@ -13,6 +13,12 @@ export const ratelApi = {
   teams: {
     createTeam: () => '/v1/teams',
   },
+  feeds: {
+    writePost: () => '/v1/feeds',
+    getPosts: (page: number, size: number) =>
+      `/v1/feeds?param-type=query&bookmark=${page}&size=${size}`,
+  },
+
   graphql: {
     listIndustries: () => {
       return {

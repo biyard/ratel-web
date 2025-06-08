@@ -28,9 +28,7 @@ export function useUserInfo(): UseQueryResult<User | undefined> {
   return query;
 }
 
-export function useSuspenseUserInfo(): UseSuspenseQueryResult<
-  User | undefined
-> {
+export function useSuspenseUserInfo(): UseSuspenseQueryResult<User> {
   const { get } = useApiCall();
   const auth = useAuth();
   const principalText = auth.ed25519KeyPair?.getPrincipal().toText();

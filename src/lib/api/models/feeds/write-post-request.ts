@@ -1,0 +1,43 @@
+import { FileInfo } from '../feeds';
+
+export interface WritePostRequest {
+  write_post: {
+    html_contents: string;
+    user_id: number;
+    industry_id: number;
+    title: string;
+    quote_feed_id: number | null;
+    files: FileInfo[] | null;
+    url: string | null;
+    url_type: UrlType;
+  };
+}
+
+export enum UrlType {
+  None = 0,
+  Image = 1,
+}
+
+export function writePostRequest(
+  html_contents: string,
+  user_id: number,
+  industry_id: number,
+  title: string,
+  quote_feed_id: number | null,
+  files: FileInfo[],
+  url: string | null,
+  url_type: UrlType = UrlType.None,
+): WritePostRequest {
+  return {
+    write_post: {
+      html_contents,
+      user_id,
+      industry_id,
+      title,
+      quote_feed_id,
+      files,
+      url,
+      url_type,
+    },
+  };
+}

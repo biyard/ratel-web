@@ -1,75 +1,54 @@
 'use client';
-
 import Image from 'next/image';
-import {
-  Award,
-  MoreHorizontal,
-  ChevronRight,
-  Star,
-  MessageSquare,
-  Building,
-  Eye,
-  Repeat,
-} from 'lucide-react';
+import { Award, ChevronRight } from 'lucide-react';
 import FeedCard from '@/components/feed-card';
+import { usePost } from './_hooks/use-posts';
+import { logger } from '@/lib/logger';
+import { Col } from '@/components/ui/col';
+
+export interface Post {
+  id: number;
+  industry: string;
+  title: string;
+  contents: string;
+  url?: string;
+  author_profile_url: string;
+  author_name: string;
+  likes: number;
+  comments: number;
+  rewards: number;
+  shares: number;
+  created_at: number;
+}
 
 export default function Home() {
-  const feeds = [
-    {
-      id: 1,
-      industry: 'Crypto',
-      title: 'DAO Treasury Transparency Act & Crypto Investor Protection Act',
-      contents:
-        'Explore powerful artworks that amplify voices for equality, diversity, and justice. This collection brings...',
-      url: '/post-placeholder.jpg?height=300&width=500',
-      author_profile_url:
-        'https://metadata.ratel.foundation/metadata/0faf45ec-35e1-40e9-bff2-c61bb52c7d19',
-      author_name: 'Miner Choi',
+  const { data } = usePost(1, 20);
+  logger.debug('query response of posts', data);
 
-      likes: 10,
-      comments: 100,
-      rewards: 221000,
-      shares: 403,
-      created_at: 0,
-    },
-  ];
+  const feeds: Post[] = data.items.map((item) => ({
+    id: item.id,
+    industry: item.industry[0].name, // FIXME:replace with actual industry
+    title: item.title!,
+    contents: item.html_contents,
+    url: item.url,
+    // FIXME: default image
+    author_profile_url: item.author[0].profile_url!,
+    author_name: item.author[0].nickname,
+
+    likes: item.likes,
+    comments: item.comments,
+    rewards: item.rewards,
+    shares: item.shares,
+    created_at: item.created_at,
+  }));
 
   return (
     <div className="flex-1 flex">
-      {/* Feed */}
-      <div className="flex-1 border-r border-gray-800">
-        {/* Tabs */}
-        <div className="flex border-b border-gray-800">
-          <div className="px-6 py-3 text-sm font-medium">For you</div>
-          <div className="px-6 py-3 text-sm text-gray-400">Following</div>
-        </div>
-
-        {/* Post Input */}
-        <div className="p-4 border-b border-gray-800">
-          <div className="flex gap-3">
-            <Image
-              src="/profile.png?height=40&width=40"
-              alt="Profile"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <input
-              type="text"
-              placeholder="Discuss legislation. Drive change."
-              className="w-full bg-gray-800 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#fcb300]"
-            />
-            {/* <div className="flex-1 bg-gray-800 rounded-full px-4 py-2 text-gray-400 text-sm">
-                                    Discuss legislation. Drive change.
-                                </div> */}
-          </div>
-        </div>
-
-        {/* Posts */}
+      <Col className="flex-1 border-r border-gray-800">
         {feeds.map((props) => (
-          <FeedCard {...props}> </FeedCard>
+          <FeedCard key={`feed-${props.id}`} {...props} />
         ))}
-      </div>
+      </Col>
 
       {/* Right Sidebar */}
       <div className="w-80 p-4">
