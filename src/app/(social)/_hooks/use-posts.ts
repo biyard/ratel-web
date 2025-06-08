@@ -6,7 +6,7 @@ import {
   useSuspenseQuery,
   UseSuspenseQueryResult,
 } from '@tanstack/react-query';
-import { QK_USERS_GET_INFO } from '@/constants';
+import { QK_GET_POSTS, QK_GET_POSTS_BY_USER_ID } from '@/constants';
 
 export function usePost(
   page: number,
@@ -15,8 +15,24 @@ export function usePost(
   const { get } = useApiCall();
 
   const query = useSuspenseQuery({
-    queryKey: [QK_USERS_GET_INFO],
+    queryKey: [QK_GET_POSTS, page, size],
     queryFn: () => get(ratelApi.feeds.getPosts(page, size)),
+    refetchOnWindowFocus: false,
+  });
+
+  return query;
+}
+
+export function usePostByUserId(
+  user_id: number,
+  page: number,
+  size: number,
+): UseSuspenseQueryResult<QueryResponse<Feed>> {
+  const { get } = useApiCall();
+
+  const query = useSuspenseQuery({
+    queryKey: [QK_GET_POSTS_BY_USER_ID, user_id, page, size],
+    queryFn: () => get(ratelApi.feeds.getPostsByUserId(user_id, page, size)),
     refetchOnWindowFocus: false,
   });
 

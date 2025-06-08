@@ -15,11 +15,29 @@ export const ratelApi = {
   },
   feeds: {
     writePost: () => '/v1/feeds',
+    getPostsByUserId: (user_id: number, page: number, size: number) =>
+      `/v1/feeds?param-type=query&action=posts-by-user-id&bookmark=${page}&size=${size}&user-id=${user_id}`,
     getPosts: (page: number, size: number) =>
       `/v1/feeds?param-type=query&bookmark=${page}&size=${size}`,
   },
-
   graphql: {
+    listNews: (size: number) => {
+      return {
+        query: gql`
+          query ListNews($limit: Int!) {
+            news(limit: $limit, order_by: { created_at: desc }) {
+              id
+              title
+              html_content
+              created_at
+            }
+          }
+        `,
+        variables: {
+          limit: size,
+        },
+      };
+    },
     listIndustries: () => {
       return {
         query: gql`

@@ -8,16 +8,14 @@ import { NoEd25519KeyPair } from '@/errors';
 
 interface AuthContextType {
   ed25519KeyPair: Ed25519KeyIdentity | null;
-  user: User | null;
-  authUser: AuthUserInfo | null;
+  user?: User;
+  authUser?: AuthUserInfo;
   login: (keyPair: Ed25519KeyIdentity) => Promise<void>;
   logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   ed25519KeyPair: null,
-  user: null,
-  authUser: null,
   login: async () => {},
   logout: async () => {},
 });
