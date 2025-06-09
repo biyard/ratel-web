@@ -1,6 +1,6 @@
 'use client';
 import { Textarea } from '@/components/ui/textarea';
-import React, { useState } from 'react';
+import React, { MouseEventHandler, useState } from 'react';
 import Comment from '@/assets/icons/comment.svg';
 
 export interface CreateCommentBoxProps {
@@ -18,7 +18,7 @@ export interface DescriptionProps {
 }
 
 export interface SendButtonProps {
-  handleSubmit: (e: any) => void;
+  handleSubmit: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export default function CreateCommentBox({
