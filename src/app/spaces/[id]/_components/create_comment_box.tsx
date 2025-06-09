@@ -1,6 +1,6 @@
 'use client';
 import { Textarea } from '@/components/ui/textarea';
-import React, { MouseEventHandler, useState } from 'react';
+import React, { useState } from 'react';
 import Comment from '@/assets/icons/comment.svg';
 
 export interface CreateCommentBoxProps {
