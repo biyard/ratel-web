@@ -59,7 +59,8 @@ export function useApiCall(): ApiCallFns {
         const errorData = await response.json().catch(() => ({
           message: 'Failed to fetch and parse error',
         }));
-        throw new Error(errorData?.message || `HTTP ${response.status}`);
+        logger.error('Failed to fetch and parse error ', errorData?.message);
+        return null;
       }
 
       return response.json();
@@ -105,7 +106,8 @@ export function useApiCall(): ApiCallFns {
         const errorData = await response.json().catch(() => ({
           message: 'Failed to fetch and parse error',
         }));
-        throw new Error(errorData?.message || `HTTP ${response.status}`);
+        logger.error('Failed to fetch and parse error ', errorData?.message);
+        return null;
       }
 
       return response.json();

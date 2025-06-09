@@ -19,7 +19,7 @@ export default function MyPostsPage() {
     title: item.title!,
     contents: item.html_contents,
     url: item.url,
-    author_id: item.author[0].id,
+    author_id: Number(item.author[0].id),
     author_profile_url: item.author[0].profile_url!,
     author_name: item.author[0].nickname,
 
