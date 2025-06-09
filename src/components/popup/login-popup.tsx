@@ -8,6 +8,7 @@ import { LoginFailurePopup } from './login-failure-popup';
 import UserSetupPopup from './user-setup-popup';
 import { logger } from '@/lib/logger';
 import { useAuth, useEd25519KeyPair } from '@/lib/contexts/auth-context';
+import { AuthUserInfo, EventType } from '@/lib/service/firebase-service';
 
 interface LoginModalProps {
   id?: string;
@@ -47,21 +48,20 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
             );
 
             try {
-              await login(anonKeyPair);
-              loader.close();
-              logger.debug('user info: ', authUser);
+              let user: AuthUserInfo = await login(anonKeyPair);
+              // loader.close();
 
-              if (authUser?.event == 'signup') {
+              if (user?.event == EventType.SignUp) {
                 popup.open(
                   <UserSetupPopup
-                    email={authUser.email ?? ''}
-                    nickname={authUser.displayName ?? ''}
-                    profileUrl={authUser.photoURL ?? ''}
-                    principal={authUser.principal ?? ''}
+                    email={user.email ?? ''}
+                    nickname={user.displayName ?? ''}
+                    profileUrl={user.photoURL ?? ''}
+                    principal={user.principal ?? ''}
                   />,
                 );
-              } else if (authUser?.event == 'login') {
-                popup.close();
+              } else if (user?.event == EventType.Login) {
+                loader.close();
               }
             } catch (err) {
               popup.open(

@@ -10,13 +10,22 @@ interface AuthContextType {
   ed25519KeyPair: Ed25519KeyIdentity | null;
   user?: User;
   authUser?: AuthUserInfo;
-  login: (keyPair: Ed25519KeyIdentity) => Promise<void>;
+  login: (keyPair: Ed25519KeyIdentity) => Promise<AuthUserInfo>;
   logout: () => Promise<void>;
 }
 
+const dummyAuthUserInfo: AuthUserInfo = {
+  principal: '',
+  contents: '',
+  email: '',
+  displayName: '',
+  photoURL: '',
+  event: null,
+};
+
 export const AuthContext = createContext<AuthContextType>({
   ed25519KeyPair: null,
-  login: async () => {},
+  login: async () => dummyAuthUserInfo,
   logout: async () => {},
 });
 

@@ -28,25 +28,29 @@ export interface Post {
 export default function Home() {
   const { data } = usePost(1, 20);
   const { data: userInfo } = useSuspenseUserInfo();
-  const user_id = userInfo.id || 0;
+  const user_id = userInfo != null ? userInfo.id || 0 : 0;
   logger.debug('query response of posts', data);
 
-  const feeds: Post[] = data.items.map((item) => ({
-    id: item.id,
-    industry: item.industry[0].name,
-    title: item.title!,
-    contents: item.html_contents,
-    url: item.url,
-    author_id: item.author[0].id,
-    author_profile_url: item.author[0].profile_url!,
-    author_name: item.author[0].nickname,
+  const feeds: Post[] =
+    data != null
+      ? data.items.map((item) => ({
+          id: item.id,
+          industry: item.industry != null ? item.industry[0].name : '',
+          title: item.title!,
+          contents: item.html_contents,
+          url: item.url,
+          author_id: item.industry != null ? item.author[0].id : '',
+          author_profile_url:
+            item.author != null ? item.author[0].profile_url! : '',
+          author_name: item.author != null ? item.author[0].nickname : '',
 
-    likes: item.likes,
-    comments: item.comments,
-    rewards: item.rewards,
-    shares: item.shares,
-    created_at: item.created_at,
-  }));
+          likes: item.likes,
+          comments: item.comments,
+          rewards: item.rewards,
+          shares: item.shares,
+          created_at: item.created_at,
+        }))
+      : [];
 
   return (
     <div className="flex-1 flex">

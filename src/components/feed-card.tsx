@@ -82,7 +82,8 @@ export function FeedContents({
   contents: string;
   url?: string;
 }) {
-  const c = DOMPurify.sanitize(contents);
+  const c =
+    typeof window !== 'undefined' ? DOMPurify.sanitize(contents) : contents;
 
   return (
     <Col className="text-white">

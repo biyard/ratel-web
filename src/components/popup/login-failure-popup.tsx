@@ -34,10 +34,10 @@ export const LoginFailurePopup = ({
   const failureMsg = `Failed to connect to ${serviceName}.\nWould you like to try again?`;
 
   return (
-    <div id={id} className="w-400 max-mobile:!w-full gap-35">
-      <div className="flex flex-col gap-10 mb-35">
+    <div id={id} className="w-100 max-mobile:!w-full gap-[35px] mt-[35px]">
+      <div className="flex flex-col gap-[8px] mb-[8px]">
         <div
-          className="w-full flex flex-row pl-20 py-22 bg-black border-[1px] rounded-[10px] justify-start items-center gap-17 cursor-pointer border-c-p-50"
+          className="w-full flex flex-row pl-5 py-5.5 bg-black border-[1px] rounded-[10px] justify-start items-center gap-4.25 cursor-pointer border-c-p-50"
           onClick={async () => {
             logger.debug('Google login button clicked');
             const loader = popup.open(
@@ -84,15 +84,17 @@ export const LoginFailurePopup = ({
           }}
         >
           {logoOrigin}
-          <div className="flex flex-col gap-3">
-            <span className="text-white text-base/19 font-semibold">{msg}</span>
+          <div className="flex flex-col gap-[3px]">
+            <span className="text-white text-base/4.75 font-semibold">
+              {msg}
+            </span>
           </div>
         </div>
 
-        <div className="w-full flex flex-row pl-20 py-10 bg-c-p-50-10 rounded-[10px] justify-start items-center gap-10">
+        <div className="w-full flex flex-row pl-5 py-2.5 bg-c-p-50-10 rounded-[10px] justify-start items-center gap-2.5">
           <AlertCircle color="#DB2780" />
-          <div className="flex flex-col gap-3">
-            <span className="text-c-p-50 text-[15px]/24 font-semibold tracking-wide whitespace-pre-line">
+          <div className="flex flex-col gap-[3px]">
+            <span className="text-c-p-50 text-[15px]/6 font-semibold tracking-wide whitespace-pre-line">
               {failureMsg}
             </span>
           </div>

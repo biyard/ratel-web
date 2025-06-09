@@ -59,28 +59,28 @@ const UserSetupPopup = ({
   return (
     <div
       id={id}
-      className="flex flex-col w-400 max-w-400 mx-5 max-mobile:!w-full max-mobile:!max-w-full gap-35 mt-35"
+      className="flex flex-col w-100 max-w-100 mx-4.25 max-mobile:!w-full max-mobile:!max-w-full gap-8.75 mt-8.75"
     >
       <WelcomeHeader
         title="Finish your Profile!"
         description="Completing your profile makes it easier for you to take action."
       />
 
-      <div className="flex flex-col items-start justify-start w-full gap-5">
-        <div className="w-full flex flex-col gap-5">
+      <div className="flex flex-col items-start justify-start w-full gap-1.25">
+        <div className="w-full flex flex-col gap-[5px]">
           <div className="flex flex-row items-start">
-            <span className="text-c-cg-30 font-bold text-base/28">
+            <span className="text-c-cg-30 font-bold text-base/7">
               {'Email'}
             </span>
           </div>
           <input
-            className="w-full outline-none px-5 h-44 text-white text-base placeholder-gray-500 font-medium border rounded-lg border-gray-600"
+            className="w-full outline-none px-5 h-11 text-white text-base placeholder-gray-500 font-medium border rounded-lg border-gray-600"
             disabled={email === ''}
             value={email}
           />
         </div>
 
-        <div className="flex flex-col gap-20 w-full mt-20">
+        <div className="flex flex-col gap-5 w-full mt-2.25">
           <LabeledInput
             labelName={'Display Name'}
             placeholder={'Display Name'}
@@ -103,7 +103,7 @@ const UserSetupPopup = ({
           />
         </div>
 
-        <div className="flex flex-col gap-10 items-start mb-20 mt-20">
+        <div className="flex flex-col gap-2.25 items-start mb-5 mt-5">
           <Checkbox id="agree_checkbox" onChange={setAgreed}>
             <span className="text-sm text-gray-400">
               <strong>[Required]</strong> I have read and accept the{' '}
@@ -139,8 +139,8 @@ const LabeledInput = ({
   children,
   warning = '',
 }: LabeledInputProps) => (
-  <div className="w-full flex flex-col items-start gap-5">
-    <p className="text-c-cg-30 font-bold text-base/28">{labelName}</p>
+  <div className="w-full flex flex-col items-start gap-[5px]">
+    <div className="text-c-cg-30 font-bold text-base/7">{labelName}</div>
     <input
       type="text"
       className="w-full outline-none px-5 text-white text-base placeholder-gray-500 font-medium border rounded-lg border-gray-600"
