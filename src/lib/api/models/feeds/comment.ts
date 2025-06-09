@@ -1,5 +1,3 @@
-import { FileInfo } from '../feeds';
-
 export interface CommentRequest {
   comment: {
     html_contents: string;

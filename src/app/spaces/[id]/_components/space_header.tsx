@@ -20,7 +20,7 @@ export default function SpaceHeader({
   proposerName,
   createdAt,
 }: SpaceHeaderProps) {
-  let router = useRouter();
+  const router = useRouter();
   return (
     <div className="flex flex-col w-full gap-2.5">
       <div className="flex flex-row w-full justify-between items-center">

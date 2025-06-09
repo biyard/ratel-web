@@ -10,10 +10,10 @@ import React from 'react';
 export default function SpaceSideMenu() {
   const params = useParams();
   const spaceId = Number(params.id);
-  let { data } = useSpaceBySpaceId(spaceId);
+  const { data } = useSpaceBySpaceId(spaceId);
 
   const feedId = data.feed_id;
-  let { data: feed } = usePostByFeedId(feedId);
+  const { data: feed } = usePostByFeedId(feedId);
   logger.debug('feed: ', feed);
 
   return (

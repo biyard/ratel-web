@@ -1,5 +1,5 @@
 import BlackBox from '@/app/(social)/_components/black-box';
-import { FileExtension, FileInfo } from '@/lib/api/models/feeds';
+import { FileInfo } from '@/lib/api/models/feeds';
 import React from 'react';
 
 import Jpg from '@/assets/icons/files/jpg.svg';

@@ -30,7 +30,7 @@ export interface FeedCardProps {
 }
 
 export default function FeedCard(props: FeedCardProps) {
-  let router = useRouter();
+  const router = useRouter();
   console.log('props: ', props);
   return (
     <Col

@@ -2,7 +2,6 @@ import React from 'react';
 import Comment from '@/assets/icons/comment.svg';
 import { SpaceComment } from '@/lib/api/models/comments';
 import { getTimeAgo } from '@/lib/time-utils';
-import ThumbUp from '@/assets/icons/thumb-up.svg';
 
 export interface SpaceCommentsProps {
   numberOfComments: number;
