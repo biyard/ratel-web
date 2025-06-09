@@ -36,21 +36,39 @@ export default function SpaceFiles({ files }: SpaceFilesProps) {
 function File({ file }: { file: FileInfo }) {
   return (
     <div className="cursor-pointer flex flex-row justify-start items-center w-full gap-2 p-4 bg-neutral-800 rounded-2">
-      {file.ext === 'JPG' ? (
-        <Jpg width={36} height={36} />
-      ) : file.ext === 'PNG' ? (
-        <Png width={36} height={36} />
-      ) : file.ext === 'PDF' ? (
-        <Pdf width={36} height={36} />
-      ) : file.ext === 'ZIP' ? (
-        <Zip width={36} height={36} />
-      ) : file.ext === 'WORD' ? (
-        <Word width={36} height={36} />
-      ) : file.ext === 'PPTX' ? (
-        <Pptx width={36} height={36} />
-      ) : (
-        <Excel width={36} height={36} />
-      )}
+      <div className="min-w-[36px] shrink-0">
+        {file.ext === 'JPG' ? (
+          <Jpg width={36} height={36} className="[&>path]:stroke-neutral-500" />
+        ) : file.ext === 'PNG' ? (
+          <Png width={36} height={36} className="[&>path]:stroke-neutral-500" />
+        ) : file.ext === 'PDF' ? (
+          <Pdf
+            width={36}
+            height={36}
+            className="[&>path]:stroke-neutral-500 block"
+          />
+        ) : file.ext === 'ZIP' ? (
+          <Zip width={36} height={36} className="[&>path]:stroke-neutral-500" />
+        ) : file.ext === 'WORD' ? (
+          <Word
+            width={36}
+            height={36}
+            className="[&>path]:stroke-neutral-500"
+          />
+        ) : file.ext === 'PPTX' ? (
+          <Pptx
+            width={36}
+            height={36}
+            className="[&>path]:stroke-neutral-500"
+          />
+        ) : (
+          <Excel
+            width={36}
+            height={36}
+            className="[&>path]:stroke-neutral-500"
+          />
+        )}
+      </div>
 
       <div className="flex flex-col w-full justify-start items-start gap-2">
         <div className="font-semibold text-xs/[18px] text-neutral-400">
