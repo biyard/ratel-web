@@ -7,6 +7,7 @@ import { convertNumberToString } from '@/lib/number-utils';
 import TimeAgo from './time-ago';
 import DOMPurify from 'dompurify';
 import { Button } from './ui/button';
+import { useRouter } from 'next/navigation';
 
 export interface FeedCardProps {
   id: number;
@@ -23,14 +24,26 @@ export interface FeedCardProps {
   rewards: number;
   shares: number;
 
-  spaceId?: number;
+  space_id?: number;
   author_id: number;
   user_id: number;
 }
 
 export default function FeedCard(props: FeedCardProps) {
+  const router = useRouter();
+  console.log('props: ', props);
   return (
-    <Col className="bg-component-bg rounded-[10px]">
+    <Col
+      className="cursor-pointer bg-component-bg rounded-[10px]"
+      onClick={() => {
+        const spaceId = props.space_id;
+        if (spaceId == 0) {
+          return;
+        }
+
+        router.push(`/spaces/${spaceId}`);
+      }}
+    >
       <FeedBody {...props} />
       <FeedFooter {...props} />
     </Col>
@@ -47,13 +60,13 @@ export function FeedBody({
   created_at,
   user_id,
   author_id,
-  spaceId,
+  space_id,
 }: FeedCardProps) {
   return (
     <Col className="pt-5 px-5 pb-2.5">
       <Row className="justify-between">
         <IndustryTag industry={industry} />
-        {user_id === author_id && !spaceId && (
+        {user_id === author_id && !space_id && (
           <Button
             variant="rounded_primary"
             className="text-[10px] font-semibold align-middle uppercase py-1 px-3"

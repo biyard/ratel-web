@@ -6,7 +6,7 @@ import { usePost } from './_hooks/use-posts';
 import { Col } from '@/components/ui/col';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { config } from '@/config';
-import News from './_components/News';
+// import News from './_components/News';
 import { CreatePost } from './_components/create-post';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
@@ -24,6 +24,7 @@ export interface Post {
   author_id: number;
   author_profile_url: string;
   author_name: string;
+  space_id?: number;
   likes: number;
   comments: number;
   rewards: number;
@@ -63,6 +64,7 @@ export default function Home() {
     );
     posts.refetch();
   };
+
   const feeds: Post[] =
     posts.data != null
       ? posts.data.items.map((item) => ({
@@ -75,7 +77,7 @@ export default function Home() {
           author_profile_url:
             item.author != null ? item.author[0].profile_url! : '',
           author_name: item.author != null ? item.author[0].nickname : '',
-
+          space_id: item.spaces?.length ? item.spaces[0].id : 0,
           likes: item.likes,
           comments: item.comments,
           rewards: item.rewards,
@@ -121,7 +123,8 @@ export default function Home() {
           </div>
         </div>
 
-        <News />
+        {/* TODO: remove this comment when graphql bug fixed */}
+        {/* <News /> */}
 
         {/* Add to your feed */}
         <div

@@ -1,5 +1,6 @@
 import { UrlType } from './feeds/write-post-request';
 import { Industry } from './industry';
+import { Space } from './spaces';
 import { User } from './user';
 
 export interface Feed {
@@ -34,6 +35,7 @@ export interface Feed {
 
   author: [User];
   industry: [Industry];
+  spaces: [Space];
 }
 
 export enum FeedType {
@@ -46,7 +48,7 @@ export enum FeedType {
 export interface FileInfo {
   name: string;
   size: string;
-  ext: FileExtension;
+  ext: string;
   url?: string | null;
 }
 

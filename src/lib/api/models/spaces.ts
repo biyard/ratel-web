@@ -1,3 +1,4 @@
+import { SpaceComment } from './comments';
 import { FileInfo } from './feeds';
 
 export interface Space {
@@ -7,8 +8,22 @@ export interface Space {
   title?: string;
   html_contents: string;
   space_type: SpaceType;
+  owner_id: number;
+  industry_id: number;
+  feed_id: number;
+  author: Author[];
   status: SpaceStatus;
   files: FileInfo[];
+
+  feed_comments: SpaceComment[];
+}
+
+export interface Author {
+  id: number;
+  nickname: string;
+  principal: string;
+  email: string;
+  profile_url: string;
 }
 
 export enum SpaceType {

@@ -18,11 +18,16 @@ export const ratelApi = {
     subscribe: () => '/v1/subscriptions?action=subscribe',
   },
   feeds: {
+    comment: () => '/v1/feeds',
     writePost: () => '/v1/feeds',
     getPostsByUserId: (user_id: number, page: number, size: number) =>
       `/v1/feeds?param-type=query&action=posts-by-user-id&bookmark=${page}&size=${size}&user-id=${user_id}`,
+    getFeedsByFeedId: (feed_id: number) => `/v1/feeds/${feed_id}`,
     getPosts: (page: number, size: number) =>
       `/v1/feeds?param-type=query&bookmark=${page}&size=${size}`,
+  },
+  spaces: {
+    getSpaceBySpaceId: (id: number) => `/v1/spaces/${id}`,
   },
   graphql: {
     listNews: (size: number) => {
