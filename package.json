@@ -15,6 +15,8 @@
     "@apollo/client": "^3.13.8",
     "@dfinity/agent": "^2.4.1",
     "@dfinity/identity": "^2.4.1",
+    "@lexical/html": "^0.32.1",
+    "@lexical/react": "^0.32.1",
     "@lottiefiles/dotlottie-react": "^0.13.5",
     "@noble/ed25519": "^2.2.3",
     "@radix-ui/react-avatar": "^1.1.10",
@@ -29,6 +31,7 @@
     "dompurify": "^3.2.6",
     "firebase": "^11.8.1",
     "graphql": "^16.11.0",
+    "lexical": "^0.32.1",
     "lucide-react": "^0.511.0",
     "next": "15.3.2",
     "react": "^19.0.0",
@@ -36,7 +39,6 @@
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
-    "eslint-plugin-unused-imports": "^4.1.4",
     "@eslint/eslintrc": "^3",
     "@storybook/addon-docs": "^9.0.0",
     "@storybook/addon-links": "^9.0.0",
@@ -52,6 +54,7 @@
     "eslint-plugin-prettier": "^5.4.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-storybook": "9.0.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "prettier": "^3.5.3",
     "storybook": "^9.0.0",
     "tailwindcss": "^4",
