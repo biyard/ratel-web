@@ -86,13 +86,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  const login = async (keyPair: Ed25519KeyIdentity) => {
+  const login = async (keyPair: Ed25519KeyIdentity): Promise<AuthUserInfo> => {
     logger.debug('login');
     const info = await loginWithGoogle(keyPair);
+    const authInfo: AuthUserInfo = {
+      principal: info.principal,
+      event: info.eventType,
+      contents: info.contents,
+      email: info.email,
+      displayName: '',
+      photoURL: info.photoURL,
+    };
+
     localStorage.setItem(SK_IDENTITY_KEY, info.contents);
     localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, info.contents);
 
+    setAuthUser(authInfo);
     setEd25519KeyPair(info.keyPair);
+
+    return authInfo;
   };
 
   const logoutUser = async () => {

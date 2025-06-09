@@ -39,7 +39,7 @@ export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
       {
         ...user,
       },
-      ...user.teams,
+      ...(user.teams ?? []),
     ];
   }
 
