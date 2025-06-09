@@ -30,14 +30,11 @@ const firebaseConfig = {
 
 export interface AuthUserInfo {
   principal: string | null;
-  event: string | null;
+  event: EventType | null;
   contents: string | null;
-  user?: User;
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
-  idToken: string;
-  accessToken: string | undefined;
 }
 
 const app = initializeApp(firebaseConfig);

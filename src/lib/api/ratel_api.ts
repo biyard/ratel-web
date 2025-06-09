@@ -4,6 +4,7 @@ import { gql } from '@apollo/client';
 export const ratelApi = {
   users: {
     getUserInfo: () => '/v1/users?action=user-info',
+    updateUserInfo: () => '/v1/users?action=signup',
     editProfile: (user_id: number) => `/v1/users/${user_id}`,
   },
   assets: {
@@ -12,6 +13,9 @@ export const ratelApi = {
   },
   teams: {
     createTeam: () => '/v1/teams',
+  },
+  subscription: {
+    subscribe: () => '/v1/subscriptions?action=subscribe',
   },
   feeds: {
     writePost: () => '/v1/feeds',

@@ -11,7 +11,7 @@ interface CheckboxProps {
 export const Checkbox = ({ id, onChange, children }: CheckboxProps) => {
   const [checked, setChecked] = useState(false);
   return (
-    <div className="text-white text-sm/16 font-normal flex flex-row gap-10 items-start">
+    <div className="text-white text-sm/16 font-normal flex flex-row gap-2.25 items-start">
       <div className="relative flex flex-row items-center justify-start gap-[6px] cursor-pointer">
         <input
           id={id}
@@ -26,7 +26,7 @@ export const Checkbox = ({ id, onChange, children }: CheckboxProps) => {
         />
 
         <label
-          className="border border-c-wg-50 rounded-[4px] peer-checked:bg-primary peer-checked:border-primary flex items-center justify-center w-18 h-18 cursor-pointer"
+          className="border border-c-wg-50 rounded-[4px] peer-checked:bg-primary peer-checked:border-primary flex items-center justify-center w-4.25 h-4.25 cursor-pointer"
           htmlFor={id}
         >
           {<CheckboxIcon width={13} height={9} />}

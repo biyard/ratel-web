@@ -14,7 +14,7 @@ export default function ProfileSection() {
     {
       ...user,
     },
-    ...user.teams,
+    ...(user.teams ?? []),
   ];
 
   const [selectedTeam, setSelectedTeam] = React.useState(0);

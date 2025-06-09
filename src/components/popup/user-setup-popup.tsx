@@ -7,6 +7,9 @@ import { WelcomeHeader } from './welcome-header';
 import { PrimaryButton } from '../button/primary-button';
 import { Checkbox } from '../checkbox/checkbox';
 import { ConfirmPopup } from './confirm-popup';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { logger } from '@/lib/logger';
 
 interface UserSetupPopupProps {
   id?: string;
@@ -27,13 +30,16 @@ interface LabeledInputProps {
 
 const UserSetupPopup = ({
   id = 'user_setup_popup',
-  email = 'test',
+  email = '',
+  profileUrl,
 }: UserSetupPopupProps) => {
+  const { post } = useApiCall();
+
   const popup = usePopup();
   const [displayName, setDisplayName] = useState('');
   const [userName, setUserName] = useState('');
   const [agreed, setAgreed] = useState(false);
-  const [, setAnnouncementAgree] = useState(false);
+  const [announcementAgreed, setAnnouncementAgree] = useState(false);
   const [isUserNameValid, setIsUserNameValid] = useState(false);
 
   const isValidUsername = (username: string) =>
@@ -42,14 +48,33 @@ const UserSetupPopup = ({
   const handleSubmit = async () => {
     if (!agreed || !isUserNameValid) return;
 
-    // TODO: call subscribe api
-    // TODO: call sign up api (principal, email, nickname, profile, termAgreed, informedAgreed)
+    if (announcementAgreed) {
+      try {
+        await post(ratelApi.subscription.subscribe(), {
+          subscribe: {
+            email,
+          },
+        });
+      } catch (err) {
+        logger.error('failed to subscription with error: ', err);
+      }
+    }
 
-    // success to query api
-    popup.open(<ConfirmPopup />);
-
-    // failed to query api
-    // popup.close();
+    try {
+      await post(ratelApi.users.updateUserInfo(), {
+        signup: {
+          nickname: displayName,
+          email,
+          profile_url: profileUrl,
+          term_agreed: agreed,
+          informed_agreed: announcementAgreed,
+          username: userName,
+        },
+      });
+      popup.open(<ConfirmPopup />);
+    } catch (err) {
+      logger.error('failed to signup with error: ', err);
+    }
   };
 
   useEffect(() => {
@@ -59,28 +84,28 @@ const UserSetupPopup = ({
   return (
     <div
       id={id}
-      className="flex flex-col w-400 max-w-400 mx-5 max-mobile:!w-full max-mobile:!max-w-full gap-35 mt-35"
+      className="flex flex-col w-100 max-w-100 mx-4.25 max-mobile:!w-full max-mobile:!max-w-full gap-8.75 mt-8.75"
     >
       <WelcomeHeader
         title="Finish your Profile!"
         description="Completing your profile makes it easier for you to take action."
       />
 
-      <div className="flex flex-col items-start justify-start w-full gap-5">
-        <div className="w-full flex flex-col gap-5">
+      <div className="flex flex-col items-start justify-start w-full gap-1.25">
+        <div className="w-full flex flex-col gap-[5px]">
           <div className="flex flex-row items-start">
-            <span className="text-c-cg-30 font-bold text-base/28">
+            <span className="text-c-cg-30 font-bold text-base/7">
               {'Email'}
             </span>
           </div>
           <input
-            className="w-full outline-none px-5 h-44 text-white text-base placeholder-gray-500 font-medium border rounded-lg border-gray-600"
+            className="w-full outline-none px-5 h-11 text-white text-base placeholder-gray-500 font-medium border rounded-lg border-gray-600"
             disabled={email === ''}
             value={email}
           />
         </div>
 
-        <div className="flex flex-col gap-20 w-full mt-20">
+        <div className="flex flex-col gap-5 w-full mt-2.25">
           <LabeledInput
             labelName={'Display Name'}
             placeholder={'Display Name'}
@@ -103,7 +128,7 @@ const UserSetupPopup = ({
           />
         </div>
 
-        <div className="flex flex-col gap-10 items-start mb-20 mt-20">
+        <div className="flex flex-col gap-2.25 items-start mb-5 mt-5">
           <Checkbox id="agree_checkbox" onChange={setAgreed}>
             <span className="text-sm text-gray-400">
               <strong>[Required]</strong> I have read and accept the{' '}
@@ -139,8 +164,8 @@ const LabeledInput = ({
   children,
   warning = '',
 }: LabeledInputProps) => (
-  <div className="w-full flex flex-col items-start gap-5">
-    <p className="text-c-cg-30 font-bold text-base/28">{labelName}</p>
+  <div className="w-full flex flex-col items-start gap-[5px]">
+    <div className="text-c-cg-30 font-bold text-base/7">{labelName}</div>
     <input
       type="text"
       className="w-full outline-none px-5 text-white text-base placeholder-gray-500 font-medium border rounded-lg border-gray-600"
