@@ -17,20 +17,25 @@ import {
   restoreEd25519KeyPair,
 } from '@/lib/wallet/ed25519';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
+import { HDNodeWallet } from 'ethers';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | undefined>(undefined);
   const [authUser, setAuthUser] = useState<AuthUserInfo | undefined>(undefined);
   const [ed25519KeyPair, setEd25519KeyPair] =
     useState<Ed25519KeyIdentity | null>(null);
+  const [evmWallet, setEvmWallet] = useState<HDNodeWallet | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     const stored = localStorage.getItem(SK_IDENTITY_KEY);
+    let identity = null;
 
     try {
       if (stored) {
         // for our users
-        const identity = restoreEd25519KeyPair(stored);
+        identity = restoreEd25519KeyPair(stored);
         logger.debug('Restored principal:', identity.getPrincipal().toText());
 
         setEd25519KeyPair(identity);
@@ -41,7 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (stored) {
           // previousely visited
-          const identity = restoreEd25519KeyPair(stored);
+          identity = restoreEd25519KeyPair(stored);
           setEd25519KeyPair(identity);
 
           logger.debug(
@@ -50,7 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           );
         } else {
           // first visited
-          const identity = createEd25519KeyPair();
+          identity = createEd25519KeyPair();
 
           logger.debug(
             'Created new principal:',
@@ -69,7 +74,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.removeItem(SK_IDENTITY_KEY);
       localStorage.removeItem(SK_ANONYMOUS_IDENTITY_KEY);
 
-      const identity = createEd25519KeyPair();
+      identity = createEd25519KeyPair();
 
       logger.debug('Created new principal:', identity.getPrincipal().toText());
 
@@ -78,6 +83,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
     }
+
+    const secret = identity!.getKeyPair().secretKey;
+    logger.debug('secret', secret);
+    const wallet = HDNodeWallet.fromSeed(new Uint8Array(secret as ArrayBuffer));
+    setEvmWallet(wallet);
+    logger.debug('EVM wallet created:', wallet.address);
 
     const unsubscribe = onUserChanged((user) => {
       setUser(user || undefined);
@@ -104,6 +115,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthUser(authInfo);
     setEd25519KeyPair(info.keyPair);
 
+    const secret = info.keyPair!.getKeyPair().secretKey;
+    logger.debug('secret', secret);
+    const wallet = HDNodeWallet.fromSeed(new Uint8Array(secret as ArrayBuffer));
+    setEvmWallet(wallet);
+    logger.debug('EVM wallet created:', wallet.address);
     return authInfo;
   };
 
@@ -119,6 +135,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     logger.debug('Created new principal:', identity.getPrincipal().toText());
 
     setEd25519KeyPair(identity);
+
+    const secret = identity!.getKeyPair().secretKey;
+    logger.debug('secret', secret);
+    const wallet = HDNodeWallet.fromSeed(new Uint8Array(secret as ArrayBuffer));
+    setEvmWallet(wallet);
+    logger.debug('EVM wallet created:', wallet.address);
+
     const encoded_identity = encodeEd25519PrivateKeyToPkcs8Base64(identity);
 
     localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
@@ -126,7 +149,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ ed25519KeyPair, user, authUser, login, logout: logoutUser }}
+      value={{
+        ed25519KeyPair,
+        user,
+        authUser,
+        login,
+        logout: logoutUser,
+        evmWallet,
+      }}
     >
       {children}
     </AuthContext.Provider>

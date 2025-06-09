@@ -5,9 +5,11 @@ import { User } from 'firebase/auth';
 import { AuthUserInfo } from '../service/firebase-service';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { NoEd25519KeyPair } from '@/errors';
+import { HDNodeWallet } from 'ethers';
 
 interface AuthContextType {
   ed25519KeyPair: Ed25519KeyIdentity | null;
+  evmWallet?: HDNodeWallet;
   user?: User;
   authUser?: AuthUserInfo;
   login: (keyPair: Ed25519KeyIdentity) => Promise<AuthUserInfo>;
