@@ -6,7 +6,7 @@ import { usePost } from './_hooks/use-posts';
 import { Col } from '@/components/ui/col';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { config } from '@/config';
-import News from './_components/News';
+// import News from './_components/News';
 import { CreatePost } from './_components/create-post';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
