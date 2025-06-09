@@ -98,7 +98,7 @@ export default function Home() {
             {feeds.map((props) => (
               <FeedCard
                 key={`feed-${props.id}`}
-                user_id={userInfo.id ?? 0}
+                user_id={user_id ?? 0}
                 {...props}
               />
             ))}
