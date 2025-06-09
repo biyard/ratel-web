@@ -4,6 +4,7 @@
 import { AuthProvider } from '@/app/_providers/auth-provider';
 import { client } from '@/lib/apollo';
 import { PopupProvider } from '@/lib/contexts/popup-service';
+import { logger } from '@/lib/logger';
 import { ApolloProvider } from '@apollo/client';
 // Since QueryClientProvider relies on useContext under the hood, we have to put 'use client' on top
 import {
@@ -15,6 +16,11 @@ import {
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
+      mutations: {
+        onError(error) {
+          logger.error('Query mutation error:', error);
+        },
+      },
       queries: {
         // With SSR, we usually want to set some default staleTime
         // above 0 to avoid refetching immediately on the client
