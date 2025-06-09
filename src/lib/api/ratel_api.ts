@@ -34,6 +34,7 @@ export const ratelApi = {
     getSpaceBySpaceId: (id: number) => `/v1/spaces/${id}`,
     getSpaceRedeemCodes: (space_id: number) =>
       `/v1/spaces/${space_id}/redeem-codes`,
+    claimBadge: (space_id: number) => `/v1/spaces/${space_id}/badges`,
   },
   graphql: {
     listNews: (size: number) => {

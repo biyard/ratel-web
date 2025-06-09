@@ -1,40 +1,35 @@
-'use client'; // 이 컴포넌트는 클라이언트 컴포넌트입니다.
+'use client';
 
 import Loading from '@/app/loading';
 import { useRedeemCodeRequest } from '@/lib/api/models/redeem-code';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useApiCall } from '@/lib/api/use-send';
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // useRouter 훅 임포트
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
-interface RedeemPageProps {
-  params: {
-    id: string;
-  };
-  searchParams: {
-    code?: string;
-  };
-}
-
-export default function RedeemPage({ params, searchParams }: RedeemPageProps) {
+export default function RedeemPage() {
   const router = useRouter();
 
-  const { id } = params;
-  const { code } = searchParams;
+  const params = useParams();
+  const id = Number(params.id);
+
+  const searchParams = useSearchParams();
+  const code = searchParams.get('code') ?? undefined;
 
   if (!id || !code) {
     useEffect(() => {
       console.error('Missing ID or Code parameters.');
-      router.replace('/'); // 예: 홈으로 리다이렉트
+      router.replace('/');
     }, [router]);
     return <p>Invalid request. Redirecting...</p>;
   }
 
-  const metaId = parseInt(id, 10);
+  const idStr = Array.isArray(id) ? id[0] : id;
+  const metaId = parseInt(idStr, 10);
   if (isNaN(metaId)) {
     useEffect(() => {
       console.error('Invalid ID parameter.');
-      router.replace('/'); // 예: 홈으로 리다이렉트
+      router.replace('/');
     }, [router]);
     return <p>Invalid request. Redirecting...</p>;
   }
@@ -49,9 +44,9 @@ export default function RedeemPage({ params, searchParams }: RedeemPageProps) {
           ratelApi.redeems.useRedeemCode(metaId),
           useRedeemCodeRequest(code),
         );
-        console.log('Redeem API successful:', response);
-
-        router.replace(`/spaces/${response.meta_id}`);
+        if (!!response) {
+          router.replace(`/spaces/${response.meta_id}`);
+        }
       } catch (error) {
         console.error('Failed to fetch redeem details:', error);
       }

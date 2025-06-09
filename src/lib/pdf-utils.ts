@@ -3,7 +3,7 @@ import { logger } from './logger';
 /**
  * Configuration for URL replacement in PDF files
  */
-interface UrlReplacement {
+export interface UrlReplacement {
   /** Original URL or URL pattern to find */
   original: string;
   /** New URL to replace with */
@@ -64,7 +64,9 @@ export async function replacePdfLinks({
 
   try {
     logger.debug('Fetching PDF from:', url);
-    const pdfResponse = await fetch(url);
+    const proxyUrl = `/api/proxy-pdf?url=${encodeURIComponent(url)}`;
+
+    const pdfResponse = await fetch(proxyUrl);
     if (!pdfResponse.ok) {
       throw new Error(`Failed to fetch PDF: ${pdfResponse.statusText}`);
     }
