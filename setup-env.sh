@@ -22,6 +22,7 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${FIREBASE_MEASUREMENT_ID}
 NEXT_PUBLIC_SIGN_DOMAIN=dev.ratel.foundation
 NEXT_PUBLIC_API_URL=https://api.dev.ratel.foundation
 NEXT_PUBLIC_EXPERIMENT=true
+NEXT_PUBLIC_GRAPHQL_URL=https://graphql.dev.ratel.foundation
 EOL
 
 echo ".env.local created successfully."

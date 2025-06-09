@@ -1,3 +1,5 @@
+import { Team } from './team';
+
 export interface User {
   id: number;
   created_at: number;
@@ -16,6 +18,7 @@ export interface User {
   username: string;
 
   groups: Group[];
+  teams: Team[];
 
   html_contents: string;
 }
@@ -36,4 +39,26 @@ export interface Group {
   user_id: number;
 
   permissions: number;
+}
+
+export interface UserEditProfileRequest {
+  edit_profile: {
+    nickname: string;
+    html_contents: string;
+    profile_url: string;
+  };
+}
+
+export function userEditProfileRequest(
+  nickname: string,
+  html_contents: string,
+  profile_url: string,
+): UserEditProfileRequest {
+  return {
+    edit_profile: {
+      nickname,
+      html_contents,
+      profile_url,
+    },
+  };
 }

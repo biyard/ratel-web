@@ -1,3 +1,5 @@
+'use client';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,38 +9,52 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User } from '@/lib/api/models/user';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { ChevronDown } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TeamCreationPopup from '../_popups/team-creation-popup';
+import { useUserInfo } from '@/lib/api/hooks/users';
+import { Team } from '@/lib/api/models/team';
+import Link from 'next/link';
+import { route } from '@/route';
+import { useAuth } from '@/lib/contexts/auth-context';
 
 export interface TeamSelectorProps {
-  user: User;
+  onSelect?: (index: number) => void;
+  team?: Team;
 }
 
-export interface TeamItem {
-  id: number;
-  name: string;
-  profile_url: string;
-}
-
-export default function TeamSelector({ user }: TeamSelectorProps) {
-  const [teams] = React.useState<TeamItem[]>([
-    {
-      id: user.id,
-      name: user.nickname,
-      profile_url: user.profile_url || '',
-    },
-  ]);
-
+export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
+  const userInfo = useUserInfo();
+  const { logout } = useAuth();
   const [selectedTeam, setSelectedTeam] = useState(0);
   const popup = usePopup();
+  const { data: user, isLoading } = userInfo;
 
-  /* const _teams_ids = Array.from(
-   *   new Map(user.groups.map((group) => [group.user_id, group])).values(),
-   * ); */
+  let teams: Team[] = [];
+
+  if (user) {
+    teams = [
+      {
+        ...user,
+      },
+      ...(user.teams ?? []),
+    ];
+  }
+
+  useEffect(() => {
+    for (let i = 0; i < teams.length; i++) {
+      if (team && team.id === teams[i].id) {
+        setSelectedTeam(i);
+        return;
+      }
+    }
+  }, [teams, team, userInfo]);
+
+  if (isLoading || !user) {
+    return <div />;
+  }
 
   logger.debug('TeamSelector groups:', teams);
 
@@ -46,7 +62,7 @@ export default function TeamSelector({ user }: TeamSelectorProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="w-full flex items-center justify-between px-2 py-2 focus:outline-none">
-          <span>{teams[selectedTeam].name}</span>
+          <span>{teams[selectedTeam].nickname}</span>
           <ChevronDown size={16} />
         </button>
       </DropdownMenuTrigger>
@@ -56,17 +72,29 @@ export default function TeamSelector({ user }: TeamSelectorProps) {
         <DropdownMenuGroup>
           {teams.map((team, index) => (
             <DropdownMenuItem
+              className="focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 w-full flex flex-row items-center gap-2 px-2 py-2 hover:bg-neutral-800 cursor-pointer"
               key={`team-select-menu-${team.id}`}
-              onClick={() => {
-                setSelectedTeam(index);
-              }}
+              asChild
             >
-              <img
-                src={team.profile_url || '/default-profile.png'}
-                alt={team.name}
-                className="w-6 h-6 rounded-full object-cover object-top"
-              />
-              <span>{team.name}</span>
+              <Link
+                href={
+                  index === 0
+                    ? route.home()
+                    : route.teamByUsername(team.username)
+                }
+                className="flex items-center gap-2"
+                onClick={() => {
+                  setSelectedTeam(index);
+                  if (onSelect) onSelect(index);
+                }}
+              >
+                <img
+                  src={team.profile_url || '/default-profile.png'}
+                  alt={team.nickname}
+                  className="w-6 h-6 rounded-full object-cover object-top"
+                />
+                <span>{team.nickname}</span>
+              </Link>
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>
@@ -84,6 +112,8 @@ export default function TeamSelector({ user }: TeamSelectorProps) {
           <DropdownMenuItem
             onClick={() => {
               logger.debug('Create team clicked');
+              logout();
+              userInfo.refetch();
             }}
           >
             <span>Log out</span>

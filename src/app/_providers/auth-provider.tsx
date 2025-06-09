@@ -17,79 +17,146 @@ import {
   restoreEd25519KeyPair,
 } from '@/lib/wallet/ed25519';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
+import { HDNodeWallet } from 'ethers';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [authUser, setAuthUser] = useState<AuthUserInfo | null>(null);
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [authUser, setAuthUser] = useState<AuthUserInfo | undefined>(undefined);
   const [ed25519KeyPair, setEd25519KeyPair] =
     useState<Ed25519KeyIdentity | null>(null);
+  const [evmWallet, setEvmWallet] = useState<HDNodeWallet | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     const stored = localStorage.getItem(SK_IDENTITY_KEY);
+    let identity = null;
 
-    if (stored) {
-      // for our users
-      const identity = restoreEd25519KeyPair(stored);
-      logger.debug('Restored principal:', identity.getPrincipal().toText());
+    try {
+      if (stored) {
+        // for our users
+        identity = restoreEd25519KeyPair(stored);
+        logger.debug('Restored principal:', identity.getPrincipal().toText());
+
+        setEd25519KeyPair(identity);
+        localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, stored);
+      } else {
+        // for guests
+        const stored = localStorage.getItem(SK_ANONYMOUS_IDENTITY_KEY);
+
+        if (stored) {
+          // previousely visited
+          identity = restoreEd25519KeyPair(stored);
+          setEd25519KeyPair(identity);
+
+          logger.debug(
+            'Restored anonymous principal:',
+            identity.getPrincipal().toText(),
+          );
+        } else {
+          // first visited
+          identity = createEd25519KeyPair();
+
+          logger.debug(
+            'Created new principal:',
+            identity.getPrincipal().toText(),
+          );
+
+          setEd25519KeyPair(identity);
+          const encoded_identity =
+            encodeEd25519PrivateKeyToPkcs8Base64(identity);
+
+          localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
+        }
+      }
+    } catch (error) {
+      logger.error('Failed to restore identity:', error);
+      localStorage.removeItem(SK_IDENTITY_KEY);
+      localStorage.removeItem(SK_ANONYMOUS_IDENTITY_KEY);
+
+      identity = createEd25519KeyPair();
+
+      logger.debug('Created new principal:', identity.getPrincipal().toText());
 
       setEd25519KeyPair(identity);
-      localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, stored);
-    } else {
-      // for guests
-      const stored = localStorage.getItem(SK_ANONYMOUS_IDENTITY_KEY);
+      const encoded_identity = encodeEd25519PrivateKeyToPkcs8Base64(identity);
 
-      if (stored) {
-        // previousely visited
-        const identity = restoreEd25519KeyPair(stored);
-        setEd25519KeyPair(identity);
-
-        logger.debug(
-          'Restored anonymous principal:',
-          identity.getPrincipal().toText(),
-        );
-      } else {
-        // first visited
-        const identity = createEd25519KeyPair();
-
-        logger.debug(
-          'Created new principal:',
-          identity.getPrincipal().toText(),
-        );
-
-        setEd25519KeyPair(identity);
-        const encoded_identity = encodeEd25519PrivateKeyToPkcs8Base64(identity);
-
-        localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
-      }
+      localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
     }
 
+    const secret = identity!.getKeyPair().secretKey;
+    logger.debug('secret', secret);
+    const wallet = HDNodeWallet.fromSeed(new Uint8Array(secret as ArrayBuffer));
+    setEvmWallet(wallet);
+    logger.debug('EVM wallet created:', wallet.address);
+
     const unsubscribe = onUserChanged((user) => {
-      setUser(user);
+      setUser(user || undefined);
     });
 
     return () => unsubscribe();
   }, []);
 
-  const login = async (keyPair: Ed25519KeyIdentity) => {
+  const login = async (keyPair: Ed25519KeyIdentity): Promise<AuthUserInfo> => {
     logger.debug('login');
     const info = await loginWithGoogle(keyPair);
+    const authInfo: AuthUserInfo = {
+      principal: info.principal,
+      event: info.eventType,
+      contents: info.contents,
+      email: info.email,
+      displayName: '',
+      photoURL: info.photoURL,
+    };
+
     localStorage.setItem(SK_IDENTITY_KEY, info.contents);
     localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, info.contents);
 
+    setAuthUser(authInfo);
     setEd25519KeyPair(info.keyPair);
+
+    const secret = info.keyPair!.getKeyPair().secretKey;
+    logger.debug('secret', secret);
+    const wallet = HDNodeWallet.fromSeed(new Uint8Array(secret as ArrayBuffer));
+    setEvmWallet(wallet);
+    logger.debug('EVM wallet created:', wallet.address);
+    return authInfo;
   };
 
   const logoutUser = async () => {
     await logout();
-    setUser(null);
-    setAuthUser(null);
+    setUser(undefined);
+    setAuthUser(undefined);
     localStorage.removeItem(SK_IDENTITY_KEY);
     localStorage.removeItem(SK_ANONYMOUS_IDENTITY_KEY);
+
+    const identity = createEd25519KeyPair();
+
+    logger.debug('Created new principal:', identity.getPrincipal().toText());
+
+    setEd25519KeyPair(identity);
+
+    const secret = identity!.getKeyPair().secretKey;
+    logger.debug('secret', secret);
+    const wallet = HDNodeWallet.fromSeed(new Uint8Array(secret as ArrayBuffer));
+    setEvmWallet(wallet);
+    logger.debug('EVM wallet created:', wallet.address);
+
+    const encoded_identity = encodeEd25519PrivateKeyToPkcs8Base64(identity);
+
+    localStorage.setItem(SK_ANONYMOUS_IDENTITY_KEY, encoded_identity);
   };
 
   return (
     <AuthContext.Provider
-      value={{ ed25519KeyPair, user, authUser, login, logout: logoutUser }}
+      value={{
+        ed25519KeyPair,
+        user,
+        authUser,
+        login,
+        logout: logoutUser,
+        evmWallet,
+      }}
     >
       {children}
     </AuthContext.Provider>

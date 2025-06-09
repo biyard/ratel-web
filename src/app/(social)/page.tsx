@@ -1,132 +1,107 @@
 'use client';
-
 import Image from 'next/image';
+import { Award, ChevronRight } from 'lucide-react';
+import FeedCard from '@/components/feed-card';
+import { usePost } from './_hooks/use-posts';
+import { Col } from '@/components/ui/col';
+import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
+import { config } from '@/config';
+// import News from './_components/News';
+import { CreatePost } from './_components/create-post';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
 import {
-  Award,
-  MoreHorizontal,
-  ChevronRight,
-  Star,
-  MessageSquare,
-  Building,
-  Eye,
-  Repeat,
-} from 'lucide-react';
+  UrlType,
+  writePostRequest,
+} from '@/lib/api/models/feeds/write-post-request';
+
+export interface Post {
+  id: number;
+  industry: string;
+  title: string;
+  contents: string;
+  url?: string;
+  author_id: number;
+  author_profile_url: string;
+  author_name: string;
+  space_id?: number;
+  likes: number;
+  comments: number;
+  rewards: number;
+  shares: number;
+  created_at: number;
+}
 
 export default function Home() {
+  const { post } = useApiCall();
+
+  const posts = usePost(1, 20);
+  const { data: userInfo } = useSuspenseUserInfo();
+  const user_id = userInfo != null ? userInfo.id || 0 : 0;
+  const handleCreatePost = async (
+    title: string,
+    html_contents: string,
+    image: string | null,
+  ) => {
+    let url = '';
+    let url_type = UrlType.None;
+    if (image !== null && image !== '') {
+      url = image;
+      url_type = UrlType.Image;
+    }
+    await post(
+      ratelApi.feeds.writePost(),
+      writePostRequest(
+        html_contents,
+        user_id,
+        1, // Default industry_id to 1 (Crpyto)
+        title,
+        0,
+        [],
+        url,
+        url_type,
+      ),
+    );
+    posts.refetch();
+  };
+
+  const feeds: Post[] =
+    posts.data != null
+      ? posts.data.items.map((item) => ({
+          id: item.id,
+          industry: item.industry != null ? item.industry[0].name : '',
+          title: item.title!,
+          contents: item.html_contents,
+          url: item.url,
+          author_id: item.industry != null ? Number(item.author[0].id) : 0,
+          author_profile_url:
+            item.author != null ? item.author[0].profile_url! : '',
+          author_name: item.author != null ? item.author[0].nickname : '',
+          space_id: item.spaces?.length ? item.spaces[0].id : 0,
+          likes: item.likes,
+          comments: item.comments,
+          rewards: item.rewards,
+          shares: item.shares,
+          created_at: item.created_at,
+        }))
+      : [];
+
   return (
-    <div className="flex-1 flex">
-      {/* Feed */}
-      <div className="flex-1 border-r border-gray-800">
-        {/* Tabs */}
-        <div className="flex border-b border-gray-800">
-          <div className="px-6 py-3 text-sm font-medium">For you</div>
-          <div className="px-6 py-3 text-sm text-gray-400">Following</div>
-        </div>
-
-        {/* Post Input */}
-        <div className="p-4 border-b border-gray-800">
-          <div className="flex gap-3">
-            <Image
-              src="/profile.png?height=40&width=40"
-              alt="Profile"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <input
-              type="text"
-              placeholder="Discuss legislation. Drive change."
-              className="w-full bg-gray-800 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#fcb300]"
-            />
-            {/* <div className="flex-1 bg-gray-800 rounded-full px-4 py-2 text-gray-400 text-sm">
-                                    Discuss legislation. Drive change.
-                                </div> */}
-          </div>
-        </div>
-
-        {/* Posts */}
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="border-b border-gray-800 p-4">
-            <div className="flex justify-between">
-              <div className="flex gap-2 items-center">
-                <div className="uppercase text-xs font-medium bg-gray-800 px-2 py-0.5 rounded">
-                  Crypto
-                </div>
-                {i === 1 && (
-                  <div className="uppercase text-xs font-medium bg-[#fcb300] text-black px-2 py-0.5 rounded">
-                    Active
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="bg-[#fcb300] text-black text-xs px-2 py-0.5 rounded">
-                  New
-                </div>
-                <button>
-                  <MessageSquare size={16} />
-                </button>
-                <button>
-                  <MoreHorizontal size={16} />
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-2">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-5 h-5 bg-gray-700 rounded"></div>
-                <div className="text-sm font-medium">Space name</div>
-                <div className="w-2 h-2 rounded-full bg-[#fcb300]"></div>
-              </div>
-              <h2 className="text-lg font-medium">
-                DAO Treasury Transparency Act & Crypto Investor Protection Act
-              </h2>
-              <p className="text-sm text-gray-400 mt-1">
-                Explore powerful artworks that amplify voices for equality,
-                diversity, and justice. This collection brings...
-                <span className="text-[#fcb300]"> See more</span>
-              </p>
-            </div>
-
-            <div className="mt-3">
-              <div className="rounded-md overflow-hidden">
-                <Image
-                  src="/post-placeholder.jpg?height=300&width=500"
-                  alt="Post image"
-                  width={500}
-                  height={300}
-                  className="w-full object-cover"
-                />
-              </div>
-            </div>
-
-            <div className="mt-3 flex justify-between text-sm text-gray-400">
-              <div className="flex items-center gap-1">
-                <Eye size={16} />
-                <span>{i === 1 ? '705' : '212'}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Building size={16} />
-                <span>Space</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Eye size={16} />
-                <span>201</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Star size={16} />
-                <span>221K</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Repeat size={16} />
-                <span>403</span>
-              </div>
-            </div>
-
-            <div className="mt-2 text-xs text-gray-500 text-right">1w ago</div>
-          </div>
+    <div className="flex-1 flex relative">
+      <Col className="flex-1">
+        {feeds.map((props) => (
+          <FeedCard key={`feed-${props.id}`} user_id={user_id} {...props} />
         ))}
+      </Col>
+      <div className="fixed bottom-0 left-0 right-0 z-10 flex flex-row items-center justify-center">
+        <div className="max-w-desktop w-full">
+          <CreatePost
+            onSubmit={async ({ title, content, image }) => {
+              await handleCreatePost(title, content, image);
+            }}
+          />
+        </div>
       </div>
-
       {/* Right Sidebar */}
       <div className="w-80 p-4">
         {/* Hot Promotion */}
@@ -148,58 +123,14 @@ export default function Home() {
           </div>
         </div>
 
-        {/* News */}
-        <div className="mt-6">
-          <h3 className="font-medium mb-3">News</h3>
-
-          <div className="mb-4">
-            <h4 className="font-medium text-sm">
-              Ratel' Launches Digital Asset Policy Comparison Feature Ahead of
-              2025 Election
-            </h4>
-            <p className="text-xs text-gray-400 mt-1">
-              Ratel, a blockchain-based legislative social media platform, has
-              introduced a new feature that allows voters to...
-            </p>
-            <div className="mt-1 text-xs text-gray-400 flex items-center">
-              <span>View Detail</span>
-              <ChevronRight size={14} />
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <h4 className="font-medium text-sm">
-              Legislative Platform 'Ratel' Records Public Opinion on Election
-              Pledges via Blockchain
-            </h4>
-            <p className="text-xs text-gray-400 mt-1">
-              Ratel, a blockchain-based social media platform, has launched a
-              new feature ahead of South Korea's 2025...
-            </p>
-            <div className="mt-1 text-xs text-gray-400 flex items-center">
-              <span>View Detail</span>
-              <ChevronRight size={14} />
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <h4 className="font-medium text-sm">
-              Decentralized Legislative Platform 'RATEL' Leads Crypto Regulatory
-              Reform in South Korea
-            </h4>
-            <p className="text-xs text-gray-400 mt-1">
-              RATEL is the world's first decentralized legislative DAO platform
-              empowering communities to propose and monitor...
-            </p>
-            <div className="mt-1 text-xs text-gray-400 flex items-center">
-              <span>View Detail</span>
-              <ChevronRight size={14} />
-            </div>
-          </div>
-        </div>
+        {/* TODO: remove this comment when graphql bug fixed */}
+        {/* <News /> */}
 
         {/* Add to your feed */}
-        <div className="mt-6">
+        <div
+          className="mt-6 hidden aria-show:block"
+          aria-show={config.experiment}
+        >
           <h3 className="font-medium mb-3">Add to your feed</h3>
 
           <div className="mb-3 flex items-center gap-3">
