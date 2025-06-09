@@ -46,7 +46,7 @@ export enum FeedType {
 export interface FileInfo {
   name: string;
   size: string;
-  ext: FileExtension;
+  ext: string;
   url?: string | null;
 }
 

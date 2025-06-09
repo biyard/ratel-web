@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import ArrowLeft from '@/assets/icons/left.svg';
 import Shared from '@/assets/icons/share.svg';
@@ -24,13 +22,7 @@ export default function SpaceHeader({
   return (
     <div className="flex flex-col w-full gap-2.5">
       <div className="flex flex-row w-full justify-between items-center">
-        <ArrowLeft
-          width={24}
-          height={24}
-          onClick={() => {
-            console.log('click');
-          }}
-        />
+        <ArrowLeft width={24} height={24} />
 
         <div className="flex flex-row w-fit h-fit items-center gap-5">
           <Shared width={24} height={24} />

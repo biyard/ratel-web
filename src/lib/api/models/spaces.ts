@@ -7,8 +7,20 @@ export interface Space {
   title?: string;
   html_contents: string;
   space_type: SpaceType;
+  user_id: number;
+  industry_id: number;
+  feed_id: number;
+  author: Author[];
   status: SpaceStatus;
   files: FileInfo[];
+}
+
+export interface Author {
+  id: number;
+  nickname: string;
+  principal: string;
+  email: string;
+  profile_url: string;
 }
 
 export enum SpaceType {
