@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import { useUserInfo } from '@/lib/api/hooks/users';
 import UserSidemenu from './_components/user-sidemenu';
 import Loading from '../loading';
-import { usePathname } from 'next/navigation';
 
 export default function SocialLayout({
   children,

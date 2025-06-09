@@ -75,7 +75,7 @@ function Description({ description, setDescription }: DescriptionProps) {
       className="flex flex-row w-full justify-start items-center bg-transparent font-medium text-[18px]/[25px] text-white placeholder:font-medium placeholder:text-[15px]/[24px] placeholder:text-neutral-600 border-none"
       value={description}
       placeholder="Input description"
-      onChange={(e: any) => {
+      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setDescription(e.target.value);
       }}
     />

@@ -1,4 +1,3 @@
-import { get } from 'http';
 import { FileType } from './models/file-type';
 import { gql } from '@apollo/client';
 

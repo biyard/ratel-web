@@ -13,7 +13,7 @@ export interface RedeemCodeRequest {
     code: string;
   };
 }
-export function useRedeemCodeRequest(code: string): RedeemCodeRequest {
+export function redeemCodeRequest(code: string): RedeemCodeRequest {
   return {
     use_code: {
       code,

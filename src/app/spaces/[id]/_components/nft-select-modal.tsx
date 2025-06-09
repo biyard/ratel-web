@@ -1,5 +1,5 @@
 'use client';
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/lib/api/models/badge';
@@ -55,7 +55,7 @@ export function NftSelectModal({
         disabled={selectNft.length === 0 || loading}
         onClick={async () => {
           if (selectNft.length > 0) {
-            !loading && setLoading(true);
+            setLoading(true);
             const success = await handleMintNfts(selectNft, contract!);
             if (success) {
               setLoading(false);

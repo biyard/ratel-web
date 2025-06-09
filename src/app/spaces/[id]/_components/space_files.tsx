@@ -55,7 +55,7 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
         <NftSelectModal
           badges={badges}
           handleMintNfts={async (ids: number[], contract: string) => {
-            let res = await post(ratelApi.spaces.claimBadge(spaceId), {
+            const res = await post(ratelApi.spaces.claimBadge(spaceId), {
               claim: {
                 ids: ids,
                 evm_address: contract,
