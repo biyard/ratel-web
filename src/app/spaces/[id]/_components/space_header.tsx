@@ -5,6 +5,7 @@ import ArrowLeft from '@/assets/icons/left.svg';
 // import Bookmark from '@/assets/icons/bookmark.svg';
 import Badge from '@/assets/icons/badge.svg';
 import { getTimeAgo } from '@/lib/time-utils';
+import { useRouter } from 'next/navigation';
 
 export interface SpaceHeaderProps {
   title: string;
@@ -19,10 +20,18 @@ export default function SpaceHeader({
   proposerName,
   createdAt,
 }: SpaceHeaderProps) {
+  let router = useRouter();
   return (
     <div className="flex flex-col w-full gap-2.5">
       <div className="flex flex-row w-full justify-between items-center">
-        <ArrowLeft width={24} height={24} />
+        <div
+          className="cursor-pointer w-fit h-fit"
+          onClick={() => {
+            router.back();
+          }}
+        >
+          <ArrowLeft width={24} height={24} />
+        </div>
 
         {/* <div className="flex flex-row w-fit h-fit items-center gap-5">
           <Shared width={24} height={24} />
