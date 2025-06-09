@@ -7,6 +7,11 @@ import { WelcomeHeader } from './welcome-header';
 import { PrimaryButton } from '../button/primary-button';
 import { Checkbox } from '../checkbox/checkbox';
 import { ConfirmPopup } from './confirm-popup';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { createUserRequest } from '@/lib/api/models/users/create-user-request';
+import { subscribe } from 'diagnostics_channel';
+import { logger } from '@/lib/logger';
 
 interface UserSetupPopupProps {
   id?: string;
@@ -27,13 +32,16 @@ interface LabeledInputProps {
 
 const UserSetupPopup = ({
   id = 'user_setup_popup',
-  email = 'test',
+  email = '',
+  profileUrl,
 }: UserSetupPopupProps) => {
+  const { post } = useApiCall();
+
   const popup = usePopup();
   const [displayName, setDisplayName] = useState('');
   const [userName, setUserName] = useState('');
   const [agreed, setAgreed] = useState(false);
-  const [, setAnnouncementAgree] = useState(false);
+  const [announcementAgreed, setAnnouncementAgree] = useState(false);
   const [isUserNameValid, setIsUserNameValid] = useState(false);
 
   const isValidUsername = (username: string) =>
@@ -42,14 +50,33 @@ const UserSetupPopup = ({
   const handleSubmit = async () => {
     if (!agreed || !isUserNameValid) return;
 
-    // TODO: call subscribe api
-    // TODO: call sign up api (principal, email, nickname, profile, termAgreed, informedAgreed)
+    if (announcementAgreed) {
+      try {
+        await post(ratelApi.subscription.subscribe(), {
+          subscribe: {
+            email,
+          },
+        });
+      } catch (err) {
+        logger.error('failed to subscription with error: ', err);
+      }
+    }
 
-    // success to query api
-    popup.open(<ConfirmPopup />);
-
-    // failed to query api
-    // popup.close();
+    try {
+      await post(ratelApi.users.updateUserInfo(), {
+        signup: {
+          nickname: displayName,
+          email,
+          profile_url: profileUrl,
+          term_agreed: agreed,
+          informed_agreed: announcementAgreed,
+          username: userName,
+        },
+      });
+      popup.open(<ConfirmPopup />);
+    } catch (err) {
+      logger.error('failed to signup with error: ', err);
+    }
   };
 
   useEffect(() => {
