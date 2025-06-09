@@ -1,8 +1,8 @@
 import React from 'react';
 import ArrowLeft from '@/assets/icons/left.svg';
-import Shared from '@/assets/icons/share.svg';
-import Extra from '@/assets/icons/extra.svg';
-import Bookmark from '@/assets/icons/bookmark.svg';
+// import Shared from '@/assets/icons/share.svg';
+// import Extra from '@/assets/icons/extra.svg';
+// import Bookmark from '@/assets/icons/bookmark.svg';
 import Badge from '@/assets/icons/badge.svg';
 import { getTimeAgo } from '@/lib/time-utils';
 
@@ -24,17 +24,17 @@ export default function SpaceHeader({
       <div className="flex flex-row w-full justify-between items-center">
         <ArrowLeft width={24} height={24} />
 
-        <div className="flex flex-row w-fit h-fit items-center gap-5">
+        {/* <div className="flex flex-row w-fit h-fit items-center gap-5">
           <Shared width={24} height={24} />
           <Extra width={24} height={24} />
-        </div>
+        </div> */}
       </div>
 
       <div className="flex flex-col gap-2.5">
         <SpaceType />
         <div className="flex flex-row w-full justify-between items-center">
           <div className="font-bold text-white text-[20px]/[30px]">{title}</div>
-          <Bookmark width={20} height={20} />
+          {/* <Bookmark width={20} height={20} /> */}
         </div>
       </div>
 

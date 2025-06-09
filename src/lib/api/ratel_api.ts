@@ -21,6 +21,7 @@ export const ratelApi = {
     writePost: () => '/v1/feeds',
     getPostsByUserId: (user_id: number, page: number, size: number) =>
       `/v1/feeds?param-type=query&action=posts-by-user-id&bookmark=${page}&size=${size}&user-id=${user_id}`,
+    getFeedsByFeedId: (feed_id: number) => `/v1/feeds/${feed_id}`,
     getPosts: (page: number, size: number) =>
       `/v1/feeds?param-type=query&bookmark=${page}&size=${size}`,
   },
