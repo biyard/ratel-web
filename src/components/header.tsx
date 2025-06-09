@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 
 import Logo from '@/assets/icons/logo.svg';
 import HomeIcon from '@/assets/icons/home.svg';
@@ -17,7 +17,12 @@ import { route } from '@/route';
 import { config } from '@/config';
 import { useUserInfo } from '@/lib/api/hooks/users';
 
-function Header() {
+export interface HeaderProps {
+  mobileExtends: boolean;
+  setMobileExtends: (extend: boolean) => void;
+}
+
+function Header(props: HeaderProps) {
   const popup = usePopup();
 
   const { data, isLoading } = useUserInfo();
@@ -124,7 +129,12 @@ function Header() {
           )}
         </div>
 
-        <div className="hidden max-tablet:block">
+        <div
+          className="hidden max-tablet:block"
+          onClick={() => {
+            props.setMobileExtends(!props.mobileExtends);
+          }}
+        >
           <Hamburger />
         </div>
       </nav>

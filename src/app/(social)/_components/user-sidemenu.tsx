@@ -9,7 +9,7 @@ import { useUserInfo } from '@/lib/api/hooks/users';
 import Link from 'next/link';
 import { route } from '@/route';
 import { Post, Settings } from '@/components/icons';
-import DevTools from './dev-tools';
+// import DevTools from './dev-tools';
 
 export default function UserSidemenu() {
   const { data: user, isLoading } = useUserInfo();
@@ -33,7 +33,7 @@ export default function UserSidemenu() {
         </Link>
       </nav>
 
-      <DevTools />
+      {/* <DevTools /> */}
 
       <RecentActivities />
 

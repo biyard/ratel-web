@@ -107,7 +107,7 @@ export default function Home() {
         </div>
       </div> */}
       {/* Right Sidebar */}
-      <div className="w-80 pl-4">
+      <div className="w-80 pl-4 max-tablet:!hidden">
         {/* Hot Promotion */}
 
         <div>

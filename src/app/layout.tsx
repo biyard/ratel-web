@@ -1,14 +1,11 @@
+// app/layout.tsx
 import { Raleway } from 'next/font/google';
-import Header from '@/components/header';
 import '@/assets/css/globals.css';
-import Providers from '@/providers/providers';
 import { Metadata } from 'next';
+import Providers from '@/providers/providers';
 import CookieProvider from './_providers/CookieProvider';
-import { Suspense } from 'react';
 import { PopupZone } from '@/components/popupzone';
-import Loading from './loading';
-import { logger } from '@/lib/logger';
-import { config } from '@/config';
+import ClientLayout from './(social)/_components/client-layout';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -26,8 +23,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  logger.debug('Config: ', config);
-
   return (
     <html lang="en">
       <head>
@@ -36,16 +31,7 @@ export default function RootLayout({
       <body className={`${raleway.variable} antialiased bg-bg`}>
         <CookieProvider>
           <Providers>
-            <Header />
-            <Suspense
-              fallback={
-                <div className="w-full h-full flex items-center justify-center">
-                  <Loading />
-                </div>
-              }
-            >
-              {children}
-            </Suspense>
+            <ClientLayout>{children}</ClientLayout>
             <PopupZone />
           </Providers>
         </CookieProvider>
