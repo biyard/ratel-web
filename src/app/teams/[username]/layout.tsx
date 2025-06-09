@@ -27,7 +27,7 @@ export default async function TeamLayout({
   logger.debug('TeamLayout: team', team);
 
   return (
-    <div className="flex min-h-screen justify-between max-w-6xl mx-auto text-white pt-3">
+    <div className="flex min-h-screen justify-between max-w-6xl mx-auto text-white pt-3 gap-[20px]">
       <TeamSidemenu team={team} />
       <div className="flex-1 flex">
         <Suspense

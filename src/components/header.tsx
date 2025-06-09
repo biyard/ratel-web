@@ -17,7 +17,12 @@ import { route } from '@/route';
 import { config } from '@/config';
 import { useUserInfo } from '@/lib/api/hooks/users';
 
-function Header() {
+export interface HeaderProps {
+  mobileExtends: boolean;
+  setMobileExtends: (extend: boolean) => void;
+}
+
+function Header(props: HeaderProps) {
   const popup = usePopup();
 
   const { data, isLoading } = useUserInfo();
@@ -87,6 +92,8 @@ function Header() {
     },
   ];
 
+  console.log('profile url: ', data?.profile_url);
+
   return (
     <header className="border-b border-neutral-800 px-2.5 py-2.5 flex items-center justify-center !bg-bg">
       <nav className="flex items-center justify-between mx-2.5 gap-12.5 w-full max-w-desktop">
@@ -124,7 +131,12 @@ function Header() {
           )}
         </div>
 
-        <div className="hidden max-tablet:block">
+        <div
+          className="hidden max-tablet:block"
+          onClick={() => {
+            props.setMobileExtends(!props.mobileExtends);
+          }}
+        >
           <Hamburger />
         </div>
       </nav>

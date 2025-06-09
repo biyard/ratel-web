@@ -18,6 +18,9 @@ export const ratelApi = {
   subscription: {
     subscribe: () => '/v1/subscriptions?action=subscribe',
   },
+  promotions: {
+    get_promotions: () => '/v1/promotions?param-type=read&action=hot-promotion',
+  },
   feeds: {
     comment: () => '/v1/feeds',
     writePost: () => '/v1/feeds',

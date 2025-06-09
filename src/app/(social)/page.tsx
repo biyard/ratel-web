@@ -1,19 +1,22 @@
 'use client';
 import Image from 'next/image';
-import { Award, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import FeedCard from '@/components/feed-card';
 import { usePost } from './_hooks/use-posts';
 import { Col } from '@/components/ui/col';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { config } from '@/config';
 // import News from './_components/News';
-import { CreatePost } from './_components/create-post';
-import { useApiCall } from '@/lib/api/use-send';
-import { ratelApi } from '@/lib/api/ratel_api';
-import {
-  UrlType,
-  writePostRequest,
-} from '@/lib/api/models/feeds/write-post-request';
+// import { CreatePost } from './_components/create-post';
+// import { useApiCall } from '@/lib/api/use-send';
+// import { ratelApi } from '@/lib/api/ratel_api';
+// import {
+//   UrlType,
+//   writePostRequest,
+// } from '@/lib/api/models/feeds/write-post-request';
+import News from './_components/News';
+import BlackBox from './_components/black-box';
+import { usePromotion } from './_hooks/use_promotion';
 
 export interface Post {
   id: number;
@@ -33,37 +36,38 @@ export interface Post {
 }
 
 export default function Home() {
-  const { post } = useApiCall();
+  // const { post } = useApiCall();
 
   const posts = usePost(1, 20);
+  const { data: promotion } = usePromotion();
   const { data: userInfo } = useSuspenseUserInfo();
   const user_id = userInfo != null ? userInfo.id || 0 : 0;
-  const handleCreatePost = async (
-    title: string,
-    html_contents: string,
-    image: string | null,
-  ) => {
-    let url = '';
-    let url_type = UrlType.None;
-    if (image !== null && image !== '') {
-      url = image;
-      url_type = UrlType.Image;
-    }
-    await post(
-      ratelApi.feeds.writePost(),
-      writePostRequest(
-        html_contents,
-        user_id,
-        1, // Default industry_id to 1 (Crpyto)
-        title,
-        0,
-        [],
-        url,
-        url_type,
-      ),
-    );
-    posts.refetch();
-  };
+  // const handleCreatePost = async (
+  //   title: string,
+  //   html_contents: string,
+  //   image: string | null,
+  // ) => {
+  //   let url = '';
+  //   let url_type = UrlType.None;
+  //   if (image !== null && image !== '') {
+  //     url = image;
+  //     url_type = UrlType.Image;
+  //   }
+  //   await post(
+  //     ratelApi.feeds.writePost(),
+  //     writePostRequest(
+  //       html_contents,
+  //       user_id,
+  //       1, // Default industry_id to 1 (Crpyto)
+  //       title,
+  //       0,
+  //       [],
+  //       url,
+  //       url_type,
+  //     ),
+  //   );
+  //   posts.refetch();
+  // };
 
   const feeds: Post[] =
     posts.data != null
@@ -73,7 +77,7 @@ export default function Home() {
           title: item.title!,
           contents: item.html_contents,
           url: item.url,
-          author_id: item.industry != null ? Number(item.author[0].id) : 0,
+          author_id: item.author != null ? Number(item.author[0].id) : 0,
           author_profile_url:
             item.author != null ? item.author[0].profile_url! : '',
           author_name: item.author != null ? item.author[0].nickname : '',
@@ -88,12 +92,24 @@ export default function Home() {
 
   return (
     <div className="flex-1 flex relative">
-      <Col className="flex-1">
-        {feeds.map((props) => (
-          <FeedCard key={`feed-${props.id}`} user_id={user_id} {...props} />
-        ))}
+      <Col className="flex-1 flex max-mobile:px-[10px]">
+        {feeds.length != 0 ? (
+          <Col className="flex-1 border-r border-gray-800">
+            {feeds.map((props) => (
+              <FeedCard
+                key={`feed-${props.id}`}
+                user_id={user_id ?? 0}
+                {...props}
+              />
+            ))}
+          </Col>
+        ) : (
+          <div className="flex flex-row w-full h-fit justify-start items-center px-[16px] py-[20px] border border-gray-500 rounded-[8px] font-medium text-base text-gray-500">
+            Feeds data is empty
+          </div>
+        )}
       </Col>
-      <div className="fixed bottom-0 left-0 right-0 z-10 flex flex-row items-center justify-center">
+      {/* <div className="fixed bottom-0 left-0 right-0 z-10 flex flex-row items-center justify-center">
         <div className="max-w-desktop w-full">
           <CreatePost
             onSubmit={async ({ title, content, image }) => {
@@ -101,35 +117,39 @@ export default function Home() {
             }}
           />
         </div>
-      </div>
+      </div> */}
       {/* Right Sidebar */}
-      <div className="w-80 p-4">
+      <div className="w-80 pl-4 max-tablet:!hidden">
         {/* Hot Promotion */}
+
         <div>
-          <h3 className="font-medium mb-3">Hot Promotion</h3>
-          <div className="bg-gray-800 rounded-lg p-3">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded bg-blue-500 flex items-center justify-center">
-                <Award size={16} />
-              </div>
-              <div>
-                <div className="font-medium">Presidential Election</div>
+          <BlackBox>
+            <div className="flex flex-col gap-2.5">
+              <h3 className="font-bold text-white text-[15px]/[20px]">
+                Hot Promotion
+              </h3>
+              <div className="flex items-center gap-2.5">
+                <img
+                  src={promotion.image_url}
+                  alt={promotion.name}
+                  className="w-[60px] h-[60px] rounded object-cover cursor-pointer"
+                />
+                <div>
+                  <div className="font-medium text-white text-base/[25px]">
+                    {promotion.name}
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="mt-2 text-xs text-gray-400 flex items-center">
-              <span>View all</span>
-              <ChevronRight size={14} />
-            </div>
-          </div>
+          </BlackBox>
         </div>
 
-        {/* TODO: remove this comment when graphql bug fixed */}
-        {/* <News /> */}
+        <News />
 
         {/* Add to your feed */}
         <div
-          className="mt-6 hidden aria-show:block"
-          aria-show={config.experiment}
+          className="mt-6 block aria-hidden:hidden"
+          aria-hidden={!config.experiment}
         >
           <h3 className="font-medium mb-3">Add to your feed</h3>
 
