@@ -92,10 +92,22 @@ export default function Home() {
 
   return (
     <div className="flex-1 flex relative">
-      <Col className="flex-1">
-        {feeds.map((props) => (
-          <FeedCard key={`feed-${props.id}`} user_id={user_id} {...props} />
-        ))}
+      <Col className="flex-1 flex max-mobile:px-[10px]">
+        {feeds.length != 0 ? (
+          <Col className="flex-1 border-r border-gray-800">
+            {feeds.map((props) => (
+              <FeedCard
+                key={`feed-${props.id}`}
+                user_id={user_id ?? 0}
+                {...props}
+              />
+            ))}
+          </Col>
+        ) : (
+          <div className="flex flex-row w-full h-fit justify-start items-center px-[16px] py-[20px] border border-gray-500 rounded-[8px] font-medium text-base text-gray-500">
+            Feeds data is empty
+          </div>
+        )}
       </Col>
       {/* <div className="fixed bottom-0 left-0 right-0 z-10 flex flex-row items-center justify-center">
         <div className="max-w-desktop w-full">
