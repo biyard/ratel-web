@@ -44,6 +44,15 @@ export default function ClientLayout({
         }
       >
         <Link
+          href={route.settings()}
+          onClick={() => {
+            setMobileExtends(false);
+          }}
+          className="font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
+        >
+          {data?.nickname}
+        </Link>
+        <Link
           href={route.home()}
           onClick={() => {
             setMobileExtends(false);

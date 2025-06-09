@@ -12,7 +12,7 @@ interface ProfileProps {
 export default function Profile({ profileUrl, name }: ProfileProps) {
   return (
     <Link
-      href={route.myProfile()}
+      href={route.settings()}
       className="flex flex-col items-center justify-center p-2.5 group"
     >
       <Image
