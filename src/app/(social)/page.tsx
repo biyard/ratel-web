@@ -38,11 +38,35 @@ export default function Home() {
   const posts = usePost(1, 20);
   const { data: userInfo } = useSuspenseUserInfo();
   const user_id = userInfo != null ? userInfo.id || 0 : 0;
-  logger.debug('query response of posts', data);
-
+  const handleCreatePost = async (
+    title: string,
+    html_contents: string,
+    image: string | null,
+  ) => {
+    let url = '';
+    let url_type = UrlType.None;
+    if (image !== null && image !== '') {
+      url = image;
+      url_type = UrlType.Image;
+    }
+    await post(
+      ratelApi.feeds.writePost(),
+      writePostRequest(
+        html_contents,
+        user_id,
+        1, // Default industry_id to 1 (Crpyto)
+        title,
+        0,
+        [],
+        url,
+        url_type,
+      ),
+    );
+    posts.refetch();
+  };
   const feeds: Post[] =
-    data != null
-      ? data.items.map((item) => ({
+    posts.data != null
+      ? posts.data.items.map((item) => ({
           id: item.id,
           industry: item.industry != null ? item.industry[0].name : '',
           title: item.title!,
