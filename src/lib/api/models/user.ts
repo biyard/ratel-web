@@ -19,6 +19,7 @@ export interface User {
 
   groups: Group[];
   teams: Team[];
+  badges: Badge[];
 
   html_contents: string;
 }
@@ -30,6 +31,26 @@ export enum UserType {
   Anonymous = 99,
 }
 
+export interface Badge {
+  id: number;
+  created_at: number;
+  updated_at: number;
+
+  creator_id: number;
+
+  name: string;
+  scope: Scope;
+  image_url: string;
+
+  contract?: string;
+  token_id?: number;
+}
+
+export enum Scope {
+  Global = 1,
+  Space = 2,
+  Team = 3,
+}
 export interface Group {
   id: number;
   created_at: number;

@@ -10,13 +10,13 @@ export default function SocialLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { data: user, isLoading } = useUserInfo();
+  const { data: user, isLoading, error } = useUserInfo();
   const pathname = usePathname();
   const hideSideMenu = /^\/spaces\/[^/]+$/.test(pathname || '');
 
   return (
     <div className="flex min-h-screen gap-5 justify-between max-w-6xl mx-auto text-white py-3 px-2.5">
-      {!hideSideMenu && !isLoading && user && <UserSidemenu />}
+      {!hideSideMenu && !isLoading && !error && user && <UserSidemenu />}
 
       <div className="flex-1 flex">
         <Suspense
