@@ -8,6 +8,13 @@ import { Col } from '@/components/ui/col';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { config } from '@/config';
 import News from './_components/News';
+import { CreatePost } from './_components/create-post';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
+import {
+  UrlType,
+  writePostRequest,
+} from '@/lib/api/models/feeds/write-post-request';
 
 export interface Post {
   id: number;
@@ -26,12 +33,39 @@ export interface Post {
 }
 
 export default function Home() {
-  const { data } = usePost(1, 20);
+  const { post } = useApiCall();
+
+  const posts = usePost(1, 20);
   const { data: userInfo } = useSuspenseUserInfo();
   const user_id = userInfo.id || 0;
-  logger.debug('query response of posts', data);
-
-  const feeds: Post[] = data.items.map((item) => ({
+  logger.debug('query response of posts', posts.data);
+  const handleCreatePost = async (
+    title: string,
+    html_contents: string,
+    image: string | null,
+  ) => {
+    let url = '';
+    let url_type = UrlType.None;
+    if (image !== null && image !== '') {
+      url = image;
+      url_type = UrlType.Image;
+    }
+    await post(
+      ratelApi.feeds.writePost(),
+      writePostRequest(
+        html_contents,
+        user_id,
+        1, // Default industry_id to 1 (Crpyto)
+        title,
+        0,
+        [],
+        url,
+        url_type,
+      ),
+    );
+    posts.refetch();
+  };
+  const feeds: Post[] = posts.data.items.map((item) => ({
     id: item.id,
     industry: item.industry[0].name,
     title: item.title!,
@@ -49,13 +83,22 @@ export default function Home() {
   }));
 
   return (
-    <div className="flex-1 flex">
+    <div className="flex-1 flex relative">
       <Col className="flex-1">
         {feeds.map((props) => (
           <FeedCard key={`feed-${props.id}`} user_id={user_id} {...props} />
         ))}
       </Col>
-
+      <div className="fixed bottom-0 left-0 right-0 z-10 flex flex-row items-center justify-center">
+        <div className="max-w-desktop w-full">
+          <CreatePost
+            onSubmit={async ({ title, content, image }) => {
+              await handleCreatePost(title, content, image);
+              feeds;
+            }}
+          />
+        </div>
+      </div>
       {/* Right Sidebar */}
       <div className="w-80 p-4">
         {/* Hot Promotion */}
