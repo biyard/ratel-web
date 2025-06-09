@@ -14,6 +14,7 @@ import {
   UrlType,
   writePostRequest,
 } from '@/lib/api/models/feeds/write-post-request';
+import News from './_components/News';
 
 export interface Post {
   id: number;
@@ -123,8 +124,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* TODO: remove this comment when graphql bug fixed */}
-        {/* <News /> */}
+        <News />
 
         {/* Add to your feed */}
         <div
