@@ -39,7 +39,7 @@ export default function Home() {
           title: item.title!,
           contents: item.html_contents,
           url: item.url,
-          author_id: item.industry != null ? item.author[0].id : '',
+          author_id: item.industry != null ? Number(item.author[0].id) : 0,
           author_profile_url:
             item.author != null ? item.author[0].profile_url! : '',
           author_name: item.author != null ? item.author[0].nickname : '',
