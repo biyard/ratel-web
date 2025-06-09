@@ -20,7 +20,7 @@ export default function News() {
   });
 
   return (
-    <Col className="w-65 rounded-[10px] bg-component-bg px-4 py-5">
+    <Col className="w-full rounded-[10px] bg-component-bg px-4 py-5 mt-[10px]">
       <h3 className="text-[15px]/[20px] tracking-[0.5px] font-bold text-white">
         Latest News
       </h3>

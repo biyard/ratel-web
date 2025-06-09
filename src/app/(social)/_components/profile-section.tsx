@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import Image from 'next/image';
 import TeamSelector from './team-selector';
@@ -48,7 +49,7 @@ export default function ProfileSection() {
       />
 
       <UserTier />
-      <UserBadges />
+      <UserBadges badges={user.badges ? user.badges : []} />
     </div>
   );
 }
