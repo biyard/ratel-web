@@ -32,7 +32,7 @@ export default function TeamsByUsernamePage() {
     fetchTeam();
   }, [username]);
 
-  let { data } = usePostByUserId(userId ?? 0, 1, 20);
+  const { data } = usePostByUserId(userId ?? 0, 1, 20);
 
   const feeds: Post[] = data.items.map((item) => ({
     id: item.id,
