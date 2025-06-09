@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import Comment from '@/assets/icons/comment.svg';
 import { SpaceComment } from '@/lib/api/models/comments';
