@@ -24,6 +24,10 @@ export const ratelApi = {
     getPosts: (page: number, size: number) =>
       `/v1/feeds?param-type=query&bookmark=${page}&size=${size}`,
   },
+  spaces: {
+    getSpaceBySpaceId: (id: number) =>
+      `v1/spaces?param-type=query&action=find-by-id&id=${id}`,
+  },
   graphql: {
     listNews: (size: number) => {
       return {
