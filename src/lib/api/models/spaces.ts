@@ -1,3 +1,4 @@
+import { Badge } from './badge';
 import { SpaceComment } from './comments';
 import { FileInfo } from './feeds';
 
@@ -15,6 +16,7 @@ export interface Space {
   status: SpaceStatus;
   files: FileInfo[];
 
+  badges: Badge[];
   feed_comments: SpaceComment[];
 }
 

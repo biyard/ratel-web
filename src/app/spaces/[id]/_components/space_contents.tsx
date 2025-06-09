@@ -1,3 +1,5 @@
+'use client';
+
 import BlackBox from '@/app/(social)/_components/black-box';
 import React from 'react';
 

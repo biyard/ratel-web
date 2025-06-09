@@ -50,7 +50,7 @@ export default function SpaceHeader({
       <div className="flex flex-row w-full justify-between items-center">
         <div className="flex flex-row w-fit gap-2">
           <img
-            src={proposerImage}
+            src={proposerImage || '/default-profile.png'}
             alt={proposerName}
             width={20}
             height={20}

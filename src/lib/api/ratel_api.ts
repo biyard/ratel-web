@@ -29,8 +29,14 @@ export const ratelApi = {
     getPosts: (page: number, size: number) =>
       `/v1/feeds?param-type=query&bookmark=${page}&size=${size}`,
   },
+  redeems: {
+    useRedeemCode: (redeem_id: number) => `/v1/redeems/${redeem_id}`,
+  },
   spaces: {
     getSpaceBySpaceId: (id: number) => `/v1/spaces/${id}`,
+    getSpaceRedeemCodes: (space_id: number) =>
+      `/v1/spaces/${space_id}/redeem-codes`,
+    claimBadge: (space_id: number) => `/v1/spaces/${space_id}/badges`,
   },
   graphql: {
     listNews: (size: number) => {
