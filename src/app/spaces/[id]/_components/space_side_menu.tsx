@@ -17,7 +17,7 @@ export default function SpaceSideMenu() {
   logger.debug('feed: ', feed);
 
   return (
-    <div className="flex flex-col max-w-[250px] w-full gap-10">
+    <div className="flex flex-col max-w-[250px] max-tablet:!hidden w-full gap-10">
       <img
         src={feed.url ?? ''}
         alt={feed.title ?? ''}

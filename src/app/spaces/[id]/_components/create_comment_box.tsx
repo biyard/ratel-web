@@ -4,7 +4,9 @@ import { Textarea } from '@/components/ui/textarea';
 import React, { useState } from 'react';
 import Comment from '@/assets/icons/comment.svg';
 
-export interface CreateCommentBoxProps {}
+export interface CreateCommentBoxProps {
+  handleSubmit: (value: string) => void;
+}
 
 export interface TitleProps {
   title: string;
@@ -16,7 +18,13 @@ export interface DescriptionProps {
   setDescription: (value: string) => void;
 }
 
-export default function CreateCommentBox() {
+export interface SendButtonProps {
+  handleSubmit: (e: any) => void;
+}
+
+export default function CreateCommentBox({
+  handleSubmit,
+}: CreateCommentBoxProps) {
   //   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
@@ -24,15 +32,23 @@ export default function CreateCommentBox() {
     <div className="flex flex-col w-full justify-start items-start px-[14px] py-[15px] border-b-[1px] border-l-[1px] border-r-[1px] border-t-[6px] rounded-t-[8px] border-primary gap-[10px] bg-neutral-900 mb-[20px]">
       {/* <Title title={title} setTitle={setTitle} /> */}
       <Description description={description} setDescription={setDescription} />
-      <SendButton />
+      <SendButton
+        handleSubmit={() => {
+          handleSubmit(description);
+          setDescription('');
+        }}
+      />
     </div>
   );
 }
 
-function SendButton() {
+function SendButton({ handleSubmit }: SendButtonProps) {
   return (
     <div className="cursor-pointer flex flex-row w-full justify-end items-end">
-      <div className="p-2 rounded-full bg-primary">
+      <div
+        className="cursor-pointer p-2 rounded-full bg-primary"
+        onClick={handleSubmit}
+      >
         <Comment width={24} height={24} className="[&>path]:stroke-black" />
       </div>
     </div>

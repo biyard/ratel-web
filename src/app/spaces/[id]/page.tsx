@@ -5,7 +5,6 @@ import SpaceContents from './_components/space_contents';
 import SpaceFiles from './_components/space_files';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 import { useParams } from 'next/navigation';
-import SpaceComments from './_components/space_comments';
 
 export default function SpaceByIdPage() {
   const params = useParams();
@@ -25,10 +24,6 @@ export default function SpaceByIdPage() {
       <div className="w-full mt-[25px] gap-2.5">
         <SpaceContents htmlContents={data.html_contents}></SpaceContents>
         <SpaceFiles files={data.files} />
-        <SpaceComments
-          numberOfComments={data.feed_comments.length}
-          comments={data.feed_comments}
-        />
       </div>
     </div>
   );
