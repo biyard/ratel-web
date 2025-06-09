@@ -48,7 +48,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
             );
 
             try {
-              let user: AuthUserInfo = await login(anonKeyPair);
+              const user: AuthUserInfo = await login(anonKeyPair);
               // loader.close();
 
               if (user?.event == EventType.SignUp) {
