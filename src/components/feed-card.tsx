@@ -66,7 +66,7 @@ export function FeedBody({
     <Col className="pt-5 px-5 pb-2.5">
       <Row className="justify-between">
         <IndustryTag industry={industry} />
-        {user_id === author_id && space_id != 0 && (
+        {user_id === author_id && !space_id && (
           <Button
             variant="rounded_primary"
             className="text-[10px] font-semibold align-middle uppercase py-1 px-3"
