@@ -14,7 +14,7 @@ interface UrlReplacement {
  * @example
  * ```typescript
  * // Basic usage
- * const result = await processPdf({
+ * const result = await replacePdfLinks({
  *   url: 'https://example.com/document.pdf',
  *   urlReplacements: [
  *     {
@@ -30,7 +30,7 @@ interface UrlReplacement {
  * // Usage in React component
  * <button
  *   onClick={async () => {
- *     const result = await processPdf({
+ *     const result = await replacePdfLinks({
  *       url: 'http://localhost:3000/test.pdf',
  *       urlReplacements: [
  *         {
@@ -49,7 +49,7 @@ interface UrlReplacement {
  * </button>
  * ```
  */
-export async function processPdf({
+export async function replacePdfLinks({
   url,
   fileName = 'document.pdf',
   urlReplacements,
