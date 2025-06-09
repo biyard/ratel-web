@@ -8,8 +8,6 @@ import {
   Underline,
   Strikethrough,
   X,
-  ExpandIcon,
-  Expand,
 } from 'lucide-react';
 
 import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';

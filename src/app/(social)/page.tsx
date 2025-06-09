@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { Award, ChevronRight } from 'lucide-react';
 import FeedCard from '@/components/feed-card';
 import { usePost } from './_hooks/use-posts';
-import { logger } from '@/lib/logger';
 import { Col } from '@/components/ui/col';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { config } from '@/config';
@@ -97,7 +96,6 @@ export default function Home() {
           <CreatePost
             onSubmit={async ({ title, content, image }) => {
               await handleCreatePost(title, content, image);
-              feeds;
             }}
           />
         </div>
