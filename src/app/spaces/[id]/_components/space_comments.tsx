@@ -32,13 +32,17 @@ function CommentInfo({ comment }: { comment: SpaceComment }) {
   return (
     <div className="flex flex-col gap-[14px] pb-5 border-b border-b-neutral-800">
       <div className="flex flex-row gap-2 items-center">
-        <img
-          alt={comment.author[0].nickname ?? ''}
-          src={comment.author[0].profile_url ?? ''}
-          width={40}
-          height={40}
-          className="rounded-full object-cover object-top"
-        />
+        {comment.author[0].profile_url ? (
+          <img
+            alt={comment.author[0].nickname ?? ''}
+            src={comment.author[0].profile_url ?? ''}
+            width={40}
+            height={40}
+            className="rounded-full object-cover object-top"
+          />
+        ) : (
+          <div className="w-[40px] h-[40px] rounded-full bg-neutral-500" />
+        )}
 
         <div className="flex flex-col gap-[2px]">
           <div className="font-semibold text-neutral-300 text-[15px]/[15px]">
