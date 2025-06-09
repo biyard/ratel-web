@@ -107,7 +107,7 @@ export default function Home() {
         </div>
       </div> */}
       {/* Right Sidebar */}
-      <div className="w-80 pl-4">
+      <div className="w-80 pl-4 max-tablet:!hidden">
         {/* Hot Promotion */}
 
         <div>
@@ -136,8 +136,8 @@ export default function Home() {
 
         {/* Add to your feed */}
         <div
-          className="mt-6 hidden aria-show:block"
-          aria-show={config.experiment}
+          className="mt-6 block aria-hidden:hidden"
+          aria-hidden={!config.experiment}
         >
           <h3 className="font-medium mb-3">Add to your feed</h3>
 

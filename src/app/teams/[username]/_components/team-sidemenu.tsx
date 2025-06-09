@@ -9,7 +9,7 @@ export interface TeamSidemenuProps {
 
 export default function TeamSidemenu({ team }: TeamSidemenuProps) {
   return (
-    <div className="w-64 flex flex-col">
+    <div className="w-64 flex flex-col max-mobile:!hidden">
       <TeamProfile team={team} />
 
       {/* <nav className="mt-4 px-2">
