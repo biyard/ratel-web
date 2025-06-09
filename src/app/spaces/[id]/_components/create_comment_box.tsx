@@ -1,9 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client';
+
 import { Textarea } from '@/components/ui/textarea';
 import React, { useState } from 'react';
 import Comment from '@/assets/icons/comment.svg';
+import { useApiCall } from '@/lib/api/use-send';
+import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
+import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { writeCommentRequest } from '@/lib/api/models/feeds/comment';
 
 export interface CreateCommentBoxProps {
   handleSubmit: (value: string) => void;
@@ -23,11 +27,20 @@ export interface SendButtonProps {
   handleSubmit: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-export default function CreateCommentBox({
-  handleSubmit,
-}: CreateCommentBoxProps) {
-  //   const [title, setTitle] = useState('');
+export default function CreateCommentBox({ spaceId }: { spaceId: number }) {
   const [description, setDescription] = useState('');
+  const { post } = useApiCall();
+  const { data: user } = useSuspenseUserInfo();
+  const space = useSpaceBySpaceId(spaceId);
+  const feedId = space.data.feed_id;
+
+  const handleSubmit = async (contents: string) => {
+    await post(
+      ratelApi.feeds.comment(),
+      writeCommentRequest(contents, user.id, feedId),
+    );
+    space.refetch();
+  };
 
   return (
     <div className="flex flex-col w-full justify-start items-start px-[14px] py-[15px] border-b-[1px] border-l-[1px] border-r-[1px] border-t-[6px] rounded-t-[8px] border-primary gap-[10px] bg-neutral-900 mb-[20px]">

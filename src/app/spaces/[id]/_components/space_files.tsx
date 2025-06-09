@@ -24,7 +24,7 @@ export default function SpaceFiles({ files }: SpaceFilesProps) {
         </div>
 
         <div className="grid grid-cols-2 max-tablet:grid-cols-1 gap-2.5">
-          {files.map((file, index) => (
+          {files?.map((file, index) => (
             <File file={file} key={'file ' + index} />
           ))}
         </div>

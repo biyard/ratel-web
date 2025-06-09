@@ -1,25 +1,20 @@
 'use client';
+
 import BlackBox from '@/app/(social)/_components/black-box';
 import { usePostByFeedId } from '@/app/(social)/_hooks/use-posts';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
-import { logger } from '@/lib/logger';
 import { getTimeWithFormat } from '@/lib/time-utils';
-import { useParams } from 'next/navigation';
 import React from 'react';
 
-export default function SpaceSideMenu() {
-  const params = useParams();
-  const spaceId = Number(params.id);
-  const { data } = useSpaceBySpaceId(spaceId);
+export default function SpaceSideMenu({ spaceId }: { spaceId: number }) {
+  const { data: space } = useSpaceBySpaceId(spaceId);
 
-  const feedId = data.feed_id;
-  const { data: feed } = usePostByFeedId(feedId);
-  logger.debug('feed: ', feed);
+  const { data: feed } = usePostByFeedId(space?.feed_id);
 
   return (
     <div className="flex flex-col max-w-[250px] max-tablet:!hidden w-full gap-10">
       <img
-        src={feed.url ?? ''}
+        src={feed.url ?? '/default-profile.png'}
         alt={feed.title ?? ''}
         width={250}
         height={127}
@@ -33,7 +28,7 @@ export default function SpaceSideMenu() {
           </div>
 
           <div className="font-medium text-neutral-80 text-xs/[12px]">
-            {getTimeWithFormat(data.created_at)}
+            {getTimeWithFormat(space.created_at)}
           </div>
         </div>
       </BlackBox>
