@@ -9,8 +9,6 @@ import { Checkbox } from '../checkbox/checkbox';
 import { ConfirmPopup } from './confirm-popup';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
-import { createUserRequest } from '@/lib/api/models/users/create-user-request';
-import { subscribe } from 'diagnostics_channel';
 import { logger } from '@/lib/logger';
 
 interface UserSetupPopupProps {

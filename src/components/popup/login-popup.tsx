@@ -23,7 +23,7 @@ interface LoginBoxProps {
 export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
   const popup = usePopup();
   const anonKeyPair = useEd25519KeyPair();
-  const { login, authUser } = useAuth();
+  const { login } = useAuth();
 
   return (
     <div
