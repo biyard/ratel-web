@@ -28,13 +28,13 @@ export default function SpaceCouponProgress({
   return (
     <BlackBox>
       <div className="w-full flex flex-row gap-2.5">
-        {progress >= 0 ? <FirstActive /> : <FirstInActive />}
-        {progress >= 1 ? <SecondActive /> : <SecondInActive />}
-        {progress >= 2 ? <ThirdActive /> : <ThirdInActive />}
-        {progress >= 3 ? <FourthActive /> : <FourthInActive />}
-        {progress >= 4 ? <FifthActive /> : <FifthInActive />}
-        {progress >= 5 ? <SixthActive /> : <SixthInActive />}
-        {progress >= 6 ? <SeventhActive /> : <SeventhInActive />}
+        {progress > 0 ? <FirstActive /> : <FirstInActive />}
+        {progress > 1 ? <SecondActive /> : <SecondInActive />}
+        {progress > 2 ? <ThirdActive /> : <ThirdInActive />}
+        {progress > 3 ? <FourthActive /> : <FourthInActive />}
+        {progress > 4 ? <FifthActive /> : <FifthInActive />}
+        {progress > 5 ? <SixthActive /> : <SixthInActive />}
+        {progress > 6 ? <SeventhActive /> : <SeventhInActive />}
       </div>
     </BlackBox>
   );

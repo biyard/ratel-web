@@ -24,7 +24,7 @@ export default function SpaceByIdPage() {
         createdAt={space?.created_at}
       />
       <div className="flex flex-col w-full mt-7.5 gap-2.5">
-        <SpaceCouponProgress progress={redeem.data.used.length || 0} />
+        <SpaceCouponProgress progress={redeem.data.used?.length || 0} />
         <SpaceContents htmlContents={space?.html_contents}></SpaceContents>
         <SpaceFiles files={space?.files} badges={space?.badges} />
       </div>
