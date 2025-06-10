@@ -7,6 +7,7 @@ import { Feed } from '@/lib/api/models/feeds';
 import SpaceByIdPage from './page.client';
 import { logger } from '@/lib/logger';
 import { config } from '@/config';
+import striptags from 'striptags';
 
 type Props = {
   params: Promise<{ id: number }>;
@@ -22,12 +23,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `${config.api_url}${ratelApi.feeds.getFeedsByFeedId(space.feed_id)}`,
   ).then((res) => res.json());
 
+  const description = striptags(space.html_contents);
+
   return {
     title: space.title ?? feed.title!,
-    description: space.html_contents,
+    description,
     openGraph: {
       title: space.title ?? feed.title!,
-      description: space.html_contents,
+      description,
       images: [
         {
           url: feed.url!,
