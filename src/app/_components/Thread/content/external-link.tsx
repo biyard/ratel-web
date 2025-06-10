@@ -1,8 +1,8 @@
-import { LinkIcon } from "lucide-react"
+import { LinkIcon } from 'lucide-react';
 
 interface ExternalLinkProps {
-  url: string
-  text: string
+  url: string;
+  text: string;
 }
 
 export function ExternalLink({ url, text }: ExternalLinkProps) {
@@ -17,5 +17,5 @@ export function ExternalLink({ url, text }: ExternalLinkProps) {
       <span className="text-xl">{text}</span>
       {/* <hr className="m-2 h-4 w-12" /> */}
     </a>
-  )
+  );
 }

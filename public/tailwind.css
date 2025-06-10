@@ -1,7 +1,7 @@
 /*! tailwindcss v4.1.4 | MIT License | https://tailwindcss.com */
 @import tailwindcss;
-:root, :host {
-  --spacing: 1px;
+:root,
+:host {
   --color-black: #000203;
   --color-primary: #fcb300;
   --color-secondary: #777677;
@@ -50,8 +50,8 @@
   --color-against: #ff9eee;
   --color-bg: #1a1a1a;
   --color-tab-hover: #282828;
-  --color-mission-title: #DEE1E6;
-  --color-tag: #DEE1E6;
+  --color-mission-title: #dee1e6;
+  --color-tag: #dee1e6;
   --color-component-bg: #191919;
   --breakpoint-desktop: 1177px;
   --breakpoint-tablet: 900px;

@@ -1,7 +1,11 @@
+PORT ?= 8080
 
+.PHONY: run node_module
 node_module:
 	pnpm i
 
-.PHONY: run
 run: node_module
-	pnpm dev
+	PORT=$(PORT) pnpm dev
+
+build: node_module
+	pnpm build

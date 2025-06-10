@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 
 import Logo from '@/assets/icons/logo.svg';
@@ -9,8 +10,26 @@ import BellIcon from '@/assets/icons/bell.svg';
 import Hamburger from '@/assets/icons/hamburger.svg';
 import Link from 'next/link';
 import Profile from './profile';
+import { LoginModal } from './popup/login-popup';
+import { usePopup } from '@/lib/contexts/popup-service';
+import { logger } from '@/lib/logger';
+import { route } from '@/route';
+import { config } from '@/config';
+import { useUserInfo } from '@/lib/api/hooks/users';
+import { UserType } from '@/lib/api/models/user';
+import LoginIcon from '@/assets/icons/login.svg';
+export interface HeaderProps {
+  mobileExtends: boolean;
+  setMobileExtends: (extend: boolean) => void;
+}
 
-function Header() {
+function Header(props: HeaderProps) {
+  const popup = usePopup();
+
+  const { data, isLoading } = useUserInfo();
+
+  logger.debug('Header data:', data);
+
   const navItems = [
     {
       name: 'Home',
@@ -21,7 +40,8 @@ function Header() {
           height="24"
         />
       ),
-      href: '/',
+      visible: true,
+      href: route.home(),
     },
     {
       name: 'Explore',
@@ -32,7 +52,8 @@ function Header() {
           height="24"
         />
       ),
-      href: '/explore',
+      visible: config.experiment,
+      href: route.explore(),
     },
     {
       name: 'My Network',
@@ -43,7 +64,8 @@ function Header() {
           height="24"
         />
       ),
-      href: '/my-network',
+      visible: config.experiment,
+      href: route.myNetwork(),
     },
     {
       name: 'Message',
@@ -54,7 +76,8 @@ function Header() {
           height="24"
         />
       ),
-      href: '/messages',
+      visible: config.experiment,
+      href: route.messages(),
     },
     {
       name: 'Notification',
@@ -65,23 +88,27 @@ function Header() {
           height="24"
         />
       ),
-      href: '/notifications',
+      visible: config.experiment,
+      href: route.notifications(),
     },
   ];
 
+  console.log('profile url: ', data?.profile_url);
+
   return (
-    <header className="border-b border-neutral-800 px-10 py-10 flex items-center justify-center !bg-bg">
-      <nav className="flex items-center justify-between mx-10 gap-50 w-full max-w-desktop">
-        <div className="flex items-center gap-20">
+    <header className="border-b border-neutral-800 px-2.5 py-2.5 flex items-center justify-center !bg-bg">
+      <nav className="flex items-center justify-between mx-2.5 gap-12.5 w-full max-w-desktop">
+        <div className="flex items-center gap-5">
           <Logo width="54" height="54" />
         </div>
 
-        <div className="flex items-center gap-10 max-tablet:hidden">
+        <div className="flex items-center gap-2.5 max-tablet:hidden">
           {navItems.map((item, index) => (
             <Link
               key={`nav-item-${index}`}
               href={item.href}
-              className="flex flex-col items-center justify-center group p-10"
+              className="flex flex-col items-center justify-center group p-2.5"
+              hidden={!item.visible}
             >
               {item.icon}
               <span className="whitespace-nowrap text-neutral-500 group-hover:text-white text-[15px] font-medium transition-all">
@@ -91,10 +118,32 @@ function Header() {
             </Link>
           ))}
 
-          <Profile />
+          {!isLoading &&
+          data &&
+          (data.user_type === UserType.Individual ||
+            data?.user_type === UserType.Team) ? (
+            <Profile profileUrl={data.profile_url} name={data.nickname} />
+          ) : (
+            <button
+              className="group cursor-pointer font-bold text-neutral-500 text-[15px] flex flex-col items-center justify-center group p-2.5"
+              onClick={() => {
+                popup.open(<LoginModal />).withTitle('Join the Movement');
+              }}
+            >
+              <LoginIcon className="size-6 group-hover:[&>path]:stroke-white" />
+              <span className="whitespace-nowrap text-neutral-500 group-hover:text-white text-[15px] font-medium transition-all">
+                Sign In
+              </span>
+            </button>
+          )}
         </div>
 
-        <div className="hidden max-tablet:block">
+        <div
+          className="hidden max-tablet:block"
+          onClick={() => {
+            props.setMobileExtends(!props.mobileExtends);
+          }}
+        >
           <Hamburger />
         </div>
       </nav>

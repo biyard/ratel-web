@@ -1,14 +1,35 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+  },
   turbopack: {
     rules: {
       '*.svg': {
-        loaders: ['@svgr/webpack'],
+        loaders: [
+          {
+            loader: '@svgr/webpack',
+            options: {
+              svgo: false,
+              typescript: true,
+              ext: 'tsx',
+            },
+          },
+        ],
         as: '*.js',
       },
     },
   },
+
   webpack: (config) => {
     const fileLoaderRule = config.module.rules.find(
       (rule: { test: { test: (arg0: string) => any } }) =>
@@ -29,6 +50,7 @@ const nextConfig: NextConfig = {
           {
             loader: '@svgr/webpack',
             options: {
+              svgo: false,
               typescript: true,
               ext: 'tsx',
             },
