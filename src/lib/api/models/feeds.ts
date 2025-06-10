@@ -24,6 +24,7 @@ export interface Feed {
   quote_feed_id?: number | null;
 
   likes: number;
+  is_liked: boolean;
   comments: number;
 
   files: FileInfo[];

@@ -10,7 +10,8 @@ import { Post } from '../page.client';
 export default function MyPostsPage() {
   const { data: user } = useSuspenseUserInfo();
   const user_id = user.id || 0;
-  const { data } = usePostByUserId(user_id, 1, 20);
+  const posts = usePostByUserId(user_id, 1, 20);
+  const data = posts.data;
   logger.debug('query response of posts', data);
 
   const feeds: Post[] = data.items.map((item) => ({
@@ -24,6 +25,7 @@ export default function MyPostsPage() {
     author_name: item.author[0].nickname,
 
     likes: item.likes,
+    is_liked: item.is_liked,
     comments: item.comments,
     rewards: item.rewards,
     shares: item.shares,
@@ -39,6 +41,7 @@ export default function MyPostsPage() {
             <FeedCard
               key={`feed-${props.id}`}
               user_id={user_id ?? 0}
+              refetch={() => posts.refetch()}
               {...props}
             />
           ))}
