@@ -36,7 +36,7 @@ export default function ProfileSection() {
           alt={team.nickname}
           width={80}
           height={80}
-          className="rounded-full border-2 border-primary object-cover object-top"
+          className="rounded-full border-2 object-cover object-top"
         />
       </div>
 

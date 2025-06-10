@@ -84,8 +84,8 @@ export function FeedBody({
   onboard,
 }: FeedCardProps) {
   return (
-    <Col className="pt-5 px-5 pb-2.5">
-      <Row className="justify-between">
+    <Col className="pt-5 pb-2.5">
+      <Row className="justify-between px-5">
         <Row>
           <IndustryTag industry={industry} />
           {onboard && <OnboradingTag />}
@@ -110,14 +110,14 @@ export function FeedBody({
           <div />
         )}
       </Row>
-      <h2 className="w-full line-clamp-2 font-bold text-xl/[25px] tracking-[0.5px] align-middle text-white">
+      <h2 className="w-full line-clamp-2 font-bold text-xl/[25px] tracking-[0.5px] align-middle text-white px-5">
         {title}
       </h2>
-      <Row className="justify-between items-center">
+      <Row className="justify-between items-center px-5">
         <UserBadge profile_url={author_profile_url} name={author_name} />
         <TimeAgo timestamp={created_at} />
       </Row>
-      <Row className="justify-between"></Row>
+      <Row className="justify-between px-5"></Row>
       <FeedContents contents={contents} url={url} />
     </Col>
   );
@@ -136,14 +136,16 @@ export function FeedContents({
   return (
     <Col className="text-white">
       <p
-        className="feed-content font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30"
+        className="feed-content font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30 px-5"
         dangerouslySetInnerHTML={{ __html: c }}
       ></p>
       {url && (
-        <img
-          className="w-full max-h-80 object-contain rounded-[8px]"
-          src={url}
-        />
+        <div className="px-5">
+          <img
+            className="w-full max-h-80 object-cover rounded-[8px]"
+            src={url}
+          />
+        </div>
       )}
     </Col>
   );
