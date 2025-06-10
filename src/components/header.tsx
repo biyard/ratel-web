@@ -17,7 +17,7 @@ import { route } from '@/route';
 import { config } from '@/config';
 import { useUserInfo } from '@/lib/api/hooks/users';
 import { UserType } from '@/lib/api/models/user';
-
+import LoginIcon from '@/assets/icons/login.svg';
 export interface HeaderProps {
   mobileExtends: boolean;
   setMobileExtends: (extend: boolean) => void;
@@ -125,12 +125,15 @@ function Header(props: HeaderProps) {
             <Profile profileUrl={data.profile_url} name={data.nickname} />
           ) : (
             <button
-              className="cursor-pointer font-bold text-neutral-500 text-[15px]"
+              className="group cursor-pointer font-bold text-neutral-500 text-[15px] flex flex-col items-center justify-center group p-2.5"
               onClick={() => {
                 popup.open(<LoginModal />).withTitle('Join the Movement');
               }}
             >
-              Sign In
+              <LoginIcon className="size-6 group-hover:[&>path]:stroke-white" />
+              <span className="whitespace-nowrap text-neutral-500 group-hover:text-white text-[15px] font-medium transition-all">
+                Sign In
+              </span>
             </button>
           )}
         </div>
