@@ -9,6 +9,8 @@ import TimeAgo from './time-ago';
 import DOMPurify from 'dompurify';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
 
 export interface FeedCardProps {
   id: number;
@@ -21,6 +23,7 @@ export interface FeedCardProps {
   created_at: number;
 
   likes: number;
+  is_liked: boolean;
   comments: number;
   rewards: number;
   shares: number;
@@ -29,11 +32,26 @@ export interface FeedCardProps {
   author_id: number;
   user_id: number;
   onboard: boolean;
+
+  onLikeClick?: (value: boolean) => void;
+  refetch?: () => void;
 }
 
 export default function FeedCard(props: FeedCardProps) {
   const router = useRouter();
-  console.log('props: ', props);
+  const { post } = useApiCall();
+
+  const handleLike = async (value: boolean) => {
+    const res = await post(ratelApi.feeds.likePost(props.id), {
+      like: {
+        value,
+      },
+    });
+    if (res) {
+      props.refetch?.();
+    }
+  };
+
   return (
     <Col
       className="cursor-pointer bg-component-bg rounded-[10px]"
@@ -47,7 +65,7 @@ export default function FeedCard(props: FeedCardProps) {
       }}
     >
       <FeedBody {...props} />
-      <FeedFooter {...props} />
+      <FeedFooter {...props} onLikeClick={handleLike} />
     </Col>
   );
 }
@@ -131,9 +149,16 @@ export function FeedContents({
   );
 }
 
-export function IconText({ children }: { children: React.ReactNode }) {
+export function IconText({
+  children,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }) {
   return (
-    <Row className="justify-center items-center gap-1.25 text-white font-normal text-[15px] px-4 py-5">
+    <Row
+      className="justify-center items-center gap-1.25 text-white font-normal text-[15px] px-4 py-5"
+      {...props}
+    >
       {children}
     </Row>
   );
@@ -181,11 +206,24 @@ export function FeedFooter({
   comments,
   rewards,
   shares,
+  is_liked,
+  onLikeClick,
 }: FeedCardProps) {
   return (
     <Row className="items-center justify-around border-t w-full border-neutral-800">
-      <IconText>
-        <ThumbUp />
+      <IconText
+        onClick={(evt) => {
+          evt.stopPropagation();
+          onLikeClick?.(!is_liked);
+        }}
+      >
+        <ThumbUp
+          className={
+            is_liked
+              ? '[&>path]:fill-primary [&>path]:stroke-primary'
+              : undefined
+          }
+        />
         {convertNumberToString(likes)}
       </IconText>
       <IconText>
