@@ -6,6 +6,8 @@ export const route = {
   explore: () => '/explore',
   settings: () => '/settings',
   myPosts: () => '/my-posts',
+  teams: () => '/teams',
+  groups: () => '/groups',
 
   myNetwork: () => '/my-network',
   messages: () => '/messages',
