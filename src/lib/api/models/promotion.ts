@@ -6,4 +6,6 @@ export interface Promotion {
   name: string;
   description: string;
   image_url: string;
+
+  feed_id: number;
 }

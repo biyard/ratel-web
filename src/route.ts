@@ -9,4 +9,5 @@ export const route = {
   messages: () => '/messages',
   notifications: () => '/notifications',
   teamByUsername: (username: string) => `/teams/${username}`,
+  spaceById: (spaceId: number) => `/spaces/${spaceId}`,
 };
