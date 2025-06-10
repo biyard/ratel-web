@@ -25,7 +25,7 @@ export default function SpaceByIdLayout({ children }: LayoutProps) {
         <div className="flex-1 flex w-full">
           <Suspense
             fallback={
-              <div className="w-full h-full flex items-center justify-center">
+              <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center">
                 <Loading />
               </div>
             }
