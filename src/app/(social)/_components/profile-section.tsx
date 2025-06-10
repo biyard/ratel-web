@@ -1,34 +1,30 @@
 'use client';
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import Image from 'next/image';
 import TeamSelector from './team-selector';
 import UserTier from './UserTier';
 import UserBadges from './user-badges';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
-import { Team } from '@/lib/api/models/team';
+import { TeamContext } from '@/lib/contexts/team-context';
 
 export default function ProfileSection() {
   const { data } = useSuspenseUserInfo();
   const user = data!;
 
-  const teams: Team[] = [
-    {
-      ...user,
-    },
-    ...(user.teams ?? []),
-  ];
+  const { teams, selectedIndex, setSelectedTeam } = useContext(TeamContext);
+  const team = useMemo(() => teams[selectedIndex], [teams, selectedIndex]);
 
-  const [selectedTeam, setSelectedTeam] = React.useState(0);
-  const team = teams[selectedTeam];
+  if (!team) {
+    return <div />;
+  }
 
   const handleTeamSelect = (i: number) => {
-    console.log('Selected team:', i);
     setSelectedTeam(i);
   };
 
   return (
     <div className="flex flex-col gap-5 px-4 py-5 rounded-[10px] bg-component-bg">
-      <TeamSelector onSelect={handleTeamSelect} />
+      <TeamSelector onSelect={handleTeamSelect} team={team} />
 
       <div className="relative">
         <Image

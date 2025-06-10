@@ -13,19 +13,23 @@ import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { ChevronDown } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import TeamCreationPopup from '../_popups/team-creation-popup';
 import { useUserInfo } from '@/lib/api/hooks/users';
 import { Team } from '@/lib/api/models/team';
 import Link from 'next/link';
 import { route } from '@/route';
 import { useAuth } from '@/lib/contexts/auth-context';
 
-export interface TeamSelectorProps {
+export interface HeaderTeamSelectorProps {
+  profile_url?: string;
   onSelect?: (index: number) => void;
   team?: Team;
 }
 
-export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
+export default function HeaderTeamSelector({
+  profile_url,
+  onSelect,
+  team,
+}: HeaderTeamSelectorProps) {
   const userInfo = useUserInfo();
   const { logout } = useAuth();
   const [selectedTeam, setSelectedTeam] = useState(0);
@@ -61,7 +65,7 @@ export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="w-full flex items-center justify-between px-2 py-2 focus:outline-none">
+        <button className="w-full flex items-center justify-between">
           <span className="font-bold text-[18px] text-white">
             {teams[selectedTeam].nickname}
           </span>
