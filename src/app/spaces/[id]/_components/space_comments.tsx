@@ -21,18 +21,30 @@ export default function SpaceComments({
     <div className="flex flex-col mt-[20px] gap-[20px]">
       <div className="flex flex-row gap-2 items-center justify-start">
         <Comment width={24} height={24} className="[&>path]:stroke-white" />
-        <div
-          className="cursor-pointer font-medium text-white text-base/[24px]"
-          onClick={() => {
-            setClose();
-          }}
-        >
+        <div className="font-medium text-white text-base/[24px]">
           {numberOfComments?.toLocaleString()} Reply
         </div>
       </div>
+      <CreateComment setClose={setClose} />
       {comments?.map((comment, index) => (
         <CommentInfo comment={comment} key={'comment ' + index} />
       ))}
+    </div>
+  );
+}
+
+function CreateComment({ setClose }: { setClose: () => void }) {
+  return (
+    <div
+      className="cursor-pointer flex flex-row w-full px-[14px] py-[12px] bg-neutral-800 border border-neutral-700 gap-[8px] items-center rounded-[8px]"
+      onClick={() => {
+        setClose();
+      }}
+    >
+      <Comment width={24} height={24} className="[&>path]:stroke-neutral-500" />
+      <div className="font-medium text-neutral-500 text-[15px] text-center">
+        Share your thoughts...
+      </div>
     </div>
   );
 }
