@@ -21,6 +21,7 @@ import { useFeedByID } from './_hooks/use-feed';
 import Link from 'next/link';
 import { route } from '@/route';
 import { Metadata } from 'next';
+import { UserType } from '@/lib/api/models/user';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -61,6 +62,7 @@ export interface Post {
   author_id: number;
   author_profile_url: string;
   author_name: string;
+  author_type: UserType;
   space_id?: number;
   likes: number;
   is_liked: boolean;
@@ -118,6 +120,8 @@ export default function Home() {
           author_profile_url:
             item.author != null ? item.author[0].profile_url! : '',
           author_name: item.author != null ? item.author[0].nickname : '',
+          author_type:
+            item.author != null ? item.author[0].user_type : UserType.Anonymous,
           space_id: item.spaces?.length ? item.spaces[0].id : 0,
           likes: item.likes,
           is_liked: item.is_liked,
@@ -133,7 +137,7 @@ export default function Home() {
     <div className="flex-1 flex relative">
       <Col className="flex-1 flex max-mobile:px-[10px]">
         {feeds.length != 0 ? (
-          <Col className="flex-1 border-r border-gray-800">
+          <Col className="flex-1">
             {feeds.map((props) => (
               <FeedCard
                 key={`feed-${props.id}`}

@@ -11,6 +11,7 @@ import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
+import { UserType } from '@/lib/api/models/user';
 
 export interface FeedCardProps {
   id: number;
@@ -19,6 +20,7 @@ export interface FeedCardProps {
   contents: string;
   author_profile_url: string;
   author_name: string;
+  author_type: UserType;
   url?: string;
   created_at: number;
 
@@ -78,6 +80,7 @@ export function FeedBody({
   author_profile_url,
   url,
   created_at,
+  author_type,
   user_id,
   author_id,
   space_id,
@@ -114,7 +117,11 @@ export function FeedBody({
         {title}
       </h2>
       <Row className="justify-between items-center px-5">
-        <UserBadge profile_url={author_profile_url} name={author_name} />
+        <UserBadge
+          profile_url={author_profile_url}
+          name={author_name}
+          author_type={author_type}
+        />
         <TimeAgo timestamp={created_at} />
       </Row>
       <Row className="justify-between px-5"></Row>
@@ -167,9 +174,11 @@ export function IconText({
 }
 
 export function UserBadge({
+  author_type,
   profile_url,
   name,
 }: {
+  author_type: UserType;
   profile_url: string;
   name: string;
 }) {
@@ -180,7 +189,11 @@ export function UserBadge({
         alt="User Profile"
         width={24}
         height={24}
-        className="w-6 h-6 rounded-sm object-cover"
+        className={
+          author_type == UserType.Team
+            ? 'w-6 h-6 rounded-sm object-cover'
+            : 'w-6 h-6 rounded-full object-cover'
+        }
       />
       <span>{name}</span>
     </Row>

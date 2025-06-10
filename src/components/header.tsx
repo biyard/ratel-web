@@ -99,7 +99,14 @@ function Header(props: HeaderProps) {
     <header className="border-b border-neutral-800 px-2.5 py-2.5 flex items-center justify-center !bg-bg">
       <nav className="flex items-center justify-between mx-2.5 gap-12.5 w-full max-w-desktop">
         <div className="flex items-center gap-5">
-          <Logo width="54" height="54" />
+          <Link
+            href={route.home()}
+            onClick={() => {
+              props.setMobileExtends(false);
+            }}
+          >
+            <Logo width="54" height="54" />
+          </Link>
         </div>
 
         <div className="flex items-center gap-2.5 max-tablet:hidden">
