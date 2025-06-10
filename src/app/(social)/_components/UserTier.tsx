@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function UserTier() {
   return (
-    <div className="mt-4" hidden={!config.experiment}>
+    <div className="mt-4 aria-hidden:hidden" aria-hidden={!config.experiment}>
       <div className="flex justify-between items-center">
         <span className="text-sm">Tier</span>
         <div className="flex items-center gap-1">

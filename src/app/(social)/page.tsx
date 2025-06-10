@@ -33,6 +33,7 @@ export interface Post {
   rewards: number;
   shares: number;
   created_at: number;
+  onboard: boolean;
 }
 
 export default function Home() {
@@ -87,6 +88,7 @@ export default function Home() {
           rewards: item.rewards,
           shares: item.shares,
           created_at: item.created_at,
+          onboard: item.onboard ?? false,
         }))
       : [];
 

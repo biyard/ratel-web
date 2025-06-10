@@ -36,6 +36,7 @@ export interface Feed {
   author: [User];
   industry: [Industry];
   spaces: [Space];
+  onboard?: boolean;
 }
 
 export enum FeedType {
