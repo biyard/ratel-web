@@ -6,6 +6,7 @@ export const ratelApi = {
     getUserInfo: () => '/v1/users?action=user-info',
     updateUserInfo: () => '/v1/users?action=signup',
     editProfile: (user_id: number) => `/v1/users/${user_id}`,
+    updateEvmAddress: () => '/v1/users',
   },
   assets: {
     getPresignedUrl: (file_type: FileType) =>

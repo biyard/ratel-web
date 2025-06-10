@@ -35,6 +35,7 @@ export interface AuthUserInfo {
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
+  keyPair: Ed25519KeyIdentity | null;
 }
 
 const app = initializeApp(firebaseConfig);

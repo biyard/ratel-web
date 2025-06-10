@@ -21,6 +21,11 @@ import { useFeedByID } from './_hooks/use-feed';
 import Link from 'next/link';
 import { route } from '@/route';
 import { Metadata } from 'next';
+import { useApiCall } from '@/lib/api/use-send';
+import { useQuery } from '@tanstack/react-query';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { useAuth } from '@/lib/contexts/auth-context';
+import { logger } from '@/lib/logger';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -72,13 +77,25 @@ export interface Post {
 }
 
 export default function Home() {
-  // const { post } = useApiCall();
+  const { post } = useApiCall();
 
   const posts = usePost(1, 20);
   const { data: promotion } = usePromotion();
   const { data: feed } = useFeedByID(promotion.feed_id);
   const { data: userInfo } = useSuspenseUserInfo();
-  const user_id = userInfo != null ? userInfo.id || 0 : 0;
+  const auth = useAuth();
+  logger.debug('user info: ', userInfo);
+  const user_id = userInfo ? userInfo.id || 0 : 0;
+
+  useQuery({
+    queryKey: ['updateEvmAddress', auth.evmWallet?.address ?? ''],
+    queryFn: () =>
+      post(ratelApi.users.updateEvmAddress(), {
+        update_evm_address: {
+          evm_address: auth.evmWallet!.address,
+        },
+      }),
+  });
   // const handleCreatePost = async (
   //   title: string,
   //   html_contents: string,
