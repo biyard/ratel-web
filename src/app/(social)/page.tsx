@@ -17,6 +17,9 @@ import { config } from '@/config';
 import News from './_components/News';
 import BlackBox from './_components/black-box';
 import { usePromotion } from './_hooks/use_promotion';
+import { useFeedByID } from './_hooks/use-feed';
+import Link from 'next/link';
+import { route } from '@/route';
 
 export interface Post {
   id: number;
@@ -41,6 +44,7 @@ export default function Home() {
 
   const posts = usePost(1, 20);
   const { data: promotion } = usePromotion();
+  const { data: feed } = useFeedByID(promotion.feed_id);
   const { data: userInfo } = useSuspenseUserInfo();
   const user_id = userInfo != null ? userInfo.id || 0 : 0;
   // const handleCreatePost = async (
@@ -130,7 +134,10 @@ export default function Home() {
               <h3 className="font-bold text-white text-[15px]/[20px]">
                 Hot Promotion
               </h3>
-              <div className="flex items-center gap-2.5">
+              <Link
+                href={route.spaceById(feed.spaces[0].id)}
+                className="flex items-center gap-2.5 hover:bg-btn-hover rounded p-2 transition-colors"
+              >
                 <img
                   src={promotion.image_url}
                   alt={promotion.name}
@@ -141,7 +148,7 @@ export default function Home() {
                     {promotion.name}
                   </div>
                 </div>
-              </div>
+              </Link>
             </div>
           </BlackBox>
         </div>
