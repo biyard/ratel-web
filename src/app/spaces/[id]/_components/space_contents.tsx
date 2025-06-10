@@ -16,39 +16,47 @@ export default function SpaceContents({ htmlContents }: SpaceContentsProps) {
       />
       <style jsx global>{`
         .rich-content h1 {
-          font-size: 1.875rem; /* text-3xl */
+          font-size: 15px;
           font-weight: 700;
-          margin-bottom: 1rem;
+          margin-bottom: 20px;
+          color: #d4d4d4;
         }
         .rich-content h2 {
-          font-size: 1.5rem; /* text-2xl */
-          font-weight: 600;
-          margin-bottom: 0.75rem;
+          font-size: 15px;
+          font-weight: 700;
+          margin-bottom: 20px;
+          color: #d4d4d4;
         }
         .rich-content h3 {
-          font-size: 1.25rem; /* text-xl */
-          font-weight: 600;
-          margin-bottom: 0.625rem;
+          font-size: 15px;
+          font-weight: 700;
+          margin-bottom: 20px;
+          color: #d4d4d4;
         }
         .rich-content h4 {
-          font-size: 1.125rem; /* text-lg */
-          font-weight: 500;
-          margin-bottom: 0.5rem;
+          font-size: 15px;
+          font-weight: 700;
+          margin-bottom: 20px;
+          color: #d4d4d4;
         }
         .rich-content h5 {
-          font-size: 1rem; /* text-base */
-          font-weight: 500;
-          margin-bottom: 0.375rem;
+          font-size: 15px;
+          font-weight: 700;
+          margin-bottom: 20px;
+          color: #d4d4d4;
         }
         .rich-content h6 {
-          font-size: 0.875rem; /* text-sm */
-          font-weight: 500;
-          margin-bottom: 0.25rem;
+          font-size: 15px;
+          font-weight: 700;
+          margin-bottom: 20px;
+          color: #d4d4d4;
         }
         .rich-content p {
-          font-size: 1rem;
-          color: #ffffff;
-          margin-bottom: 0.75rem;
+          font-size: 15px;
+          font-weight: 400;
+          line-height: 24px;
+          margin-bottom: 20px;
+          color: #d4d4d4;
         }
       `}</style>
     </BlackBox>

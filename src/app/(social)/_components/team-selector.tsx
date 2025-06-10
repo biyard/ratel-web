@@ -62,7 +62,9 @@ export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="w-full flex items-center justify-between px-2 py-2 focus:outline-none">
-          <span>{teams[selectedTeam].nickname}</span>
+          <span className="font-bold text-[18px] text-white">
+            {teams[selectedTeam].nickname}
+          </span>
           <ChevronDown size={16} />
         </button>
       </DropdownMenuTrigger>

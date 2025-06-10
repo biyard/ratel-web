@@ -18,7 +18,7 @@ export default function SpaceSideMenu({ spaceId }: { spaceId: number }) {
         alt={feed.title ?? ''}
         width={250}
         height={127}
-        className="rounded-full object-cover object-top"
+        className="rounded-[8px] object-cover object-top"
       />
 
       <BlackBox>
