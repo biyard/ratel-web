@@ -5,7 +5,7 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 export default function Loading() {
   return (
     <DotLottieReact
-      className="max-w-100 max-h-100"
+      className="max-w-50 max-h-50"
       src="/animations/loading.json"
       loop
       autoplay

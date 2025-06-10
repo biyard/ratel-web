@@ -63,6 +63,7 @@ export interface Post {
   author_name: string;
   space_id?: number;
   likes: number;
+  is_liked: boolean;
   comments: number;
   rewards: number;
   shares: number;
@@ -119,6 +120,7 @@ export default function Home() {
           author_name: item.author != null ? item.author[0].nickname : '',
           space_id: item.spaces?.length ? item.spaces[0].id : 0,
           likes: item.likes,
+          is_liked: item.is_liked,
           comments: item.comments,
           rewards: item.rewards,
           shares: item.shares,
@@ -136,6 +138,7 @@ export default function Home() {
               <FeedCard
                 key={`feed-${props.id}`}
                 user_id={user_id ?? 0}
+                refetch={() => posts.refetch()}
                 {...props}
               />
             ))}

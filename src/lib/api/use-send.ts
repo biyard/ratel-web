@@ -56,11 +56,6 @@ export function useApiCall(): ApiCallFns {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({
-          message: 'Failed to fetch and parse error',
-        }));
-
-        logger.error('Failed to fetch and parse error ', errorData);
         return null;
       }
 

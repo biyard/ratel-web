@@ -9,6 +9,8 @@ import UserSetupPopup from './user-setup-popup';
 import { logger } from '@/lib/logger';
 import { useAuth, useEd25519KeyPair } from '@/lib/contexts/auth-context';
 import { AuthUserInfo, EventType } from '@/lib/service/firebase-service';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { send } from '@/lib/api/send';
 
 interface LoginModalProps {
   id?: string;
@@ -50,6 +52,14 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
             try {
               const user: AuthUserInfo = await login(anonKeyPair);
               // loader.close();
+              const info = await send(
+                anonKeyPair,
+                ratelApi.users.getUserInfo(),
+              );
+
+              if (!info) {
+                user.event = EventType.SignUp;
+              }
 
               if (user?.event == EventType.SignUp) {
                 popup.open(

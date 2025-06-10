@@ -1,16 +1,32 @@
 'use client';
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { config } from '@/config';
 import { logger } from '../logger';
-import { getCookieContext } from '@/app/_providers/CookieProvider';
+import { Ed25519KeyIdentity } from '@dfinity/identity';
+import { encode_base64 } from '../base64';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function send(path: string): Promise<any> {
+export async function send(
+  keyPair: Ed25519KeyIdentity,
+  path: string,
+): Promise<any | undefined> {
+  const pk = keyPair.getPublicKey().rawKey;
+  const publicKey = encode_base64(new Uint8Array(pk));
+  const timestamp = Math.floor(Date.now() / 1000);
+  const msg = `${config.sign_domain}-${timestamp}`;
+  logger.debug('Signing message:', msg, 'with public key:', publicKey);
+  const encoder = new TextEncoder();
+  const msg_bytes = encoder.encode(msg).buffer as ArrayBuffer;
+  const sig = await keyPair.sign(msg_bytes);
+
+  logger.debug('Signature:', sig, 'Public Key:', pk);
+
+  const s = encode_base64(new Uint8Array(sig.slice()));
+
+  const token_type = 'UserSig';
+  const token = `${timestamp}:eddsa:${publicKey}:${s}`;
+
   logger.debug('sending request', path);
   const apiBaseUrl = config.api_url;
-  const c = await getCookieContext();
-  const token = c.token || '';
-  const token_type = 'Bearer';
   logger.debug('send', token, apiBaseUrl);
 
   logger.debug(
@@ -21,7 +37,6 @@ export async function send(path: string): Promise<any> {
     token,
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const req: any = {
     method: 'GET',
     headers: {
@@ -38,11 +53,7 @@ export async function send(path: string): Promise<any> {
   const response = await fetch(`${apiBaseUrl}${path}`, req);
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({
-      message:
-        'Failed to fetch user profile and could not parse error response.',
-    }));
-    throw new Error(errorData || `HTTP error! status: ${response.status}`);
+    return undefined;
   }
 
   return response.json();

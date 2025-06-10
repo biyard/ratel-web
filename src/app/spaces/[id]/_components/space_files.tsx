@@ -96,7 +96,7 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
 function File({ file, onClick }: { file: FileInfo; onClick: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row justify-start items-center w-full gap-2 p-4 bg-neutral-800 rounded-2"
+      className="cursor-pointer flex flex-row justify-start items-center w-full gap-2 p-4 bg-neutral-800 rounded-[8px]"
       onClick={onClick}
     >
       <div className="[&>svg]:size-9">
