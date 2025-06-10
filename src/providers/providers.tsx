@@ -5,6 +5,7 @@ import { AuthProvider } from '@/app/_providers/auth-provider';
 import { client } from '@/lib/apollo';
 import { PopupProvider } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
+import { TeamProvider } from '@/lib/service/team-provider';
 import { ApolloProvider } from '@apollo/client';
 // Since QueryClientProvider relies on useContext under the hood, we have to put 'use client' on top
 import {
@@ -58,8 +59,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           {/* <KeyPairProvider> */}
-          <PopupProvider>{children}</PopupProvider>
-          {/* </KeyPairProvider> */}
+          <PopupProvider>
+            {/* {children} */}
+            <TeamProvider>{children}</TeamProvider>
+          </PopupProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ApolloProvider>
