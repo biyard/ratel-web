@@ -6,3 +6,6 @@ export const InvalidLowerAlphaNumeric = new Error(
   'must be combination of lower alphanumeric characters, dashes, and underscores',
 );
 export const InvalidDuplicatedUsername = new Error('username already exists');
+
+export const ApiCallFailure = (msg: string) =>
+  new Error(`API call failed: ${msg}`);
