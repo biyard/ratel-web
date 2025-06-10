@@ -6,9 +6,11 @@ import ArrowLeft from '@/assets/icons/left.svg';
 import Badge from '@/assets/icons/badge.svg';
 import { getTimeAgo } from '@/lib/time-utils';
 import { useRouter } from 'next/navigation';
+import { UserType } from '@/lib/api/models/user';
 
 export interface SpaceHeaderProps {
   title: string;
+  userType: UserType;
   proposerImage: string;
   proposerName: string;
   createdAt: number;
@@ -16,6 +18,7 @@ export interface SpaceHeaderProps {
 
 export default function SpaceHeader({
   title,
+  userType,
   proposerImage,
   proposerName,
   createdAt,
@@ -48,13 +51,17 @@ export default function SpaceHeader({
       </div>
 
       <div className="flex flex-row w-full justify-between items-center">
-        <div className="flex flex-row w-fit gap-2">
+        <div className="flex flex-row w-fit gap-2 justify-between items-center">
           <img
             src={proposerImage || '/default-profile.png'}
             alt={proposerName}
             width={20}
             height={20}
-            className="rounded-full object-cover object-top"
+            className={
+              userType == UserType.Team
+                ? 'rounded-[8px] object-cover object-top w-[25px] h-[25px]'
+                : 'rounded-full object-cover object-top w-[25px] h-[25px]'
+            }
           />
           <div className="font-semibold text-white text-sm/[20px]">
             {proposerName}
