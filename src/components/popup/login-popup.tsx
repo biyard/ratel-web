@@ -9,6 +9,8 @@ import UserSetupPopup from './user-setup-popup';
 import { logger } from '@/lib/logger';
 import { useAuth, useEd25519KeyPair } from '@/lib/contexts/auth-context';
 import { AuthUserInfo, EventType } from '@/lib/service/firebase-service';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { send } from '@/lib/api/send';
 
 interface LoginModalProps {
   id?: string;
@@ -23,7 +25,8 @@ interface LoginBoxProps {
 export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
   const popup = usePopup();
   const anonKeyPair = useEd25519KeyPair();
-  const { login } = useAuth();
+
+  const { login, ed25519KeyPair } = useAuth();
 
   return (
     <div
@@ -49,7 +52,26 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
 
             try {
               const user: AuthUserInfo = await login(anonKeyPair);
+              logger.debug('Google login user info:', user);
               // loader.close();
+              logger.debug('User principal:', user.principal);
+              logger.debug(
+                'User keypair:',
+                user.keyPair?.getPrincipal().toText(),
+              );
+              logger.debug(
+                'edkeypair principal:',
+                ed25519KeyPair?.getPrincipal().toText(),
+              );
+              const info = await send(
+                user.keyPair!,
+                ratelApi.users.getUserInfo(),
+              );
+              logger.debug('User info from API:', info);
+
+              if (!info) {
+                user.event = EventType.SignUp;
+              }
 
               if (user?.event == EventType.SignUp) {
                 popup.open(

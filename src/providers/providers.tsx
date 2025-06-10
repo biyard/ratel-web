@@ -60,6 +60,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <AuthProvider>
           {/* <KeyPairProvider> */}
           <PopupProvider>
+            {/* {children} */}
             <TeamProvider>{children}</TeamProvider>
           </PopupProvider>
         </AuthProvider>

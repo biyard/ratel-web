@@ -1,5 +1,5 @@
 'use client';
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import Image from 'next/image';
 import { TeamContext } from '@/lib/contexts/team-context';
 import { useUserInfo } from '@/lib/api/hooks/users';
@@ -30,7 +30,6 @@ export default function Profile({ profileUrl, name }: ProfileProps) {
   const userInfo = useUserInfo();
   const { logout } = useAuth();
   const popup = usePopup();
-  const { data: user, isLoading } = userInfo;
 
   if (!team) {
     return <div />;

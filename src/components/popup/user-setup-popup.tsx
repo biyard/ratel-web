@@ -10,6 +10,9 @@ import { ConfirmPopup } from './confirm-popup';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { logger } from '@/lib/logger';
+import { useApolloClient } from '@apollo/client';
+import { useUserInfo } from '@/lib/api/hooks/users';
+import { useAuth } from '@/lib/contexts/auth-context';
 
 interface UserSetupPopupProps {
   id?: string;
@@ -34,6 +37,7 @@ const UserSetupPopup = ({
   profileUrl,
 }: UserSetupPopupProps) => {
   const { post } = useApiCall();
+  const client = useApolloClient();
 
   const popup = usePopup();
   const [displayName, setDisplayName] = useState('');
@@ -41,9 +45,11 @@ const UserSetupPopup = ({
   const [agreed, setAgreed] = useState(false);
   const [announcementAgreed, setAnnouncementAgree] = useState(false);
   const [isUserNameValid, setIsUserNameValid] = useState(false);
+  const [warning, setWarning] = useState('');
+  const query = useUserInfo();
+  const auth = useAuth();
 
-  const isValidUsername = (username: string) =>
-    username.length > 0 && /^[a-z0-9_-]+$/.test(username);
+  const isValidUsername = (username: string) => /^[a-z0-9_-]+$/.test(username);
 
   const handleSubmit = async () => {
     if (!agreed || !isUserNameValid) return;
@@ -69,8 +75,10 @@ const UserSetupPopup = ({
           term_agreed: agreed,
           informed_agreed: announcementAgreed,
           username: userName,
+          evm_address: auth.evmWallet!.address,
         },
       });
+      query.refetch();
       popup.open(<ConfirmPopup />);
     } catch (err) {
       logger.error('failed to signup with error: ', err);
@@ -119,12 +127,37 @@ const UserSetupPopup = ({
             labelName={'User Name'}
             placeholder={'User Name'}
             value={userName}
-            onInput={(value: string) => {
+            onInput={async (value: string) => {
               setUserName(value);
+              if (value.length === 0) {
+                setWarning('');
+                setIsUserNameValid(true);
+                return;
+              }
+
+              if (!isValidUsername(value)) {
+                setWarning(
+                  'Only numbers, lowercase letters, -, _ and more than one character can be entered.',
+                );
+                setIsUserNameValid(false);
+                return;
+              } else {
+                setWarning('');
+                setIsUserNameValid(true);
+              }
+              const {
+                data: { users },
+              } = await client.query(ratelApi.graphql.getUserByUsername(value));
+
+              if (users.length > 0) {
+                setWarning('This username is already taken.');
+                setIsUserNameValid(false);
+              } else {
+                setWarning('');
+                setIsUserNameValid(true);
+              }
             }}
-            warning={
-              'Only numbers, lowercase letters, -, _ and more than one character can be entered.'
-            }
+            warning={warning}
           />
         </div>
 
@@ -176,7 +209,7 @@ const LabeledInput = ({
     >
       {children}
     </input>
-    {warning !== '' && <span className="text-sm text-c-cg-30">{warning}</span>}
+    {warning !== '' && <span className="text-sm text-c-p-50">{warning}</span>}
   </div>
 );
 

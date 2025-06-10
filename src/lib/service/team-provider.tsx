@@ -7,20 +7,16 @@ import { TeamContext } from '@/lib/contexts/team-context';
 
 export const TeamProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: user } = useSuspenseUserInfo();
-
-  const teams: Team[] = useMemo(() => {
-    return user ? [{ ...user }, ...(user.teams ?? [])] : [];
-  }, [user]);
-
   const [selectedIndex, setSelectedTeam] = useState(0);
 
-  const selectedTeam = useMemo(() => {
-    return teams[selectedIndex] ?? null;
-  }, [teams, selectedIndex]);
+  const teams: Team[] = useMemo(() => {
+    if (!user) return [];
+    return [{ ...user }, ...(user.teams ?? [])];
+  }, [user]);
 
-  if (!user || teams.length === 0 || selectedTeam === null) {
-    return null;
-  }
+  const selectedTeam: Team | undefined = useMemo(() => {
+    return teams[selectedIndex];
+  }, [teams, selectedIndex]);
 
   return (
     <TeamContext.Provider

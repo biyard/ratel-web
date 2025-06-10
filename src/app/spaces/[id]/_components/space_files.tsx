@@ -99,37 +99,21 @@ function File({ file, onClick }: { file: FileInfo; onClick: () => void }) {
       className="cursor-pointer flex flex-row justify-start items-center w-full gap-2 p-4 bg-neutral-800 rounded-[8px]"
       onClick={onClick}
     >
-      <div className="min-w-[36px] shrink-0">
+      <div className="[&>svg]:size-9">
         {file.ext === 'JPG' ? (
-          <Jpg width={36} height={36} className="[&>path]:stroke-neutral-500" />
+          <Jpg />
         ) : file.ext === 'PNG' ? (
-          <Png width={36} height={36} className="[&>path]:stroke-neutral-500" />
+          <Png />
         ) : file.ext === 'PDF' ? (
-          <Pdf
-            width={36}
-            height={36}
-            className="[&>path]:stroke-neutral-500 block"
-          />
+          <Pdf />
         ) : file.ext === 'ZIP' ? (
-          <Zip width={36} height={36} className="[&>path]:stroke-neutral-500" />
+          <Zip />
         ) : file.ext === 'WORD' ? (
-          <Word
-            width={36}
-            height={36}
-            className="[&>path]:stroke-neutral-500"
-          />
+          <Word />
         ) : file.ext === 'PPTX' ? (
-          <Pptx
-            width={36}
-            height={36}
-            className="[&>path]:stroke-neutral-500"
-          />
+          <Pptx />
         ) : (
-          <Excel
-            width={36}
-            height={36}
-            className="[&>path]:stroke-neutral-500"
-          />
+          <Excel />
         )}
       </div>
       <div className="flex flex-col w-full justify-start items-start gap-2">

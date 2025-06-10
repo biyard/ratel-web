@@ -23,6 +23,7 @@ const dummyAuthUserInfo: AuthUserInfo = {
   displayName: '',
   photoURL: '',
   event: null,
+  keyPair: null,
 };
 
 export const AuthContext = createContext<AuthContextType>({
