@@ -28,7 +28,7 @@ export default function MyPostsPage() {
     rewards: item.rewards,
     shares: item.shares,
     created_at: item.created_at,
-    onboard: item.onboard,
+    onboard: item.onboard || false,
   }));
 
   return (
