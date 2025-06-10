@@ -21,7 +21,7 @@ export default function SpaceByIdLayout({ children }: LayoutProps) {
 
   return (
     <div className="flex flex-col w-full min-h-screen justify-between max-w-6xl mx-auto text-white pt-3 gap-5 max-tablet:px-5">
-      <div className="flex flex-row w-full gap-20">
+      <div className="flex flex-row w-full gap-5">
         <div className="flex-1 flex w-full">
           <Suspense
             fallback={
