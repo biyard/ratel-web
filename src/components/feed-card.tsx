@@ -118,7 +118,7 @@ export function FeedContents({
   return (
     <Col className="text-white">
       <p
-        className="font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30"
+        className="feed-content font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30"
         dangerouslySetInnerHTML={{ __html: c }}
       ></p>
       {url && (

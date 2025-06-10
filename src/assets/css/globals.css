@@ -76,3 +76,8 @@ a {
 .med-16 {
   @apply font-medium text-base/[24px] align-middle tracking-[0.5px];
 }
+
+.feed-content h2 {
+  @apply text-base font-bold text-white mb-2 mt-4;
+}
+
