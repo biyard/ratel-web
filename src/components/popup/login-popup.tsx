@@ -25,7 +25,8 @@ interface LoginBoxProps {
 export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
   const popup = usePopup();
   const anonKeyPair = useEd25519KeyPair();
-  const { login } = useAuth();
+
+  const { login, ed25519KeyPair } = useAuth();
 
   return (
     <div
@@ -51,11 +52,22 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
 
             try {
               const user: AuthUserInfo = await login(anonKeyPair);
+              logger.debug('Google login user info:', user);
               // loader.close();
+              logger.debug('User principal:', user.principal);
+              logger.debug(
+                'User keypair:',
+                user.keyPair?.getPrincipal().toText(),
+              );
+              logger.debug(
+                'edkeypair principal:',
+                ed25519KeyPair?.getPrincipal().toText(),
+              );
               const info = await send(
-                anonKeyPair,
+                user.keyPair!,
                 ratelApi.users.getUserInfo(),
               );
+              logger.debug('User info from API:', info);
 
               if (!info) {
                 user.event = EventType.SignUp;

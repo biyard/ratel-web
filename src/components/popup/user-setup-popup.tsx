@@ -12,6 +12,7 @@ import { ratelApi } from '@/lib/api/ratel_api';
 import { logger } from '@/lib/logger';
 import { useApolloClient } from '@apollo/client';
 import { useUserInfo } from '@/lib/api/hooks/users';
+import { useAuth } from '@/lib/contexts/auth-context';
 
 interface UserSetupPopupProps {
   id?: string;
@@ -46,6 +47,7 @@ const UserSetupPopup = ({
   const [isUserNameValid, setIsUserNameValid] = useState(false);
   const [warning, setWarning] = useState('');
   const query = useUserInfo();
+  const auth = useAuth();
 
   const isValidUsername = (username: string) => /^[a-z0-9_-]+$/.test(username);
 
@@ -73,6 +75,7 @@ const UserSetupPopup = ({
           term_agreed: agreed,
           informed_agreed: announcementAgreed,
           username: userName,
+          evm_address: auth.evmWallet!.address,
         },
       });
       query.refetch();

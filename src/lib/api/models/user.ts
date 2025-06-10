@@ -22,6 +22,8 @@ export interface User {
   badges: Badge[];
 
   html_contents: string;
+
+  evm_address?: string;
 }
 
 export enum UserType {

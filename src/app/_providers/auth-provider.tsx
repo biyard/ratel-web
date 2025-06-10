@@ -107,6 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       email: info.email,
       displayName: '',
       photoURL: info.photoURL,
+      keyPair: info.keyPair,
     };
 
     localStorage.setItem(SK_IDENTITY_KEY, info.contents);
