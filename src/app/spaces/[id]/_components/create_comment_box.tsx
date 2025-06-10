@@ -8,6 +8,9 @@ import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { writeCommentRequest } from '@/lib/api/models/feeds/comment';
+import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';
+import DoubleArrowUp from '@/assets/icons/double-arrow-up.svg';
+import Clear from '@/assets/icons/clear.svg';
 
 export interface CreateCommentBoxProps {
   handleSubmit: (value: string) => void;
@@ -27,7 +30,17 @@ export interface SendButtonProps {
   handleSubmit: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-export default function CreateCommentBox({ spaceId }: { spaceId: number }) {
+export default function CreateCommentBox({
+  spaceId,
+  expand,
+  setExpand,
+  setClose,
+}: {
+  spaceId: number;
+  expand: boolean;
+  setExpand: (description: string) => void;
+  setClose: () => void;
+}) {
   const [description, setDescription] = useState('');
   const { post } = useApiCall();
   const { data: user } = useSuspenseUserInfo();
@@ -42,9 +55,34 @@ export default function CreateCommentBox({ spaceId }: { spaceId: number }) {
     space.refetch();
   };
 
-  return (
-    <div className="flex flex-col w-full justify-start items-start px-[14px] py-[15px] border-b-[1px] border-l-[1px] border-r-[1px] border-t-[6px] rounded-t-[8px] border-primary gap-[10px] bg-neutral-900 mb-[20px]">
+  return !expand ? (
+    <div className="flex flex-row w-full justify-end items-center px-[14px] py-[15px] rounded-t-[8px] bg-primary">
+      <div className="flex flex-row w-full justify-end items-end gap-[30px]">
+        <DoubleArrowUp
+          className="cursor-pointer w-fit h-fit"
+          onClick={() => {
+            setExpand(description);
+          }}
+        />
+        <Clear
+          className="cursor-pointer w-fit h-fit"
+          onClick={() => {
+            setClose();
+          }}
+        />
+      </div>
+    </div>
+  ) : (
+    <div className="flex flex-col w-full justify-start items-start px-[14px] py-[15px] border-b-[1px] border-l-[1px] border-r-[1px] border-t-[6px] rounded-t-[8px] border-primary gap-[10px] bg-neutral-900">
       {/* <Title title={title} setTitle={setTitle} /> */}
+      <div className="flex flex-row w-full justify-end items-end">
+        <DoubleArrowDown
+          className="cursor-pointer w-fit h-fit"
+          onClick={() => {
+            setExpand(description);
+          }}
+        />
+      </div>
       <Description description={description} setDescription={setDescription} />
       <SendButton
         handleSubmit={() => {

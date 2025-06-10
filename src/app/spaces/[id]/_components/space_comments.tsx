@@ -7,7 +7,13 @@ import { SpaceComment } from '@/lib/api/models/comments';
 import { getTimeAgo } from '@/lib/time-utils';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 
-export default function SpaceComments({ spaceId }: { spaceId: number }) {
+export default function SpaceComments({
+  spaceId,
+  setClose,
+}: {
+  spaceId: number;
+  setClose: () => void;
+}) {
   const space = useSpaceBySpaceId(spaceId);
   const numberOfComments = space.data.feed_comments.length;
   const comments = space.data.feed_comments;
@@ -15,7 +21,12 @@ export default function SpaceComments({ spaceId }: { spaceId: number }) {
     <div className="flex flex-col mt-[20px] gap-[20px]">
       <div className="flex flex-row gap-2 items-center justify-start">
         <Comment width={24} height={24} className="[&>path]:stroke-white" />
-        <div className="font-medium text-white text-base/[24px]">
+        <div
+          className="cursor-pointer font-medium text-white text-base/[24px]"
+          onClick={() => {
+            setClose();
+          }}
+        >
           {numberOfComments?.toLocaleString()} Reply
         </div>
       </div>
