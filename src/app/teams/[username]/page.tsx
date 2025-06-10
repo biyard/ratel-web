@@ -49,6 +49,7 @@ export default function TeamsByUsernamePage() {
     rewards: item.rewards,
     shares: item.shares,
     created_at: item.created_at,
+    onboard: item.onboard || false,
   }));
 
   return (
