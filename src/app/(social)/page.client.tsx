@@ -190,7 +190,11 @@ export default function Home() {
                 Hot Promotion
               </h3>
               <Link
-                href={route.spaceById(feed.spaces[0].id)}
+                href={
+                  feed.spaces.length > 0
+                    ? route.spaceById(feed.spaces[0].id)
+                    : route.threadByFeedId(feed.id)
+                }
                 className="flex items-center gap-2.5 hover:bg-btn-hover rounded p-2 transition-colors"
               >
                 <img
