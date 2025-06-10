@@ -1,6 +1,7 @@
 import { Badge } from './badge';
 import { SpaceComment } from './comments';
 import { FileInfo } from './feeds';
+import { UserType } from './user';
 
 export interface Space {
   id: number;
@@ -26,6 +27,8 @@ export interface Author {
   principal: string;
   email: string;
   profile_url: string;
+
+  user_type: UserType;
 }
 
 export enum SpaceType {

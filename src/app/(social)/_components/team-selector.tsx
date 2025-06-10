@@ -87,7 +87,7 @@ export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
                 className="flex items-center gap-2"
                 onClick={() => {
                   setSelectedTeam(index);
-                  if (onSelect) onSelect(index);
+                  onSelect!(index);
                 }}
               >
                 <img

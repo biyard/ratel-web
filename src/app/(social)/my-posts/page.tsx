@@ -23,6 +23,7 @@ export default function MyPostsPage() {
     author_id: Number(item.author[0].id),
     author_profile_url: item.author[0].profile_url!,
     author_name: item.author[0].nickname,
+    author_type: item.author[0].user_type,
 
     likes: item.likes,
     is_liked: item.is_liked,
