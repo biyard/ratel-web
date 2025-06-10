@@ -16,6 +16,7 @@ import { logger } from '@/lib/logger';
 import { route } from '@/route';
 import { config } from '@/config';
 import { useUserInfo } from '@/lib/api/hooks/users';
+import { UserType } from '@/lib/api/models/user';
 
 export interface HeaderProps {
   mobileExtends: boolean;
@@ -117,7 +118,10 @@ function Header(props: HeaderProps) {
             </Link>
           ))}
 
-          {!isLoading && data ? (
+          {!isLoading &&
+          data &&
+          (data.user_type === UserType.Individual ||
+            data?.user_type === UserType.Team) ? (
             <Profile profileUrl={data.profile_url} name={data.nickname} />
           ) : (
             <button

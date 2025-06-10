@@ -1,6 +1,6 @@
 'use client';
 import { usePostByUserId } from '@/app/(social)/_hooks/use-posts';
-import { Post } from '@/app/(social)/page';
+import { Post } from '@/app/(social)/page.client';
 import FeedCard from '@/components/feed-card';
 import { Col } from '@/components/ui/col';
 import { Team } from '@/lib/api/models/team';
@@ -32,7 +32,8 @@ export default function TeamsByUsernamePage() {
     fetchTeam();
   }, [username]);
 
-  const { data } = usePostByUserId(userId ?? 0, 1, 20);
+  const posts = usePostByUserId(userId ?? 0, 1, 20);
+  const data = posts.data;
 
   const feeds: Post[] = data.items.map((item) => ({
     id: item.id,
@@ -45,10 +46,12 @@ export default function TeamsByUsernamePage() {
     author_name: item.author[0].nickname,
 
     likes: item.likes,
+    is_liked: item.is_liked,
     comments: item.comments,
     rewards: item.rewards,
     shares: item.shares,
     created_at: item.created_at,
+    onboard: item.onboard || false,
   }));
 
   return (
@@ -59,6 +62,7 @@ export default function TeamsByUsernamePage() {
             <FeedCard
               key={`feed-${props.id}`}
               user_id={userId ?? 0}
+              refetch={() => posts.refetch()}
               {...props}
             />
           ))}

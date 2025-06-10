@@ -24,6 +24,7 @@ export interface Feed {
   quote_feed_id?: number | null;
 
   likes: number;
+  is_liked: boolean;
   comments: number;
 
   files: FileInfo[];
@@ -36,6 +37,7 @@ export interface Feed {
   author: [User];
   industry: [Industry];
   spaces: [Space];
+  onboard?: boolean;
 }
 
 export enum FeedType {

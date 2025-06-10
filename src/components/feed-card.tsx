@@ -9,6 +9,8 @@ import TimeAgo from './time-ago';
 import DOMPurify from 'dompurify';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
 
 export interface FeedCardProps {
   id: number;
@@ -21,6 +23,7 @@ export interface FeedCardProps {
   created_at: number;
 
   likes: number;
+  is_liked: boolean;
   comments: number;
   rewards: number;
   shares: number;
@@ -28,11 +31,27 @@ export interface FeedCardProps {
   space_id?: number;
   author_id: number;
   user_id: number;
+  onboard: boolean;
+
+  onLikeClick?: (value: boolean) => void;
+  refetch?: () => void;
 }
 
 export default function FeedCard(props: FeedCardProps) {
   const router = useRouter();
-  console.log('props: ', props);
+  const { post } = useApiCall();
+
+  const handleLike = async (value: boolean) => {
+    const res = await post(ratelApi.feeds.likePost(props.id), {
+      like: {
+        value,
+      },
+    });
+    if (res) {
+      props.refetch?.();
+    }
+  };
+
   return (
     <Col
       className="cursor-pointer bg-component-bg rounded-[10px]"
@@ -46,7 +65,7 @@ export default function FeedCard(props: FeedCardProps) {
       }}
     >
       <FeedBody {...props} />
-      <FeedFooter {...props} />
+      <FeedFooter {...props} onLikeClick={handleLike} />
     </Col>
   );
 }
@@ -62,11 +81,15 @@ export function FeedBody({
   user_id,
   author_id,
   space_id,
+  onboard,
 }: FeedCardProps) {
   return (
     <Col className="pt-5 pb-2.5">
       <Row className="justify-between px-5">
-        <IndustryTag industry={industry} />
+        <Row>
+          <IndustryTag industry={industry} />
+          {onboard && <OnboradingTag />}
+        </Row>
         {/* {user_id === author_id && !space_id && (
           <Button
             variant="rounded_primary"
@@ -113,7 +136,7 @@ export function FeedContents({
   return (
     <Col className="text-white">
       <p
-        className="font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30 px-5"
+        className="feed-content font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30 px-5"
         dangerouslySetInnerHTML={{ __html: c }}
       ></p>
       {url && (
@@ -128,9 +151,16 @@ export function FeedContents({
   );
 }
 
-export function IconText({ children }: { children: React.ReactNode }) {
+export function IconText({
+  children,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }) {
   return (
-    <Row className="justify-center items-center gap-1.25 text-white font-normal text-[15px] px-4 py-5">
+    <Row
+      className="justify-center items-center gap-1.25 text-white font-normal text-[15px] px-4 py-5"
+      {...props}
+    >
       {children}
     </Row>
   );
@@ -165,16 +195,37 @@ export function IndustryTag({ industry }: { industry: string }) {
   );
 }
 
+export function OnboradingTag() {
+  return (
+    <span className="rounded-sm bg-primary px-2 text-xs/[25px] font-semibold align-middle uppercase">
+      Onboard
+    </span>
+  );
+}
+
 export function FeedFooter({
   likes,
   comments,
   rewards,
   shares,
+  is_liked,
+  onLikeClick,
 }: FeedCardProps) {
   return (
     <Row className="items-center justify-around border-t w-full border-neutral-800">
-      <IconText>
-        <ThumbUp />
+      <IconText
+        onClick={(evt) => {
+          evt.stopPropagation();
+          onLikeClick?.(!is_liked);
+        }}
+      >
+        <ThumbUp
+          className={
+            is_liked
+              ? '[&>path]:fill-primary [&>path]:stroke-primary'
+              : undefined
+          }
+        />
         {convertNumberToString(likes)}
       </IconText>
       <IconText>
