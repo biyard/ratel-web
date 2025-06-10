@@ -28,6 +28,7 @@ export interface FeedCardProps {
   space_id?: number;
   author_id: number;
   user_id: number;
+  onboard: boolean;
 }
 
 export default function FeedCard(props: FeedCardProps) {
@@ -62,11 +63,15 @@ export function FeedBody({
   user_id,
   author_id,
   space_id,
+  onboard,
 }: FeedCardProps) {
   return (
     <Col className="pt-5 px-5 pb-2.5">
       <Row className="justify-between">
-        <IndustryTag industry={industry} />
+        <Row>
+          <IndustryTag industry={industry} />
+          {onboard && <OnboradingTag />}
+        </Row>
         {/* {user_id === author_id && !space_id && (
           <Button
             variant="rounded_primary"
@@ -113,7 +118,7 @@ export function FeedContents({
   return (
     <Col className="text-white">
       <p
-        className="font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30"
+        className="feed-content font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30"
         dangerouslySetInnerHTML={{ __html: c }}
       ></p>
       {url && (
@@ -159,6 +164,14 @@ export function IndustryTag({ industry }: { industry: string }) {
   return (
     <span className="rounded-sm border border-c-wg-70 px-2 text-xs/[25px] font-semibold align-middle uppercase">
       {industry}
+    </span>
+  );
+}
+
+export function OnboradingTag() {
+  return (
+    <span className="rounded-sm bg-primary px-2 text-xs/[25px] font-semibold align-middle uppercase">
+      Onboard
     </span>
   );
 }

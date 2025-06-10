@@ -45,5 +45,5 @@ jobs:
         uses: grassedge/git-pr-release-action@v1.0
         with:
           base: main
-          head: dev
+          head: stage
           token: ${{ secrets.GITHUB_TOKEN }}

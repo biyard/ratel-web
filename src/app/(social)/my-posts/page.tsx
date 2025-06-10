@@ -4,8 +4,8 @@ import React from 'react';
 import { usePostByUserId } from '../_hooks/use-posts';
 import { Col } from '@/components/ui/col';
 import FeedCard from '@/components/feed-card';
-import { Post } from '../page';
 import { logger } from '@/lib/logger';
+import { Post } from '../page.client';
 
 export default function MyPostsPage() {
   const { data: user } = useSuspenseUserInfo();
@@ -28,6 +28,7 @@ export default function MyPostsPage() {
     rewards: item.rewards,
     shares: item.shares,
     created_at: item.created_at,
+    onboard: item.onboard || false,
   }));
 
   return (

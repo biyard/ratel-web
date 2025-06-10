@@ -1,33 +1,47 @@
-'use client';
 import React from 'react';
-import SpaceHeader from './_components/space_header';
-import SpaceContents from './_components/space_contents';
-import SpaceCouponProgress from './_components/coupon-progress';
 
-import SpaceFiles from './_components/space_files';
-import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
-import { useParams } from 'next/navigation';
-import { useRedeemCode } from '@/lib/api/hooks/redeem-codes';
+import type { Metadata } from 'next';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { Space } from '@/lib/api/models/spaces';
+import { Feed } from '@/lib/api/models/feeds';
+import SpaceByIdPage from './page.client';
+import { logger } from '@/lib/logger';
+import { config } from '@/config';
+import striptags from 'striptags';
 
-export default function SpaceByIdPage() {
-  const params = useParams();
-  const spaceId = Number(params.id);
-  const { data: space } = useSpaceBySpaceId(spaceId);
-  const redeem = useRedeemCode(spaceId);
+type Props = {
+  params: Promise<{ id: number }>;
+};
 
-  return (
-    <div className="flex flex-col w-full justify-start items-start">
-      <SpaceHeader
-        title={space?.title ?? ''}
-        proposerImage={space?.author[0].profile_url ?? ''}
-        proposerName={space?.author[0].nickname ?? ''}
-        createdAt={space?.created_at}
-      />
-      <div className="flex flex-col w-full mt-7.5 gap-2.5">
-        <SpaceCouponProgress progress={redeem.data.used.length || 0} />
-        <SpaceContents htmlContents={space?.html_contents}></SpaceContents>
-        <SpaceFiles files={space?.files} badges={space?.badges} />
-      </div>
-    </div>
-  );
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const id = (await params).id;
+  const space: Space = await fetch(
+    `${config.api_url}${ratelApi.spaces.getSpaceBySpaceId(id)}`,
+  ).then((res) => res.json());
+
+  const feed: Feed = await fetch(
+    `${config.api_url}${ratelApi.feeds.getFeedsByFeedId(space.feed_id)}`,
+  ).then((res) => res.json());
+
+  const description = striptags(space.html_contents);
+
+  return {
+    title: space.title ?? feed.title!,
+    description,
+    openGraph: {
+      title: space.title ?? feed.title!,
+      description,
+      images: [
+        {
+          url: feed.url!,
+        },
+      ],
+    },
+  };
+}
+
+export default async function SpacePage({ params }: Props) {
+  logger.debug('SpacePage params', await params);
+
+  return <SpaceByIdPage />;
 }
