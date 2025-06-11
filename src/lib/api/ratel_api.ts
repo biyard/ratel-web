@@ -21,6 +21,9 @@ export const ratelApi = {
   promotions: {
     get_promotions: () => '/v1/promotions?param-type=read&action=hot-promotion',
   },
+  groups: {
+    create_group: (team_id: number) => `/v1/teams/${team_id}/groups`,
+  },
   feeds: {
     comment: () => '/v1/feeds',
     writePost: () => '/v1/feeds',
