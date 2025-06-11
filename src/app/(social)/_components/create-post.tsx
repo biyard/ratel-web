@@ -218,6 +218,8 @@ export function CreatePost() {
           <div className="flex items-center gap-3">
             <div className="size-6 rounded-full">
               <Image
+                width={40}
+                height={40}
                 src={userInfo?.profile_url || '/default-profile.png'}
                 alt="Profile"
                 className="w-full h-full object-cover"
@@ -275,11 +277,13 @@ export function CreatePost() {
             {image && (
               <div className="px-4 pt-2">
                 <div className="flex flex-wrap gap-2">
-                  <div className="relative">
+                  <div className="relative size-16">
                     <Image
+                      width={64}
+                      height={64}
                       src={image}
                       alt={`Uploaded image`}
-                      className="w-16 h-16 object-cover rounded-lg border border-neutral-600"
+                      className="object-cover rounded-lg border border-neutral-600"
                     />
                     <button
                       onClick={() => removeImage()}
