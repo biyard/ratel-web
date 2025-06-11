@@ -26,6 +26,20 @@ export function createGroupRequest(
   };
 }
 
+export interface InviteMemberRequest {
+  invite_member: {
+    user_ids: number[];
+  };
+}
+
+export function inviteMemberRequest(user_ids: number[]): InviteMemberRequest {
+  return {
+    invite_member: {
+      user_ids,
+    },
+  };
+}
+
 export enum GroupPermission {
   ReadPosts = 0,
   WritePosts = 1,

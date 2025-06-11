@@ -1,9 +1,11 @@
 interface CustomCheckboxProps {
+  isRounded?: boolean;
   checked: boolean;
   onChange: () => void;
 }
 
 export default function CustomCheckbox({
+  isRounded = false,
   checked,
   onChange,
 }: CustomCheckboxProps) {
@@ -12,9 +14,10 @@ export default function CustomCheckbox({
       type="button"
       onClick={onChange}
       aria-pressed={checked}
-      className={`w-6 h-6 flex items-center justify-center border rounded-sm
+      className={`w-6 h-6 flex items-center justify-center border
         ${checked ? 'bg-yellow-500 border-transparent' : 'bg-transparent border-neutral-500'}
-        transition-colors duration-150`}
+        ${isRounded ? 'rounded-full' : 'rounded-sm'}
+        transition-colors duration-150 `}
     >
       {checked && (
         <svg
