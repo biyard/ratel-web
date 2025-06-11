@@ -4,6 +4,7 @@ import { useUserInfo } from '@/lib/api/hooks/users';
 import UserSidemenu from './_components/user-sidemenu';
 import Loading from '../loading';
 import { UserType } from '@/lib/api/models/user';
+import { CreatePost, PostDraftProvider } from './_components/create-post';
 
 export default function SocialLayout({
   children,
@@ -27,7 +28,14 @@ export default function SocialLayout({
             </div>
           }
         >
-          {children}
+          <PostDraftProvider>
+            {children}
+            <div className="fixed bottom-0 left-0 right-0 z-10 flex flex-row items-center justify-center">
+              <div className="max-w-desktop w-full">
+                <CreatePost />
+              </div>
+            </div>
+          </PostDraftProvider>
         </Suspense>
       </div>
     </div>

@@ -6,7 +6,7 @@ export const route = {
   explore: () => '/explore',
   settings: () => '/settings',
   myPosts: () => '/my-posts',
-
+  drafts: () => '/drafts',
   myNetwork: () => '/my-network',
   messages: () => '/messages',
   notifications: () => '/notifications',

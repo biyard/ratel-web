@@ -1,6 +1,14 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef, Fragment } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  Fragment,
+} from 'react';
 import {
   ImagePlus,
   Bold,
@@ -33,17 +41,19 @@ import {
   TextFormatType,
   COMMAND_PRIORITY_LOW,
   SELECTION_CHANGE_COMMAND,
+  $createParagraphNode,
 } from 'lexical';
 import { $generateHtmlFromNodes } from '@lexical/html';
 import FileUploader from '@/components/file-uploader';
-
-interface CreatePostProps {
-  onSubmit: (data: {
-    title: string;
-    content: string;
-    image: string | null;
-  }) => void;
-}
+import { logger } from '@/lib/logger';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
+import {
+  updateDraftRequest,
+  UrlType,
+} from '@/lib/api/models/feeds/update-draft-request';
+import { Feed, FeedType } from '@/lib/api/models/feeds';
+import Image from 'next/image';
 
 const editorTheme = {
   ltr: 'text-left',
@@ -151,11 +161,18 @@ function ToolbarPlugin({
   );
 }
 
-export function CreatePost({ onSubmit }: CreatePostProps) {
-  const [expand, setExpand] = useState(false);
-  const [title, setTitle] = useState('');
-  const [editorStateString, setEditorStateString] = useState<string>('');
-  const [image, setImage] = useState<string | null>(null);
+export function CreatePost() {
+  const {
+    expand,
+    setExpand,
+    title,
+    setTitle,
+    setContent: setEditorStateString,
+    image,
+    setImage,
+    publishPost,
+  } = usePostDraft();
+
   const { data: userInfo, isLoading } = useUserInfo();
   const editorRef = useRef<LexicalEditor | null>(null);
 
@@ -170,36 +187,21 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
       // const textContent = $getRoot().getTextContent();
     });
   };
-
+  const clearEditor = () => {
+    if (editorRef.current) {
+      editorRef.current.update(() => {
+        const root = $getRoot();
+        root.clear();
+        root.append($createParagraphNode());
+      });
+    }
+  };
   const handleImageUpload = (url: string) => {
     setImage(url);
   };
 
   const removeImage = () => {
     setImage(null);
-  };
-
-  const handleSubmit = () => {
-    const trimmedTitle = title.trim();
-    // Check if content is effectively empty (might contain empty HTML tags like <p><br></p>)
-    const isContentEmpty = !editorRef.current
-      ?.getEditorState()
-      .read(() => $getRoot().getTextContent().trim());
-
-    if (!trimmedTitle && isContentEmpty) return;
-
-    onSubmit({
-      title: trimmedTitle,
-      content: editorStateString,
-      image: image || '',
-    });
-
-    // Reset form
-    setTitle('');
-    setImage(null);
-    editorRef.current?.update(() => {
-      $getRoot().clear();
-    });
   };
 
   if (isLoading) {
@@ -215,7 +217,7 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
         <div className="flex items-center p-4 justify-between">
           <div className="flex items-center gap-3">
             <div className="size-6 rounded-full">
-              <img
+              <Image
                 src={userInfo?.profile_url || '/default-profile.png'}
                 alt="Profile"
                 className="w-full h-full object-cover"
@@ -231,7 +233,7 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
           <div
             className={cn(
               'cursor-pointer transition-transform duration-300',
-              expand ? 'rotate-180' : '',
+              expand ? '' : 'rotate-180',
             )}
             onClick={() => setExpand(!expand)}
           >
@@ -239,7 +241,7 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
           </div>
         </div>
 
-        {!expand && (
+        {expand && (
           <>
             {/* Title input */}
             <div className="px-4 pt-4">
@@ -274,7 +276,7 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
               <div className="px-4 pt-2">
                 <div className="flex flex-wrap gap-2">
                   <div className="relative">
-                    <img
+                    <Image
                       src={image}
                       alt={`Uploaded image`}
                       className="w-16 h-16 object-cover rounded-lg border border-neutral-600"
@@ -298,7 +300,10 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
               </div>
 
               <button
-                onClick={handleSubmit}
+                onClick={async () => {
+                  await publishPost();
+                  clearEditor();
+                }}
                 disabled={isSubmitDisabled}
                 className={cn(
                   'flex items-center gap-2 p-3 rounded-full font-medium text-sm transition-all',
@@ -316,3 +321,223 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
     </LexicalComposer>
   );
 }
+
+export interface PostDraftContextType {
+  expand: boolean;
+  setExpand: (expand: boolean) => void;
+
+  draftId: number | null;
+  setDraftId: (id: number | null) => void;
+  title: string;
+  setTitle: (title: string) => void;
+  content: string;
+  setContent: (content: string) => void;
+  image: string | null;
+  setImage: (image: string | null) => void;
+
+  isSaving: boolean;
+
+  publishPost: () => Promise<void>;
+  loadDraft: (id: number) => Promise<void>;
+}
+
+export const PostDraftContext = createContext<PostDraftContextType>({
+  expand: false,
+  setExpand: () => {},
+
+  draftId: null,
+  setDraftId: () => {},
+  title: '',
+  setTitle: () => {},
+  content: '',
+  setContent: () => {},
+  image: '',
+  setImage: () => {},
+  isSaving: false,
+  publishPost: async () => {},
+  loadDraft: async () => {},
+});
+
+export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [expand, setExpand] = useState(false);
+  const [draftId, setDraftId] = useState<number | null>(null);
+  const [title, setTitleState] = useState('');
+  const [content, setContentState] = useState('');
+  const [image, setImage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const hasInput = useRef(false);
+  const { get, post } = useApiCall();
+
+  const loadDraft = useCallback(
+    async (id: number) => {
+      setIsSaving(true);
+      try {
+        setDraftId(null);
+        setTitleState('');
+        setContentState('');
+        hasInput.current = false;
+
+        const draft: Feed = await get(ratelApi.feeds.getFeedsByFeedId(id));
+
+        setDraftId(draft.id);
+        setTitleState(draft.title || '');
+        setContentState(draft.html_contents);
+        hasInput.current = true;
+        logger.debug('Draft loaded:', draft);
+      } catch (error: unknown) {
+        logger.error('LoadDraft error:', error);
+        setDraftId(null);
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [get],
+  );
+
+  const createInitialDraftOnServer = useCallback(async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const data: Feed = await post(ratelApi.feeds.createDraft(), {
+        create: {},
+      });
+
+      setDraftId(data.id);
+    } catch (error: unknown) {
+      logger.error('CreateInitialDraftOnServer error:', error);
+      setDraftId(null);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [post, isSaving]);
+
+  useEffect(() => {
+    console.log(draftId, title, content, hasInput.current);
+    if (
+      !draftId &&
+      hasInput.current &&
+      title.length > 0 &&
+      content.length > 0 &&
+      !isSaving
+    ) {
+      console.log('Creating initial draft on server');
+      createInitialDraftOnServer();
+    }
+  }, [draftId, title, content, isSaving, createInitialDraftOnServer]);
+
+  const saveDraft = useCallback(async () => {
+    if (!draftId) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      let url = '';
+      let url_type = UrlType.None;
+      if (image !== null && image !== '') {
+        url = image;
+        url_type = UrlType.Image;
+      }
+      await post(
+        ratelApi.feeds.updateDraft(draftId),
+
+        updateDraftRequest(
+          FeedType.Post,
+          content,
+          1, // Default industry_id to 1 (Crpyto)
+          title,
+          0,
+          [],
+          url,
+          url_type,
+        ),
+      );
+    } catch (error: unknown) {
+      logger.error('Update draft error:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [draftId, title, content, image, post]);
+
+  useEffect(() => {
+    if (!draftId || (!title.length && !content.length && !hasInput.current))
+      return;
+
+    const handler = setTimeout(() => {
+      saveDraft();
+    }, 1500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [title, content, draftId, saveDraft]);
+
+  const publishPost = useCallback(async () => {
+    if (!draftId || (!title.trim() && !content.trim()) || isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      await saveDraft();
+      await post(ratelApi.feeds.publishDraft(draftId), {
+        publish: {},
+      });
+
+      setDraftId(null);
+      setTitleState('');
+      setContentState('');
+      setImage(null);
+      hasInput.current = false;
+    } catch (error: unknown) {
+      logger.error('Publish error:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [draftId, title, content, isSaving, saveDraft, post]);
+
+  const setTitle = useCallback((newTitle: string) => {
+    if (!hasInput.current) hasInput.current = true;
+    setTitleState(newTitle);
+  }, []);
+
+  const setContent = useCallback((newContent: string) => {
+    if (!hasInput.current) hasInput.current = true;
+    setContentState(newContent);
+  }, []);
+
+  const contextValue = {
+    expand,
+    setExpand,
+    draftId,
+    setDraftId,
+    title,
+    setTitle,
+    content,
+    setContent,
+    image,
+    setImage,
+    isSaving,
+    publishPost,
+    loadDraft,
+  };
+
+  return (
+    <PostDraftContext.Provider value={contextValue}>
+      {children}
+    </PostDraftContext.Provider>
+  );
+};
+
+export const usePostDraft = () => {
+  const context = useContext(PostDraftContext);
+  if (context === undefined) {
+    throw new Error('usePostDraft must be used within a PostDraftProvider');
+  }
+  return context;
+};

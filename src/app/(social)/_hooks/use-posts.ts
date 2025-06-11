@@ -1,6 +1,6 @@
 import { ratelApi } from '@/lib/api/ratel_api';
 import { QueryResponse } from '@/lib/api/models/common';
-import { Feed } from '@/lib/api/models/feeds';
+import { Feed, FeedStatus } from '@/lib/api/models/feeds';
 import { useApiCall } from '@/lib/api/use-send';
 import {
   useSuspenseQuery,
@@ -43,12 +43,14 @@ export function usePostByUserId(
   user_id: number,
   page: number,
   size: number,
+  status: FeedStatus = FeedStatus.Published,
 ): UseSuspenseQueryResult<QueryResponse<Feed>> {
   const { get } = useApiCall();
 
   const query = useSuspenseQuery({
-    queryKey: [QK_GET_POSTS_BY_USER_ID, user_id, page, size],
-    queryFn: () => get(ratelApi.feeds.getPostsByUserId(user_id, page, size)),
+    queryKey: [QK_GET_POSTS_BY_USER_ID, user_id, page, size, status],
+    queryFn: () =>
+      get(ratelApi.feeds.getPostsByUserId(user_id, page, size, status)),
     refetchOnWindowFocus: false,
   });
 

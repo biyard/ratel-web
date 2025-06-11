@@ -5,7 +5,7 @@ import { FileInfo } from '@/lib/api/models/feeds';
 import {
   UrlType,
   writePostRequest,
-} from '@/lib/api/models/feeds/write-post-request';
+} from '@/lib/api/models/feeds/update-draft-request';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useApiCall } from '@/lib/api/use-send';
 import React, { Fragment } from 'react';
