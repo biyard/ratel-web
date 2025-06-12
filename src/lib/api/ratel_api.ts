@@ -1,9 +1,14 @@
+import { FeedStatus } from './models/feeds';
 import { FileType } from './models/file-type';
 import { gql } from '@apollo/client';
 
 export const ratelApi = {
   users: {
+    getTotalInfo: (page: number, size: number) =>
+      `/v1/totals?param-type=query&bookmark=${page}&size=${size}`,
     getUserInfo: () => '/v1/users?action=user-info',
+    getUserByEmail: (email: string) =>
+      `/v1/users?param-type=read&action=find-by-email&email=${email}`,
     updateUserInfo: () => '/v1/users?action=signup',
     editProfile: (user_id: number) => `/v1/users/${user_id}`,
     updateEvmAddress: () => '/v1/users',
@@ -21,12 +26,26 @@ export const ratelApi = {
   promotions: {
     get_promotions: () => '/v1/promotions?param-type=read&action=hot-promotion',
   },
+  groups: {
+    create_group: (team_id: number) => `/v1/teams/${team_id}/groups`,
+    invite_member: (team_id: number, group_id: number) =>
+      `/v1/teams/${team_id}/groups/${group_id}`,
+  },
   feeds: {
     comment: () => '/v1/feeds',
     writePost: () => '/v1/feeds',
+    createDraft: () => '/v1/feeds',
+    updateDraft: (post_id: number) => `/v1/feeds/${post_id}`,
+    publishDraft: (post_id: number) => `/v1/feeds/${post_id}`,
+
     likePost: (post_id: number) => `/v1/feeds/${post_id}`,
-    getPostsByUserId: (user_id: number, page: number, size: number) =>
-      `/v1/feeds?param-type=query&action=posts-by-user-id&bookmark=${page}&size=${size}&user-id=${user_id}`,
+    getPostsByUserId: (
+      user_id: number,
+      page: number,
+      size: number,
+      status: FeedStatus,
+    ) =>
+      `/v1/feeds?param-type=query&action=posts-by-user-id&bookmark=${page}&size=${size}&user-id=${user_id}&status=${status}`,
     getFeedsByFeedId: (feed_id: number) => `/v1/feeds/${feed_id}`,
     getPosts: (page: number, size: number) =>
       `/v1/feeds?param-type=query&bookmark=${page}&size=${size}`,
