@@ -4,7 +4,7 @@ import { Team } from '@/lib/api/models/team';
 import TeamProfile from './team-profile';
 import Link from 'next/link';
 import { route } from '@/route';
-import { UserGroup } from '@/components/icons';
+import { Home, UserGroup, Settings, User } from '@/components/icons';
 
 export interface TeamSidemenuProps {
   team: Team;
@@ -20,7 +20,7 @@ export default function TeamSidemenu({ team }: TeamSidemenuProps) {
           href={route.teamByUsername(team.username)}
           className="sidemenu-link"
         >
-          <UserGroup />
+          <Home />
           <span>Home</span>
         </Link>
         <Link href={route.teamGroups(team.username)} className="sidemenu-link">
@@ -28,14 +28,14 @@ export default function TeamSidemenu({ team }: TeamSidemenuProps) {
           <span>Groups</span>
         </Link>
         <Link href={route.teamMembers(team.username)} className="sidemenu-link">
-          <UserGroup />
+          <User className="w-[24px] h-[24px]" />
           <span>Members</span>
         </Link>
         <Link
           href={route.teamSettings(team.username)}
           className="sidemenu-link"
         >
-          <UserGroup />
+          <Settings className="w-[24px] h-[24px]" />
           <span>Settings</span>
         </Link>
       </nav>
