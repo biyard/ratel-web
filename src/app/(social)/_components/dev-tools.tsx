@@ -3,7 +3,10 @@ import { config, Env } from '@/config';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { Feed, FeedType, FileInfo } from '@/lib/api/models/feeds';
 import { createDraftRequest } from '@/lib/api/models/feeds/create-draft';
-import { UrlType } from '@/lib/api/models/feeds/update-draft-request';
+import {
+  updateDraftRequest,
+  UrlType,
+} from '@/lib/api/models/feeds/update-draft-request';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useApiCall } from '@/lib/api/use-send';
 import React, { Fragment } from 'react';
@@ -33,16 +36,18 @@ export default function DevTools() {
       createDraftRequest(FeedType.Post, user_id),
     );
 
-    await post(ratelApi.feeds.updateDraft(res.id), {
-      title,
-      content: html_contents,
-      user_id,
-      industry_id,
-      quote_feed_id,
-      files,
-      url,
-      url_type: UrlType.Image,
-    });
+    await post(
+      ratelApi.feeds.updateDraft(res.id),
+      updateDraftRequest(
+        html_contents,
+        industry_id,
+        title,
+        quote_feed_id,
+        files,
+        url,
+        UrlType.Image,
+      ),
+    );
 
     await post(ratelApi.feeds.publishDraft(res.id), { publish: {} });
   };
