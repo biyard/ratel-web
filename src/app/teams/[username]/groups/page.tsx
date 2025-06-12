@@ -9,6 +9,10 @@
 import { Metadata } from 'next';
 import TeamGroups from './page.client';
 
+export interface TeamLayoutProps {
+  params: Promise<{ username: string }>;
+}
+
 export const metadata: Metadata = {
   title: 'Ratel',
   description:
@@ -39,6 +43,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
-  return <TeamGroups />;
+export default async function Page({ params }: TeamLayoutProps) {
+  const { username } = await params;
+  return <TeamGroups username={username} />;
 }

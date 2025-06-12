@@ -1,4 +1,4 @@
-import { UserType } from './user';
+import { Group, UserType } from './user';
 
 export interface CreateTeamRequest {
   create: {
@@ -39,4 +39,5 @@ export interface Team {
   username: string;
 
   html_contents: string;
+  groups?: Group[];
 }

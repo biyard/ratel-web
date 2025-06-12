@@ -12,6 +12,9 @@ export const QK_GET_FEED_BY_FEED_ID = 'get-feeds-by-feed-id';
 
 export const QK_GET_SPACE_BY_SPACE_ID = 'get-space-by-space-id';
 
+export const QK_GET_TEAM_BY_ID = 'get-team-by-id';
+export const QK_GET_TEAM_BY_USERNAME = 'get-team-by-username';
+
 export const QK_GET_REDEEM_CODE = 'get-redeem-code';
 export const QK_GET_PROMOTION = 'get-promotion';
 export const QK_GET_TOTAL_USER = 'get-total-users';
