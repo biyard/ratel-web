@@ -1,8 +1,7 @@
-import { FeedType, FileInfo } from '../feeds';
+import { FileInfo } from '../feeds';
 
 export interface updateDraftRequest {
   update: {
-    feed_type: FeedType;
     html_contents: string;
     industry_id: number;
     title: string;
@@ -19,7 +18,6 @@ export enum UrlType {
 }
 
 export function updateDraftRequest(
-  feed_type: FeedType,
   html_contents: string,
   industry_id: number,
   title: string,
@@ -30,7 +28,6 @@ export function updateDraftRequest(
 ): updateDraftRequest {
   return {
     update: {
-      feed_type,
       html_contents,
       industry_id,
       title,

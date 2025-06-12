@@ -4,7 +4,6 @@ import React from 'react';
 import { usePostByUserId } from '../_hooks/use-posts';
 import { Col } from '@/components/ui/col';
 import { logger } from '@/lib/logger';
-import { Post } from '../page.client';
 import { FeedStatus } from '@/lib/api/models/feeds';
 import { usePostDraft } from '../_components/create-post';
 
@@ -15,33 +14,22 @@ export default function MyPostsPage() {
   const data = posts.data;
   logger.debug('query response of posts', data);
   const { setExpand, loadDraft } = usePostDraft();
-  const feeds: Post[] = data.items.map((item) => ({
+
+  const drafts = data?.items.map((item) => ({
     id: item.id,
-    industry: item.industry[0].name,
     title: item.title!,
     contents: item.html_contents,
     url: item.url,
-    author_id: Number(item.author[0].id),
-    author_profile_url: item.author[0].profile_url!,
-    author_name: item.author[0].nickname,
-    author_type: item.author[0].user_type,
-
-    likes: item.likes,
-    is_liked: item.is_liked,
-    comments: item.comments,
-    rewards: item.rewards,
-    shares: item.shares,
-    created_at: item.created_at,
-    onboard: item.onboard || false,
   }));
 
   return (
     <div className="flex-1 flex max-mobile:px-[10px]">
-      {feeds.length != 0 ? (
+      {drafts?.length != 0 ? (
         <Col className="flex-1 border-r border-gray-800">
-          {feeds.map((props) => (
+          {drafts?.map((props) => (
             <div
               key={`feed-${props.id}`}
+              className="cursor-pointer bg-component-bg rounded-[10px] px-[16px] py-[12px] mb-[8px] hover:bg-gray-700 transition-colors duration-200 text-white"
               onClick={(evt) => {
                 loadDraft(props.id);
                 setExpand(true);
@@ -49,19 +37,13 @@ export default function MyPostsPage() {
                 evt.stopPropagation();
               }}
             >
-              {props.title}
-              {/* <FeedCard
-                key={`feed-${props.id}`}
-                user_id={user_id ?? 0}
-                refetch={() => posts.refetch()}
-                {...props}
-              /> */}
+              (Draft) <span className="font-extrabold">{props.title}</span>
             </div>
           ))}
         </Col>
       ) : (
         <div className="flex flex-row w-full h-fit justify-start items-center px-[16px] py-[20px] border border-gray-500 rounded-[8px] font-medium text-base text-gray-500">
-          Feeds data is empty
+          No drafts available
         </div>
       )}
     </div>

@@ -16,6 +16,7 @@ import {
   Underline,
   Strikethrough,
   X,
+  Loader2,
 } from 'lucide-react';
 
 import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';
@@ -43,7 +44,7 @@ import {
   SELECTION_CHANGE_COMMAND,
   $createParagraphNode,
 } from 'lexical';
-import { $generateHtmlFromNodes } from '@lexical/html';
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 import FileUploader from '@/components/file-uploader';
 import { logger } from '@/lib/logger';
 import { useApiCall } from '@/lib/api/use-send';
@@ -52,8 +53,11 @@ import {
   updateDraftRequest,
   UrlType,
 } from '@/lib/api/models/feeds/update-draft-request';
-import { Feed, FeedType } from '@/lib/api/models/feeds';
+import { Feed, FeedStatus, FeedType } from '@/lib/api/models/feeds';
 import Image from 'next/image';
+import { createDraftRequest } from '@/lib/api/models/feeds/create-draft';
+import { useQueryClient } from '@tanstack/react-query';
+import { postByUserIdQk } from '../_hooks/use-posts';
 
 const editorTheme = {
   ltr: 'text-left',
@@ -68,14 +72,6 @@ const editorTheme = {
   },
   placeholder:
     'absolute top-0 left-0 text-neutral-500 pointer-events-none select-none inline-block',
-};
-
-const editorConfig = {
-  namespace: 'CreatePostEditor',
-  theme: editorTheme,
-  onError(error: Error) {
-    console.error(error);
-  },
 };
 
 function ToolbarPlugin({
@@ -161,20 +157,35 @@ function ToolbarPlugin({
   );
 }
 
+function EditorRefPlugin({
+  setEditorRef,
+}: {
+  setEditorRef: (editor: LexicalEditor) => void;
+}) {
+  const [editor] = useLexicalComposerContext();
+  useEffect(() => {
+    setEditorRef(editor);
+  }, [editor, setEditorRef]);
+  return null;
+}
+
 export function CreatePost() {
   const {
     expand,
     setExpand,
     title,
     setTitle,
-    setContent: setEditorStateString,
+    content,
+    setContent,
     image,
     setImage,
     publishPost,
+    status,
   } = usePostDraft();
 
   const { data: userInfo, isLoading } = useUserInfo();
   const editorRef = useRef<LexicalEditor | null>(null);
+  const isLoadingContent = useRef(false);
 
   const handleLexicalChange = (
     editorState: EditorState,
@@ -183,37 +194,81 @@ export function CreatePost() {
     editorRef.current = editor;
     editorState.read(() => {
       const html = $generateHtmlFromNodes(editor, null);
-      setEditorStateString(html);
-      // const textContent = $getRoot().getTextContent();
+      if (html !== content) {
+        setContent(html);
+      }
     });
-  };
-  const clearEditor = () => {
-    if (editorRef.current) {
-      editorRef.current.update(() => {
-        const root = $getRoot();
-        root.clear();
-        root.append($createParagraphNode());
-      });
-    }
-  };
-  const handleImageUpload = (url: string) => {
-    setImage(url);
   };
 
   const removeImage = () => {
     setImage(null);
   };
 
-  if (isLoading) {
+  const isSubmitDisabled = !title.trim() || status !== 'idle';
+
+  const createEditorStateFromHTML = useCallback(
+    (editor: LexicalEditor, htmlString: string) => {
+      if (!htmlString) {
+        const root = $getRoot();
+        root.clear();
+        root.append($createParagraphNode());
+        return;
+      }
+      try {
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(htmlString, 'text/html');
+        const nodes = $generateNodesFromDOM(editor, dom);
+        const root = $getRoot();
+        root.clear();
+        root.append(...nodes);
+      } catch (error) {
+        logger.error('Error parsing HTML:', error);
+      }
+    },
+    [],
+  );
+
+  const editorConfig = {
+    namespace: 'CreatePostEditor',
+    theme: editorTheme,
+    onError(error: Error) {
+      console.error(error);
+    },
+  };
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const currentHtml = editor
+      .getEditorState()
+      .read(() => $generateHtmlFromNodes(editor, null));
+    if (!content || content !== currentHtml) {
+      isLoadingContent.current = true;
+
+      editor.update(
+        () => {
+          createEditorStateFromHTML(editor, content ?? '');
+        },
+        {
+          onUpdate: () => {
+            setTimeout(() => {
+              isLoadingContent.current = false;
+            }, 0);
+          },
+        },
+      );
+    }
+  }, [editorRef, content, createEditorStateFromHTML]);
+
+  if (isLoading || !expand) {
     return <Fragment />;
   }
-
-  const isSubmitDisabled = !title.trim();
 
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className="w-full bg-neutral-900 border-t-6 border-x border-b border-primary rounded-t-lg overflow-hidden">
-        {/* Header with user info */}
+        {/* Header */}
         <div className="flex items-center p-4 justify-between">
           <div className="flex items-center gap-3">
             <div className="size-6 rounded-full">
@@ -233,81 +288,88 @@ export function CreatePost() {
             <Certified className="size-5" />
           </div>
           <div
-            className={cn(
-              'cursor-pointer transition-transform duration-300',
-              expand ? '' : 'rotate-180',
-            )}
+            className={cn('cursor-pointer')}
             onClick={() => setExpand(!expand)}
           >
             <DoubleArrowDown />
           </div>
         </div>
 
-        {expand && (
-          <>
-            {/* Title input */}
-            <div className="px-4 pt-4">
-              <input
-                type="text"
-                placeholder="Write a title..."
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-transparent text-white text-xl font-semibold placeholder-neutral-500 outline-none border-none"
-              />
-            </div>
+        <>
+          {/* Title input */}
+          <div className="px-4 pt-4">
+            <input
+              type="text"
+              placeholder="Write a title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full bg-transparent text-white text-xl font-semibold placeholder-neutral-500 outline-none border-none"
+            />
+          </div>
 
-            {/* Lexical Content Area */}
-            <div className="px-4 pt-2 min-h-[80px] relative text-neutral-300 text-[15px] leading-relaxed">
-              <RichTextPlugin
-                contentEditable={
-                  <ContentEditable className="outline-none resize-none w-full min-h-[60px]" />
-                }
-                placeholder={
-                  <div className="absolute top-0 text-neutral-500 pointer-events-none select-none">
-                    Type here, Use Markdown, BB code, or HTML to format.
-                  </div>
-                }
-                ErrorBoundary={LexicalErrorBoundary}
-              />
-              <OnChangePlugin onChange={handleLexicalChange} />
-              <HistoryPlugin />
-            </div>
+          {/* Lexical Content Area */}
+          <div className="px-4 pt-2 min-h-[80px] relative text-neutral-300 text-[15px] leading-relaxed">
+            <RichTextPlugin
+              contentEditable={
+                <ContentEditable className="outline-none resize-none w-full min-h-[60px]" />
+              }
+              placeholder={
+                <div className="absolute top-0 text-neutral-500 pointer-events-none select-none">
+                  Type here, Use Markdown, BB code, or HTML to format.
+                </div>
+              }
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <OnChangePlugin onChange={handleLexicalChange} />
 
-            {/* Image previews */}
-            {image && (
-              <div className="px-4 pt-2">
-                <div className="flex flex-wrap gap-2">
-                  <div className="relative size-16">
-                    <Image
-                      width={64}
-                      height={64}
-                      src={image}
-                      alt={`Uploaded image`}
-                      className="object-cover rounded-lg border border-neutral-600"
-                    />
-                    <button
-                      onClick={() => removeImage()}
-                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center text-white text-xs hover:bg-red-700 border-2 border-neutral-900"
-                      aria-label={`Remove uploaded image`}
-                    >
-                      <X size={12} />
-                    </button>
-                  </div>
+            <HistoryPlugin />
+            <EditorRefPlugin
+              setEditorRef={(editor) => (editorRef.current = editor)}
+            />
+          </div>
+
+          {/* Image previews */}
+          {image && (
+            <div className="px-4 pt-2">
+              <div className="flex flex-wrap gap-2">
+                <div className="relative size-16">
+                  <Image
+                    width={64}
+                    height={64}
+                    src={image}
+                    alt={`Uploaded image`}
+                    className="object-cover rounded-lg border border-neutral-600"
+                  />
+                  <button
+                    onClick={removeImage}
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center text-white text-xs hover:bg-red-700 border-2 border-neutral-900"
+                    aria-label={`Remove uploaded image`}
+                  >
+                    <X size={12} />
+                  </button>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Bottom toolbar */}
-            <div className="flex items-center justify-between p-4 text-neutral-400">
-              <div className="flex items-center gap-4">
-                <ToolbarPlugin onImageUpload={handleImageUpload} />
-              </div>
+          {/* Bottom toolbar */}
+          <div className="flex items-center justify-between p-4 text-neutral-400">
+            <ToolbarPlugin onImageUpload={(url) => setImage(url)} />
+
+            <div className="flex items-center gap-4">
+              {/* 상태 표시 */}
+              {status === 'saving' && (
+                <div className="flex items-center gap-2 text-sm text-neutral-400">
+                  <Loader2 className="animate-spin" size={16} />
+                  <span>Saving...</span>
+                </div>
+              )}
+              {status === 'error' && (
+                <span className="text-sm text-red-500">Error saving!</span>
+              )}
 
               <button
-                onClick={async () => {
-                  await publishPost();
-                  clearEditor();
-                }}
+                onClick={publishPost}
                 disabled={isSubmitDisabled}
                 className={cn(
                   'flex items-center gap-2 p-3 rounded-full font-medium text-sm transition-all',
@@ -316,219 +378,263 @@ export function CreatePost() {
                     : 'bg-neutral-700 text-neutral-500 cursor-not-allowed',
                 )}
               >
-                <UserCircleIcon />
+                {status === 'publishing' ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <UserCircleIcon />
+                )}
               </button>
             </div>
-          </>
-        )}
+          </div>
+        </>
       </div>
     </LexicalComposer>
   );
 }
 
+export type DraftStatus =
+  | 'idle'
+  | 'loading'
+  | 'creating'
+  | 'saving'
+  | 'publishing'
+  | 'error';
+
 export interface PostDraftContextType {
   expand: boolean;
   setExpand: (expand: boolean) => void;
-
   draftId: number | null;
-  setDraftId: (id: number | null) => void;
   title: string;
   setTitle: (title: string) => void;
-  content: string;
-  setContent: (content: string) => void;
+  content: string | null;
+  setContent: (content: string | null) => void;
   image: string | null;
   setImage: (image: string | null) => void;
-
-  isSaving: boolean;
-
+  status: DraftStatus;
   publishPost: () => Promise<void>;
   loadDraft: (id: number) => Promise<void>;
+  newDraft: () => void;
 }
 
-export const PostDraftContext = createContext<PostDraftContextType>({
-  expand: false,
-  setExpand: () => {},
-
-  draftId: null,
-  setDraftId: () => {},
-  title: '',
-  setTitle: () => {},
-  content: '',
-  setContent: () => {},
-  image: '',
-  setImage: () => {},
-  isSaving: false,
-  publishPost: async () => {},
-  loadDraft: async () => {},
-});
+export const PostDraftContext = createContext<PostDraftContextType | undefined>(
+  undefined,
+);
 
 export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [expand, setExpand] = useState(false);
   const [draftId, setDraftId] = useState<number | null>(null);
-  const [title, setTitleState] = useState('');
-  const [content, setContentState] = useState('');
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState<string | null>(null);
   const [image, setImage] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+  const [status, setStatus] = useState<DraftStatus>('idle');
 
-  const hasInput = useRef(false);
+  const lastSavedRef = useRef({
+    title: '',
+    content: null as string | null,
+    image: null as string | null,
+  });
+
   const { get, post } = useApiCall();
+  const { data: user } = useUserInfo();
+  const queryClient = useQueryClient();
+
+  const refetchDrafts = useCallback(() => {
+    if (!user) return;
+    queryClient.invalidateQueries({
+      queryKey: postByUserIdQk(user.id, 1, 20, FeedStatus.Draft),
+    });
+  }, [user, queryClient]);
+
+  const resetState = useCallback(() => {
+    setDraftId(null);
+    setTitle('');
+    setContent('');
+    setImage(null);
+    setStatus('idle');
+    lastSavedRef.current = {
+      title: '',
+      content: '',
+      image: null,
+    };
+  }, []);
+
+  const newDraft = useCallback(() => {
+    resetState();
+    setExpand(true);
+  }, [resetState]);
 
   const loadDraft = useCallback(
     async (id: number) => {
-      setIsSaving(true);
+      setStatus('loading');
       try {
-        setDraftId(null);
-        setTitleState('');
-        setContentState('');
-        hasInput.current = false;
-
         const draft: Feed = await get(ratelApi.feeds.getFeedsByFeedId(id));
+        const draftTitle = draft.title || '';
+        const draftContent = draft.html_contents || '';
+        const draftImage =
+          draft.url && draft.url_type === UrlType.Image ? draft.url : null;
 
         setDraftId(draft.id);
-        setTitleState(draft.title || '');
-        setContentState(draft.html_contents);
-        hasInput.current = true;
+        setTitle(draftTitle);
+        setImage(draftImage);
+        setContent(draftContent);
+        lastSavedRef.current = {
+          title: draftTitle,
+          content: draftContent,
+          image: draftImage,
+        };
+        setExpand(true);
         logger.debug('Draft loaded:', draft);
       } catch (error: unknown) {
         logger.error('LoadDraft error:', error);
-        setDraftId(null);
+        setStatus('error');
       } finally {
-        setIsSaving(false);
+        setStatus('idle');
       }
     },
     [get],
   );
 
-  const createInitialDraftOnServer = useCallback(async () => {
-    if (isSaving) return;
+  const saveDraft = useCallback(
+    async (
+      currentTitle: string,
+      currentContent: string,
+      currentImage: string | null,
+    ) => {
+      if (status === 'saving' || status === 'creating' || !user) return;
 
-    setIsSaving(true);
-    try {
-      const data: Feed = await post(ratelApi.feeds.createDraft(), {
-        create: {},
-      });
+      if (!currentTitle.trim()) return;
 
-      setDraftId(data.id);
-    } catch (error: unknown) {
-      logger.error('CreateInitialDraftOnServer error:', error);
-      setDraftId(null);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [post, isSaving]);
-
-  useEffect(() => {
-    console.log(draftId, title, content, hasInput.current);
-    if (
-      !draftId &&
-      hasInput.current &&
-      title.length > 0 &&
-      content.length > 0 &&
-      !isSaving
-    ) {
-      console.log('Creating initial draft on server');
-      createInitialDraftOnServer();
-    }
-  }, [draftId, title, content, isSaving, createInitialDraftOnServer]);
-
-  const saveDraft = useCallback(async () => {
-    if (!draftId) {
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      let url = '';
-      let url_type = UrlType.None;
-      if (image !== null && image !== '') {
-        url = image;
-        url_type = UrlType.Image;
+      const lastSaved = lastSavedRef.current;
+      if (
+        currentTitle === lastSaved.title &&
+        currentContent === lastSaved.content &&
+        currentImage === lastSaved.image
+      ) {
+        return;
       }
-      await post(
-        ratelApi.feeds.updateDraft(draftId),
 
-        updateDraftRequest(
-          FeedType.Post,
-          content,
-          1, // Default industry_id to 1 (Crpyto)
-          title,
-          0,
-          [],
-          url,
-          url_type,
-        ),
-      );
-    } catch (error: unknown) {
-      logger.error('Update draft error:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [draftId, title, content, image, post]);
+      const isCreating = !draftId;
+      setStatus(isCreating ? 'creating' : 'saving');
+
+      try {
+        let currentDraftId = draftId;
+        if (isCreating) {
+          const data: Feed = await post(
+            ratelApi.feeds.createDraft(),
+            createDraftRequest(FeedType.Post, user.id),
+          );
+          currentDraftId = data.id;
+          setDraftId(currentDraftId);
+        }
+
+        if (currentDraftId) {
+          let url = '';
+          let url_type = UrlType.None;
+          if (currentImage) {
+            url = currentImage;
+            url_type = UrlType.Image;
+          }
+          await post(
+            ratelApi.feeds.updateDraft(currentDraftId),
+            updateDraftRequest(
+              currentContent,
+              1,
+              currentTitle,
+              0,
+              [],
+              url,
+              url_type,
+            ),
+          );
+
+          // 성공적으로 저장된 값들을 기록
+          lastSavedRef.current = {
+            title: currentTitle,
+            content: currentContent,
+            image: currentImage,
+          };
+        }
+        refetchDrafts();
+      } catch (error: unknown) {
+        logger.error('Save draft error:', error);
+        setStatus('error');
+      } finally {
+        setStatus('idle');
+      }
+    },
+    [draftId, user, post, refetchDrafts, status],
+  );
 
   useEffect(() => {
-    if (!draftId || (!title.length && !content.length && !hasInput.current))
+    if (!title.trim() && !content?.trim()) return;
+    if (status !== 'idle') return;
+
+    const lastSaved = lastSavedRef.current;
+    if (
+      (title === lastSaved.title &&
+        content === lastSaved.content &&
+        image === lastSaved.image) ||
+      content === null
+    ) {
       return;
+    }
 
     const handler = setTimeout(() => {
-      saveDraft();
+      saveDraft(title, content, image);
     }, 1500);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [title, content, draftId, saveDraft]);
+  }, [title, content, image, status, saveDraft]);
 
   const publishPost = useCallback(async () => {
-    if (!draftId || (!title.trim() && !content.trim()) || isSaving) {
+    if (!draftId || !title.trim() || status !== 'idle' || content == null)
       return;
-    }
 
-    setIsSaving(true);
-
+    setStatus('publishing');
     try {
-      await saveDraft();
-      await post(ratelApi.feeds.publishDraft(draftId), {
-        publish: {},
-      });
+      await saveDraft(title, content, image);
 
-      setDraftId(null);
-      setTitleState('');
-      setContentState('');
-      setImage(null);
-      hasInput.current = false;
+      await post(ratelApi.feeds.publishDraft(draftId), { publish: {} });
+
+      resetState();
+      setExpand(false);
+      refetchDrafts();
     } catch (error: unknown) {
       logger.error('Publish error:', error);
+      setStatus('error');
     } finally {
-      setIsSaving(false);
+      setStatus('idle');
     }
-  }, [draftId, title, content, isSaving, saveDraft, post]);
-
-  const setTitle = useCallback((newTitle: string) => {
-    if (!hasInput.current) hasInput.current = true;
-    setTitleState(newTitle);
-  }, []);
-
-  const setContent = useCallback((newContent: string) => {
-    if (!hasInput.current) hasInput.current = true;
-    setContentState(newContent);
-  }, []);
+  }, [
+    draftId,
+    title,
+    content,
+    image,
+    status,
+    saveDraft,
+    post,
+    resetState,
+    refetchDrafts,
+  ]);
 
   const contextValue = {
     expand,
     setExpand,
     draftId,
-    setDraftId,
     title,
     setTitle,
     content,
     setContent,
     image,
     setImage,
-    isSaving,
+    status,
     publishPost,
     loadDraft,
+    newDraft,
   };
 
   return (
