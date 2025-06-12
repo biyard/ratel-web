@@ -14,3 +14,5 @@ export const QK_GET_SPACE_BY_SPACE_ID = 'get-space-by-space-id';
 
 export const QK_GET_REDEEM_CODE = 'get-redeem-code';
 export const QK_GET_PROMOTION = 'get-promotion';
+export const QK_GET_TOTAL_USER = 'get-total-users';
+export const QK_GET_USER_BY_EMAIL = 'get-user-by-emails';

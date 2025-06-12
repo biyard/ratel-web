@@ -3,7 +3,11 @@ import { gql } from '@apollo/client';
 
 export const ratelApi = {
   users: {
+    getTotalInfo: (page: number, size: number) =>
+      `/v1/totals?param-type=query&bookmark=${page}&size=${size}`,
     getUserInfo: () => '/v1/users?action=user-info',
+    getUserByEmail: (email: string) =>
+      `/v1/users?param-type=read&action=find-by-email&email=${email}`,
     updateUserInfo: () => '/v1/users?action=signup',
     editProfile: (user_id: number) => `/v1/users/${user_id}`,
     updateEvmAddress: () => '/v1/users',
@@ -20,6 +24,11 @@ export const ratelApi = {
   },
   promotions: {
     get_promotions: () => '/v1/promotions?param-type=read&action=hot-promotion',
+  },
+  groups: {
+    create_group: (team_id: number) => `/v1/teams/${team_id}/groups`,
+    invite_member: (team_id: number, group_id: number) =>
+      `/v1/teams/${team_id}/groups/${group_id}`,
   },
   feeds: {
     comment: () => '/v1/feeds',

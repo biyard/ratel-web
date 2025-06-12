@@ -21,3 +21,6 @@ export { default as ThumbUp } from '@/assets/icons/thumb-up.svg';
 export { default as CommentIcon } from '@/assets/icons/comment.svg';
 export { default as Rewards } from '@/assets/icons/rewards.svg';
 export { default as Shares } from '@/assets/icons/shares.svg';
+export { default as Edit1 } from '@/assets/icons/edit_1.svg';
+export { default as User } from '@/assets/icons/user.svg';
+export { default as Clear } from '@/assets/icons/clear.svg';
