@@ -27,6 +27,7 @@ import { ratelApi } from '@/lib/api/ratel_api';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
+import CreatePostButton from './_components/create-post-button';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -150,6 +151,7 @@ export default function Home() {
         {/* Hot Promotion */}
 
         <div>
+          <CreatePostButton />
           <BlackBox>
             <div className="flex flex-col gap-2.5">
               <h3 className="font-bold text-white text-[15px]/[20px]">

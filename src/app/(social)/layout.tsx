@@ -4,11 +4,7 @@ import { useUserInfo } from '@/lib/api/hooks/users';
 import UserSidemenu from './_components/user-sidemenu';
 import Loading from '../loading';
 import { UserType } from '@/lib/api/models/user';
-import {
-  CreatePost,
-  PostDraftProvider,
-  usePostDraft,
-} from './_components/create-post';
+import { CreatePost, PostDraftProvider } from './_components/create-post';
 
 export default function SocialLayout({
   children,
@@ -40,27 +36,9 @@ export default function SocialLayout({
                 <CreatePost />
               </div>
             </div>
-            <div className="fixed bottom-0 right-0 z-10 flex flex-row items-center justify-center">
-              <PostButton />
-            </div>
           </PostDraftProvider>
         </Suspense>
       </div>
     </div>
   );
 }
-
-function PostButton() {
-  const { newDraft } = usePostDraft();
-  return (
-    <button
-      className="bg-blue-500 text-white px-4 py-2 rounded"
-      onClick={() => {
-        newDraft();
-      }}
-    >
-      Create Post
-    </button>
-  );
-}
-export { PostButton };
