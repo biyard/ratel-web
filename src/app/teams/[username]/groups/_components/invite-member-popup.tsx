@@ -3,12 +3,11 @@
 import SelectBox from '@/components/selectbox/selectbox';
 import { Group, TotalUser } from '@/lib/api/models/user';
 import React, { useState } from 'react';
-import CustomCheckbox from '@/components/checkbox/custom-checkbox';
+// import CustomCheckbox from '@/components/checkbox/custom-checkbox';
 import { Clear } from '@/components/icons';
 import SearchInput from '@/components/input/search-input';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
-import { useUser } from '@/app/(social)/_hooks/use-user';
 
 export default function InviteMemberPopup({
   groups,
@@ -18,14 +17,11 @@ export default function InviteMemberPopup({
   onclick: (group_id: number, users: number[]) => void;
 }) {
   const { get } = useApiCall();
-  const users = useUser(1, 20);
   const [groupIndex, setGroupIndex] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState(groups[0]);
 
   const [selectedUsers, setSelectedUsers] = useState<TotalUser[]>([]);
   const [searchValue, setSearchValue] = useState('');
-
-  const totalUsers = users.data.items;
 
   return (
     <div className="flex flex-col w-[900px] min-h-[400px] max-w-[900px] min-w-[400px] max-mobile:!w-full max-mobile:!max-w-full gap-5">
@@ -93,7 +89,7 @@ export default function InviteMemberPopup({
           />
         </div>
 
-        <div className="flex flex-col w-full gap-[14px] h-[250px] overflow-y-scroll">
+        {/* <div className="flex flex-col w-full gap-[14px] h-[250px] overflow-y-scroll">
           {totalUsers.slice(0, 20).map((user) => (
             <div key={user.id} className="flex flex-row gap-[11px] my-2.5">
               {user.profile_url && !user.profile_url.includes('test') ? (
@@ -136,7 +132,7 @@ export default function InviteMemberPopup({
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
 
         <InviteMemberButton
           onclick={() => {

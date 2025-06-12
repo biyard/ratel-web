@@ -16,6 +16,7 @@ import { Group } from '@/lib/api/models/user';
 import Image from 'next/image';
 import InviteMemberPopup from './_components/invite-member-popup';
 import { useTeamByUsername } from '../../_hooks/use-team';
+import { Folder } from 'lucide-react';
 
 export default function TeamGroups({ username }: { username: string }) {
   const query = useTeamByUsername(username);
@@ -109,13 +110,7 @@ function ListGroups({ groups }: { groups: Group[] }) {
           key={group.id}
           className="flex flex-row w-full h-fit gap-[15px] bg-transparent rounded-sm border border-neutral-800 p-5"
         >
-          <Image
-            src={group.image_url || '/default-profile.png'}
-            alt={group.name}
-            width={48}
-            height={48}
-            className="rounded-lg object-cover w-12 h-12"
-          />
+          <Folder className="w-12 h-12 stroke-neutral-400" />
 
           <div className="flex flex-col justify-between items-start">
             <div className="font-bold text-white text-base/[20px]">

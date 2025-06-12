@@ -1,6 +1,5 @@
 'use client';
 import CustomCheckbox from '@/components/checkbox/custom-checkbox';
-import FileUploader from '@/components/file-uploader';
 import Switch from '@/components/switch/switch';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -40,7 +39,6 @@ export default function CreateGroupPopup({
     groupPermissions: GroupPermission[],
   ) => void;
 }) {
-  const [profileUrl, setProfileUrl] = useState('');
   const [groupName, setGroupName] = useState('');
   const [groupDescription, setGroupDescription] = useState('');
   const [groupPermissions, setGroupPermissions] = useState<GroupPermission[]>(
@@ -50,25 +48,8 @@ export default function CreateGroupPopup({
   const [imageRequired, setGroupImageRequired] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const handleProfileUrl = (url: string) => {
-    setProfileUrl(url);
-  };
-
   return (
     <div className="flex flex-col w-[900px] max-w-[900px] min-w-[400px] max-mobile:!w-full max-mobile:!max-w-full gap-5">
-      <FileUploader onUploadSuccess={handleProfileUrl} className="w-fit h-fit">
-        {profileUrl ? (
-          <img
-            src={profileUrl}
-            alt="Group Logo"
-            className="w-[84px] h-[84px] rounded-[12px] object-cover cursor-pointer"
-          />
-        ) : (
-          <button className="w-[84px] h-[84px] rounded-[12px] bg-c-wg-80 text-sm font-semibold flex items-center justify-center text-c-wg-50">
-            Upload
-          </button>
-        )}
-      </FileUploader>
       <GroupName groupName={groupName} setGroupName={setGroupName} />
       <GroupDescription
         groupDescription={groupDescription}
@@ -84,10 +65,6 @@ export default function CreateGroupPopup({
       <div className="flex flex-row w-full justify-end items-center px-[30px] py-[25px]">
         <CreateButton
           onClick={() => {
-            if (profileUrl.length == 0) {
-              setGroupImageRequired(true);
-              return;
-            }
             if (groupName.length == 0) {
               setGroupImageRequired(false);
               setGroupNameRequired(true);
@@ -100,7 +77,7 @@ export default function CreateGroupPopup({
               return;
             }
 
-            onCreate(profileUrl, groupName, groupDescription, groupPermissions);
+            onCreate('', groupName, groupDescription, groupPermissions);
           }}
         />
       </div>
