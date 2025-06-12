@@ -16,13 +16,27 @@ export default function TeamSidemenu({ team }: TeamSidemenuProps) {
       <TeamProfile team={team} />
 
       <nav className="px-2 py-5 px-3 w-full rounded-[10px] bg-component-bg">
-        <Link href={route.teams()} className="sidemenu-link">
+        <Link
+          href={route.teamByUsername(team.username)}
+          className="sidemenu-link"
+        >
           <UserGroup />
-          <span>Teams</span>
+          <span>Home</span>
         </Link>
-        <Link href={route.groups()} className="sidemenu-link">
+        <Link href={route.teamGroups(team.username)} className="sidemenu-link">
           <UserGroup />
           <span>Groups</span>
+        </Link>
+        <Link href={route.teamMembers(team.username)} className="sidemenu-link">
+          <UserGroup />
+          <span>Members</span>
+        </Link>
+        <Link
+          href={route.teamSettings(team.username)}
+          className="sidemenu-link"
+        >
+          <UserGroup />
+          <span>Settings</span>
         </Link>
       </nav>
 
