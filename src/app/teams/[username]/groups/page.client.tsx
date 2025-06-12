@@ -13,7 +13,6 @@ import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { logger } from '@/lib/logger';
 import { Group } from '@/lib/api/models/user';
-import Image from 'next/image';
 import InviteMemberPopup from './_components/invite-member-popup';
 import { useTeamByUsername } from '../../_hooks/use-team';
 import { Folder } from 'lucide-react';
@@ -40,6 +39,7 @@ export default function TeamGroups({ username }: { username: string }) {
               popup
                 .open(
                   <InviteMemberPopup
+                    team_id={team.id}
                     groups={groups}
                     onclick={async (group_id, users) => {
                       console.log('group: ', team.id, group_id, users);

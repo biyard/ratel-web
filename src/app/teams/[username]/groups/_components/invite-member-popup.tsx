@@ -8,20 +8,64 @@ import { Clear } from '@/components/icons';
 import SearchInput from '@/components/input/search-input';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
+import { checkEmailRequest } from '@/lib/api/models/group';
+import clsx from 'clsx';
+import { logger } from '@/lib/logger';
 
 export default function InviteMemberPopup({
+  team_id,
   groups,
   onclick,
 }: {
+  team_id: number;
   groups: Group[];
   onclick: (group_id: number, users: number[]) => void;
 }) {
-  const { get } = useApiCall();
+  const { post, get } = useApiCall();
   const [groupIndex, setGroupIndex] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState(groups[0]);
 
   const [selectedUsers, setSelectedUsers] = useState<TotalUser[]>([]);
+  const [isError, setIsError] = useState<boolean[]>([]);
   const [searchValue, setSearchValue] = useState('');
+  const [errorCount, setErrorCount] = useState(0);
+
+  const setValue = async (value: string, isEnter: boolean) => {
+    if (value.includes(',') || isEnter) {
+      const emails = value
+        .split(',')
+        .map((email) => email.trim())
+        .filter((email) => email !== '');
+
+      for (const email of emails) {
+        const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!isValidEmail) continue;
+
+        const data = await get(ratelApi.users.getUserByEmail(email));
+        const result = await post(
+          ratelApi.groups.check_email(team_id, selectedGroup.id),
+          checkEmailRequest(email),
+        );
+
+        if (data) {
+          const exists = selectedUsers.some((u) => u.id === data.id);
+          if (!exists) {
+            const value: boolean = !result ? true : false;
+            setSelectedUsers((prev) => [...prev, data]);
+            setIsError((prevErrors) => [...prevErrors, value]);
+
+            if (value) {
+              setErrorCount((prev) => Math.max(prev + 1, 0));
+            }
+          }
+        }
+      }
+
+      setSearchValue('');
+    } else {
+      setSearchValue(value);
+    }
+  };
 
   return (
     <div className="flex flex-col w-[900px] min-h-[400px] max-w-[900px] min-w-[400px] max-mobile:!w-full max-mobile:!max-w-full gap-5">
@@ -44,15 +88,31 @@ export default function InviteMemberPopup({
         </div>
 
         <div className="flex flex-wrap gap-1">
-          {selectedUsers.map((user) => {
+          {selectedUsers.map((user, index) => {
             return (
               <SelectedUserInfo
                 key={user.id}
                 username={user.nickname}
+                isError={isError[index]}
                 onremove={() => {
-                  setSelectedUsers((prev) =>
-                    prev.filter((u) => u.id !== user.id),
-                  );
+                  setSelectedUsers((prevUsers) => {
+                    const newUsers = [...prevUsers];
+                    newUsers.splice(index, 1);
+                    return newUsers;
+                  });
+
+                  setIsError((prevErrors) => {
+                    const newErrors = [...prevErrors];
+                    const v = newErrors.splice(index, 1)[0];
+                    logger.debug('value: ', v);
+
+                    const newErrorCount = newErrors.filter(
+                      (e) => e === true,
+                    ).length;
+                    setErrorCount(newErrorCount);
+
+                    return newErrors;
+                  });
                 }}
               />
             );
@@ -62,79 +122,27 @@ export default function InviteMemberPopup({
 
       <div className="flex flex-col w-full gap-[10px]">
         <div className="font-bold text-[15px]/[28px] text-neutral-400">
-          Suggested
+          Input User Email
+        </div>
+
+        <div className="font-medium text-[12px]/[28px] text-neutral-400">
+          (exp: test@test.test, test2@test.test, test3@test.test)
         </div>
 
         <div className="mt-[10px]">
           <SearchInput
             value={searchValue}
-            setValue={setSearchValue}
+            setValue={async (value) => {
+              setValue(value, false);
+            }}
             onenter={async () => {
-              const data = await get(
-                ratelApi.users.getUserByEmail(searchValue),
-              );
-
-              if (data) {
-                setSelectedUsers((prev) => {
-                  const exists = prev.some((u) => u.id === data.id);
-                  if (exists) {
-                    return prev.filter((u) => u.id !== data.id);
-                  } else {
-                    return [...prev, data];
-                  }
-                });
-                setSearchValue('');
-              }
+              setValue(searchValue, true);
             }}
           />
         </div>
 
-        {/* <div className="flex flex-col w-full gap-[14px] h-[250px] overflow-y-scroll">
-          {totalUsers.slice(0, 20).map((user) => (
-            <div key={user.id} className="flex flex-row gap-[11px] my-2.5">
-              {user.profile_url && !user.profile_url.includes('test') ? (
-                <img
-                  src={user.profile_url || '/default-profile.png'}
-                  alt={user.username}
-                  width={48}
-                  height={48}
-                  className="rounded-full object-cover w-[48px] h-[48px]"
-                />
-              ) : (
-                <div className="rounded-full w-[48px] h-[48px] bg-neutral-500" />
-              )}
-
-              <div className="flex flex-col gap-1 flex-1">
-                <div className="font-bold text-white text-[15px]/[20px]">
-                  {user.nickname}
-                </div>
-
-                <div className="font-semibold text-neutral-500 text-sm/[20px]">
-                  {user.email}
-                </div>
-              </div>
-
-              <div className="mr-[10px]">
-                <CustomCheckbox
-                  onChange={() => {
-                    setSelectedUsers((prev) => {
-                      const exists = prev.some((u) => u.id === user.id);
-                      if (exists) {
-                        return prev.filter((u) => u.id !== user.id);
-                      } else {
-                        return [...prev, user];
-                      }
-                    });
-                  }}
-                  checked={selectedUsers.some((u) => u.id === user.id)}
-                  isRounded={true}
-                />
-              </div>
-            </div>
-          ))}
-        </div> */}
-
         <InviteMemberButton
+          isError={errorCount != 0}
           onclick={() => {
             const selectedUserIds = selectedUsers.map((user) => user.id);
             onclick(selectedGroup.id, selectedUserIds);
@@ -145,28 +153,56 @@ export default function InviteMemberPopup({
   );
 }
 
-function InviteMemberButton({ onclick }: { onclick: () => void }) {
+function InviteMemberButton({
+  isError,
+  onclick,
+}: {
+  isError: boolean;
+  onclick: () => void;
+}) {
+  const containerClass = clsx(
+    'flex flex-row w-full justify-center items-center my-[15px] py-[15px] rounded-lg font-bold text-[#000203] text-base',
+    isError ? 'cursor-not-allowed bg-neutral-500' : 'cursor-pointer bg-primary',
+  );
   return (
-    <div
-      className="cursor-pointer flex flex-row w-full justify-center items-center my-[15px] py-[15px] rounded-lg bg-primary font-bold text-[#000203] text-base"
-      onClick={() => {
-        onclick();
-      }}
-    >
-      Send
+    <div className="flex flex-col w-full">
+      <div
+        className={containerClass}
+        onClick={() => {
+          if (!isError) {
+            onclick();
+          }
+        }}
+      >
+        Send
+      </div>
+
+      {isError && (
+        <div className="font-semibold text-base text-red-400">
+          The user does not exist or already exists in the group. Please check
+          the email again.
+        </div>
+      )}
     </div>
   );
 }
 
 function SelectedUserInfo({
   username,
+  isError,
   onremove,
 }: {
   username: string;
+  isError: boolean;
   onremove: () => void;
 }) {
+  const containerClass = clsx(
+    'flex flex-row w-fit gap-1 justify-start items-center bg-primary rounded-[100px] px-[12px] py-[2px]',
+    isError ? 'border-[3px] border-[#ff0000]' : '',
+  );
+
   return (
-    <div className="flex flex-row w-fit gap-1 justify-start items-center bg-primary rounded-[100px] px-[12px] py-[2px]">
+    <div className={containerClass}>
       <div className="font-medium text-neutral-900 text-[15px]/[24px]">
         {username}
       </div>
@@ -174,9 +210,7 @@ function SelectedUserInfo({
         width={24}
         height={24}
         className="w-6 h-6 cursor-pointer"
-        onClick={() => {
-          onremove();
-        }}
+        onClick={onremove}
       />
     </div>
   );

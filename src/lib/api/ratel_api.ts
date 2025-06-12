@@ -33,6 +33,8 @@ export const ratelApi = {
     create_group: (team_id: number) => `/v1/teams/${team_id}/groups`,
     invite_member: (team_id: number, group_id: number) =>
       `/v1/teams/${team_id}/groups/${group_id}`,
+    check_email: (team_id: number, group_id: number) =>
+      `/v1/teams/${team_id}/groups/${group_id}`,
   },
   feeds: {
     comment: () => '/v1/feeds',
