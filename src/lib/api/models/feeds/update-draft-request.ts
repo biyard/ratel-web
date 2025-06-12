@@ -1,9 +1,8 @@
 import { FileInfo } from '../feeds';
 
-export interface WritePostRequest {
-  write_post: {
+export interface updateDraftRequest {
+  update: {
     html_contents: string;
-    user_id: number;
     industry_id: number;
     title: string;
     quote_feed_id: number | null;
@@ -18,20 +17,18 @@ export enum UrlType {
   Image = 1,
 }
 
-export function writePostRequest(
+export function updateDraftRequest(
   html_contents: string,
-  user_id: number,
   industry_id: number,
   title: string,
   quote_feed_id: number | null,
   files: FileInfo[],
   url: string | null,
   url_type: UrlType = UrlType.None,
-): WritePostRequest {
+): updateDraftRequest {
   return {
-    write_post: {
+    update: {
       html_contents,
-      user_id,
       industry_id,
       title,
       quote_feed_id,

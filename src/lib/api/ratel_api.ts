@@ -1,3 +1,4 @@
+import { FeedStatus } from './models/feeds';
 import { FileType } from './models/file-type';
 import { gql } from '@apollo/client';
 
@@ -36,9 +37,18 @@ export const ratelApi = {
   feeds: {
     comment: () => '/v1/feeds',
     writePost: () => '/v1/feeds',
+    createDraft: () => '/v1/feeds',
+    updateDraft: (post_id: number) => `/v1/feeds/${post_id}`,
+    publishDraft: (post_id: number) => `/v1/feeds/${post_id}`,
+
     likePost: (post_id: number) => `/v1/feeds/${post_id}`,
-    getPostsByUserId: (user_id: number, page: number, size: number) =>
-      `/v1/feeds?param-type=query&action=posts-by-user-id&bookmark=${page}&size=${size}&user-id=${user_id}`,
+    getPostsByUserId: (
+      user_id: number,
+      page: number,
+      size: number,
+      status: FeedStatus,
+    ) =>
+      `/v1/feeds?param-type=query&action=posts-by-user-id&bookmark=${page}&size=${size}&user-id=${user_id}&status=${status}`,
     getFeedsByFeedId: (feed_id: number) => `/v1/feeds/${feed_id}`,
     getPosts: (page: number, size: number) =>
       `/v1/feeds?param-type=query&bookmark=${page}&size=${size}`,
