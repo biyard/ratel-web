@@ -8,6 +8,13 @@
 // } from '@/lib/api/models/feeds/write-post-request';
 import { Metadata } from 'next';
 import TeamSettings from './page.client';
+import { logger } from '@/lib/logger';
+import { client } from '@/lib/apollo';
+import { ratelApi } from '@/lib/api/ratel_api';
+
+export interface TeamLayoutProps {
+  params: Promise<{ username: string }>;
+}
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -39,6 +46,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
-  return <TeamSettings />;
+export default async function Page({ params }: TeamLayoutProps) {
+  const { username } = await params;
+  logger.debug('TeamLayout: username', username);
+  const {
+    data: { users },
+  } = await client.query(ratelApi.graphql.getTeamByTeamname(username));
+  logger.debug('TeamLayout: users', users);
+
+  const [team] = users;
+  logger.debug('TeamLayout: team', team);
+
+  return <TeamSettings team={team} />;
 }
