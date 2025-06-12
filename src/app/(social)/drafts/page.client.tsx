@@ -7,6 +7,10 @@ import { logger } from '@/lib/logger';
 import { FeedStatus } from '@/lib/api/models/feeds';
 import { usePostDraft } from '../_components/create-post';
 import CreatePostButton from '../_components/create-post-button';
+import { Row } from '@/components/ui/row';
+import { FeedContents, IndustryTag, UserBadge } from '@/components/feed-card';
+import { UserType } from '@/lib/api/models/user';
+import TimeAgo from '@/components/time-ago';
 
 export default function MyPostsPage() {
   const { data: user } = useSuspenseUserInfo();
@@ -19,6 +23,7 @@ export default function MyPostsPage() {
   const drafts = data?.items.map((item) => ({
     id: item.id,
     title: item.title!,
+    updated_at: item.updated_at,
     contents: item.html_contents,
     url: item.url,
   }));
@@ -29,9 +34,9 @@ export default function MyPostsPage() {
         {drafts?.length != 0 ? (
           <Col className="flex-1">
             {drafts?.map((props) => (
-              <div
-                key={`feed-${props.id}`}
-                className="cursor-pointer bg-component-bg rounded-[10px] px-[16px] py-[12px] mb-[8px] hover:bg-gray-700 transition-colors duration-200 text-white"
+              <Col
+                key={props.id}
+                className="cursor-pointer pt-5 pb-2.5 bg-component-bg rounded-lg"
                 onClick={(evt) => {
                   loadDraft(props.id);
                   setExpand(true);
@@ -39,8 +44,26 @@ export default function MyPostsPage() {
                   evt.stopPropagation();
                 }}
               >
-                (Draft) <span className="font-extrabold">{props.title}</span>
-              </div>
+                <Row className="justify-between px-5">
+                  <Row>
+                    <IndustryTag industry={'CRYPTO'} />
+                  </Row>
+                </Row>
+                <div className="flex flex-row items-center gap-1 w-full line-clamp-2 font-bold text-xl/[25px] tracking-[0.5px] align-middle text-white px-5">
+                  <div className="text-sm font-normal">(Draft)</div>
+                  <div className="font-normal">{props.title}</div>
+                </div>
+                <Row className="justify-between items-center px-5">
+                  <UserBadge
+                    profile_url={user.profile_url ?? ''}
+                    name={user.username}
+                    author_type={UserType.Individual}
+                  />
+                  <TimeAgo timestamp={props.updated_at} />
+                </Row>
+                <Row className="justify-between px-5"></Row>
+                <FeedContents contents={props.contents} url={props.url} />
+              </Col>
             ))}
           </Col>
         ) : (
