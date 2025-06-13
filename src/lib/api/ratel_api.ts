@@ -19,6 +19,9 @@ export const ratelApi = {
   },
   teams: {
     createTeam: () => '/v1/teams',
+    getTeamById: (team_id: number) => `/v1/teams/${team_id}`,
+    getTeamByUsername: (username: string) =>
+      `/v1/teams?param-type=read&action=get-by-username&username=${username}`,
   },
   subscription: {
     subscribe: () => '/v1/subscriptions?action=subscribe',
@@ -29,6 +32,8 @@ export const ratelApi = {
   groups: {
     create_group: (team_id: number) => `/v1/teams/${team_id}/groups`,
     invite_member: (team_id: number, group_id: number) =>
+      `/v1/teams/${team_id}/groups/${group_id}`,
+    check_email: (team_id: number, group_id: number) =>
       `/v1/teams/${team_id}/groups/${group_id}`,
   },
   feeds: {

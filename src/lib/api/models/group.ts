@@ -40,6 +40,20 @@ export function inviteMemberRequest(user_ids: number[]): InviteMemberRequest {
   };
 }
 
+export interface CheckEmailRequest {
+  check_email: {
+    email: string;
+  };
+}
+
+export function checkEmailRequest(email: string): CheckEmailRequest {
+  return {
+    check_email: {
+      email,
+    },
+  };
+}
+
 export enum GroupPermission {
   ReadPosts = 0,
   WritePosts = 1,

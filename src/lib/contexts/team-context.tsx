@@ -6,6 +6,7 @@ export interface TeamContextType {
   selectedTeam: Team;
   selectedIndex: number;
   setSelectedTeam: (index: number) => void;
+  updateSelectedTeam: (team: Team) => void;
 }
 
 export const TeamContext = createContext<TeamContextType>({
@@ -13,4 +14,5 @@ export const TeamContext = createContext<TeamContextType>({
   selectedTeam: {} as Team,
   selectedIndex: 0,
   setSelectedTeam: () => {},
+  updateSelectedTeam: () => {},
 });

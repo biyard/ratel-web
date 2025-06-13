@@ -6,15 +6,21 @@ import { Col } from '@/components/ui/col';
 import { Input } from '@/components/ui/input';
 import { Row } from '@/components/ui/row';
 import { Textarea } from '@/components/ui/textarea';
-import { Team } from '@/lib/api/models/team';
 import { userEditProfileRequest } from '@/lib/api/models/user';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useApiCall } from '@/lib/api/use-send';
-import { route } from '@/route';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
 
-export default function MyProfilePage({ team }: { team: Team }) {
+import React, { useContext, useMemo, useState } from 'react';
+import { TeamContext } from '@/lib/contexts/team-context';
+import { useRouter } from 'next/navigation';
+import { route } from '@/route';
+
+export default function SettingsPage({ username }: { username: string }) {
+  const { teams, updateSelectedTeam } = useContext(TeamContext);
+  const team = useMemo(() => {
+    return teams.find((t) => t.username === username);
+  }, [teams, username]);
+
   const { post } = useApiCall();
   const router = useRouter();
 
@@ -22,8 +28,9 @@ export default function MyProfilePage({ team }: { team: Team }) {
   const [nickname, setNickname] = useState(team?.nickname);
   const [htmlContents, setHtmlContents] = useState(team?.html_contents);
 
-  console.log('team: ', team);
-
+  if (!team) {
+    return <></>;
+  }
   const handleContents = (evt: React.FormEvent<HTMLTextAreaElement>) => {
     setHtmlContents(evt.currentTarget.value);
   };
@@ -37,13 +44,19 @@ export default function MyProfilePage({ team }: { team: Team }) {
   };
 
   const handleSave = async () => {
-    post(
+    await post(
       ratelApi.users.editProfile(team!.id),
       userEditProfileRequest(nickname!, htmlContents!, profileUrl),
     );
-    // FIXME: fix to enable refetch
-    // userinfo.refetch();
-    router.push(route.home());
+
+    updateSelectedTeam({
+      ...team!,
+      nickname: nickname!,
+      html_contents: htmlContents!,
+      profile_url: profileUrl,
+    });
+
+    router.push(route.teamByUsername(username));
   };
 
   return (

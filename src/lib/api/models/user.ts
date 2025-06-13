@@ -64,8 +64,7 @@ export interface Group {
 
   creator_id: number;
 
-  members: GroupMember[];
-
+  member_count: number;
   permissions: number;
 }
 
