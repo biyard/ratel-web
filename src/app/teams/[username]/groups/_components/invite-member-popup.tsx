@@ -82,11 +82,27 @@ export default function InviteMemberPopup({
         />
       </div>
 
-      <div className="flex flex-col w-full gap-[10px]">
+      <div className="flex flex-col w-full">
         <div className="font-bold text-[15px]/[28px] text-neutral-400">
-          Selected Users
+          Input User Email
         </div>
+        <div className="mt-[10px]">
+          <SearchInput
+            value={searchValue}
+            placeholder={
+              'Input the value (ex: test@test.test, test2@test.test, test3@test.test)'
+            }
+            setValue={async (value) => {
+              setValue(value, false);
+            }}
+            onenter={async () => {
+              setValue(searchValue, true);
+            }}
+          />
+        </div>
+      </div>
 
+      <div className="flex flex-col w-full gap-[10px]">
         <div className="flex flex-wrap gap-1">
           {selectedUsers.map((user, index) => {
             return (
@@ -120,35 +136,13 @@ export default function InviteMemberPopup({
         </div>
       </div>
 
-      <div className="flex flex-col w-full gap-[10px]">
-        <div className="font-bold text-[15px]/[28px] text-neutral-400">
-          Input User Email
-        </div>
-
-        <div className="font-medium text-[12px]/[28px] text-neutral-400">
-          (exp: test@test.test, test2@test.test, test3@test.test)
-        </div>
-
-        <div className="mt-[10px]">
-          <SearchInput
-            value={searchValue}
-            setValue={async (value) => {
-              setValue(value, false);
-            }}
-            onenter={async () => {
-              setValue(searchValue, true);
-            }}
-          />
-        </div>
-
-        <InviteMemberButton
-          isError={errorCount != 0}
-          onclick={() => {
-            const selectedUserIds = selectedUsers.map((user) => user.id);
-            onclick(selectedGroup.id, selectedUserIds);
-          }}
-        />
-      </div>
+      <InviteMemberButton
+        isError={errorCount != 0}
+        onclick={() => {
+          const selectedUserIds = selectedUsers.map((user) => user.id);
+          onclick(selectedGroup.id, selectedUserIds);
+        }}
+      />
     </div>
   );
 }
