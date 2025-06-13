@@ -27,6 +27,10 @@ export default function UserSidemenu() {
           <Post />
           <span>My Posts</span>
         </Link>
+        <Link href={route.drafts()} className="sidemenu-link">
+          <Post />
+          <span>Drafts</span>
+        </Link>
         <Link href={route.settings()} className="sidemenu-link">
           <Settings />
           <span>Settings</span>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Team } from '@/lib/api/models/team';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { TeamContext } from '@/lib/contexts/team-context';
@@ -8,15 +8,25 @@ import { TeamContext } from '@/lib/contexts/team-context';
 export const TeamProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: user } = useSuspenseUserInfo();
   const [selectedIndex, setSelectedTeam] = useState(0);
+  const [teams, setTeams] = useState<Team[]>([]);
 
-  const teams: Team[] = useMemo(() => {
-    if (!user) return [];
-    return [{ ...user }, ...(user.teams ?? [])];
+  useEffect(() => {
+    if (user) {
+      setTeams([{ ...user }, ...(user.teams ?? [])]);
+    }
   }, [user]);
 
-  const selectedTeam: Team | undefined = useMemo(() => {
+  const selectedTeam = useMemo(() => {
     return teams[selectedIndex];
   }, [teams, selectedIndex]);
+
+  const updateSelectedTeam = (updatedTeam: Team) => {
+    const updatedTeams = teams.map((team) =>
+      team.id === updatedTeam.id ? { ...team, ...updatedTeam } : team,
+    );
+    setTeams(updatedTeams);
+    setSelectedTeam(0);
+  };
 
   return (
     <TeamContext.Provider
@@ -25,6 +35,7 @@ export const TeamProvider = ({ children }: { children: React.ReactNode }) => {
         selectedTeam,
         selectedIndex,
         setSelectedTeam,
+        updateSelectedTeam,
       }}
     >
       {children}

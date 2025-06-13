@@ -59,7 +59,7 @@ export default function FeedCard(props: FeedCardProps) {
       className="cursor-pointer bg-component-bg rounded-[10px]"
       onClick={() => {
         const spaceId = props.space_id;
-        if (spaceId == 0) {
+        if (!spaceId || spaceId == 0) {
           return;
         }
 

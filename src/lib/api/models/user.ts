@@ -59,9 +59,36 @@ export interface Group {
   updated_at: number;
 
   name: string;
-  user_id: number;
+  description: string;
+  image_url: string;
 
+  creator_id: number;
+
+  member_count: number;
   permissions: number;
+}
+
+export interface GroupMember {
+  id: number;
+  created_at: number;
+  updated_at: number;
+
+  nickname: string;
+  username: string;
+  profile_url: string;
+}
+
+export interface TotalUser {
+  id: number;
+  created_at: number;
+  updated_at: number;
+
+  nickname: string;
+  username: string;
+  email: string;
+  profile_url: string;
+
+  user_type: UserType;
 }
 
 export interface UserEditProfileRequest {

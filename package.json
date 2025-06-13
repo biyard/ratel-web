@@ -15,6 +15,7 @@
     "@apollo/client": "^3.13.8",
     "@dfinity/agent": "^2.4.1",
     "@dfinity/identity": "^2.4.1",
+    "@heroicons/react": "^2.2.0",
     "@lexical/html": "^0.32.1",
     "@lexical/react": "^0.32.1",
     "@lottiefiles/dotlottie-react": "^0.13.5",

@@ -20,6 +20,7 @@ import { NftSelectModal } from './nft-select-modal';
 import { Badge } from '@/lib/api/models/badge';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
+import { useUserBadge } from '@/lib/api/hooks/user-badges';
 
 export interface SpaceFilesProps {
   files: FileInfo[];
@@ -33,6 +34,10 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
 
   const redeem = useRedeemCode(spaceId);
   const { post } = useApiCall();
+
+  const userBadges = useUserBadge(spaceId, 1, 20);
+
+  const badgeList = userBadges.data.items ?? [];
 
   const handlePdfDownload = async (file: FileInfo) => {
     const redeemId = redeem.data.id;
@@ -50,6 +55,10 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
     });
   };
   const handleFileDownload = (file: FileInfo) => {
+    if (badgeList.length != 0) {
+      return;
+    }
+
     popup
       .open(
         <NftSelectModal
@@ -82,6 +91,7 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
         <div className="grid grid-cols-2 max-tablet:grid-cols-1 gap-2.5">
           {files?.map((file, index) => (
             <File
+              enabled={badgeList.length == 0}
               file={file}
               key={'file ' + index}
               onClick={() => handleFileDownload(file)}
@@ -93,10 +103,20 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
   );
 }
 
-function File({ file, onClick }: { file: FileInfo; onClick: () => void }) {
+function File({
+  enabled,
+  file,
+  onClick,
+}: {
+  enabled: boolean;
+  file: FileInfo;
+  onClick: () => void;
+}) {
   return (
     <div
-      className="cursor-pointer flex flex-row justify-start items-center w-full gap-2 p-4 bg-neutral-800 rounded-[8px]"
+      className={`flex flex-row justify-start items-center ${
+        enabled ? 'cursor-pointer' : 'cursor-not-allowed'
+      } w-full gap-2 p-4 bg-neutral-800 rounded-[8px]`}
       onClick={onClick}
     >
       <div className="[&>svg]:size-9">
