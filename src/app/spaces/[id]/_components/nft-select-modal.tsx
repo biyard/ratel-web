@@ -1,6 +1,3 @@
-
-
-
 'use client';
 import React, { useState } from 'react';
 import { usePopup } from '@/lib/contexts/popup-service';
@@ -42,7 +39,7 @@ export function NftSelectModal({
               setSelectNft((prev) =>
                 prev.includes(id)
                   ? prev.filter((i) => i !== id)
-                  : [...prev, id]
+                  : [...prev, id],
               );
             }}
             className="cursor-pointer"
@@ -54,7 +51,7 @@ export function NftSelectModal({
             >
               {selectNft.includes(id) && (
                 <div className="absolute top-1 left-1 z-10 w-5 h-5">
-                  <RoundCheckIcon/>
+                  <RoundCheckIcon />
                 </div>
               )}
               <img src={image_url} alt={name} className="rounded-md" />
