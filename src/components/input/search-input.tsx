@@ -4,8 +4,10 @@ export default function SearchInput({
   value,
   setValue,
   onenter,
+  placeholder,
 }: {
   value: string;
+  placeholder: string;
   setValue: (value: string) => void;
   onenter: () => void;
 }) {
@@ -18,11 +20,11 @@ export default function SearchInput({
   return (
     <input
       type="text"
-      placeholder="Enter user email"
+      placeholder={placeholder}
       value={value}
       onChange={(e) => setValue(e.target.value)}
       onKeyDown={handleKeyDown}
-      className="bg-transparent text-white placeholder:text-neutral-500 text-base outline-none w-full focus:border focus:border-primary p-[10px] rounded-sm"
+      className="bg-transparent text-white placeholder:text-neutral-500 border border-[#464646] text-base outline-none w-full focus:border focus:border-primary p-[10px] rounded-sm"
     />
   );
 }
