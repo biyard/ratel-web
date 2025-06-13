@@ -1,6 +1,3 @@
-
-
-
 'use client';
 import React, { useState } from 'react';
 import { usePopup } from '@/lib/contexts/popup-service';
@@ -39,11 +36,7 @@ export function NftSelectModal({
             key={id}
             onClick={() => {
               setContract(contract);
-              setSelectNft((prev) =>
-                prev.includes(id)
-                  ? prev.filter((i) => i !== id)
-                  : [...prev, id]
-              );
+              setSelectNft([id]);
             }}
             className="cursor-pointer"
           >
@@ -54,7 +47,7 @@ export function NftSelectModal({
             >
               {selectNft.includes(id) && (
                 <div className="absolute top-1 left-1 z-10 w-5 h-5">
-                  <RoundCheckIcon/>
+                  <RoundCheckIcon />
                 </div>
               )}
               <img src={image_url} alt={name} className="rounded-md" />
@@ -64,7 +57,7 @@ export function NftSelectModal({
       </div>
 
       <Button
-        className="w-full bg-primary text-white text-xl disabled:bg-neutral-600 disabled:text-neutral-400"
+        className="w-full bg-primary text-white text-xl disabled:bg-neutral-600 disabled:text-neutral-400 hover:bg-[#ffb000]"
         disabled={selectNft.length === 0 || loading}
         onClick={async () => {
           if (selectNft.length > 0) {
