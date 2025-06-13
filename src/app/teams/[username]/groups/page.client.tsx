@@ -126,7 +126,7 @@ function ListGroups({ groups }: { groups: Group[] }) {
 function InviteMemberButton({ onClick }: { onClick: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row max-w-[170px] w-full justify-start items-center px-4 py-3 bg-primary rounded-[100px] gap-1"
+      className="cursor-pointer flex flex-row w-fit justify-start items-center px-4 py-3 bg-primary rounded-[100px] gap-1"
       onClick={onClick}
     >
       <User className="w-4 h-4 [&>path]:stroke-[#000203]" />
@@ -140,7 +140,7 @@ function InviteMemberButton({ onClick }: { onClick: () => void }) {
 function CreateGroupButton({ onClick }: { onClick: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row max-w-[170px] w-full justify-start items-center px-4 py-3 bg-white rounded-[100px] gap-1"
+      className="cursor-pointer flex flex-row w-fit justify-start items-center px-4 py-3 bg-white rounded-[100px] gap-1"
       onClick={onClick}
     >
       <Edit1 className="w-4 h-4" />
