@@ -13,6 +13,7 @@ import { useApiCall } from '@/lib/api/use-send';
 import { route } from '@/route';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import WalletSummary from '../_components/wallet-summary';
 
 export default function MyProfilePage({ team }: { team: Team }) {
   const { post } = useApiCall();
@@ -89,6 +90,10 @@ export default function MyProfilePage({ team }: { team: Team }) {
             Save
           </Button>
         </Row>
+      </Col>
+
+      <Col>
+        <WalletSummary></WalletSummary>
       </Col>
     </div>
   );
