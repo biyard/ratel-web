@@ -54,8 +54,9 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
       fileName: file.name,
     });
   };
-  const handleFileDownload = (file: FileInfo) => {
+  const handleFileDownload = async (file: FileInfo) => {
     if (badgeList.length != 0) {
+      await handlePdfDownload(file);
       return;
     }
 
@@ -71,9 +72,12 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
               },
             });
             if (res) {
+              userBadges.refetch();
               await handlePdfDownload(file);
+              popup.close();
               return true;
             } else {
+              popup.close();
               return false;
             }
           }}
@@ -91,7 +95,6 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
         <div className="grid grid-cols-2 max-tablet:grid-cols-1 gap-2.5">
           {files?.map((file, index) => (
             <File
-              enabled={badgeList.length == 0}
               file={file}
               key={'file ' + index}
               onClick={() => handleFileDownload(file)}
@@ -103,20 +106,10 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
   );
 }
 
-function File({
-  enabled,
-  file,
-  onClick,
-}: {
-  enabled: boolean;
-  file: FileInfo;
-  onClick: () => void;
-}) {
+function File({ file, onClick }: { file: FileInfo; onClick: () => void }) {
   return (
     <div
-      className={`flex flex-row justify-start items-center ${
-        enabled ? 'cursor-pointer' : 'cursor-not-allowed'
-      } w-full gap-2 p-4 bg-neutral-800 rounded-[8px]`}
+      className={`cursor-pointer flex flex-row justify-start items-center w-full gap-2 p-4 bg-neutral-800 rounded-[8px]`}
       onClick={onClick}
     >
       <div className="[&>svg]:size-9">

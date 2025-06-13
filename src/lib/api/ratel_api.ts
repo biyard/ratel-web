@@ -42,7 +42,7 @@ export const ratelApi = {
     createDraft: () => '/v1/feeds',
     updateDraft: (post_id: number) => `/v1/feeds/${post_id}`,
     publishDraft: (post_id: number) => `/v1/feeds/${post_id}`,
-
+    removeDraft: (post_id: number) => `/v1/feeds/${post_id}?action=delete`,
     likePost: (post_id: number) => `/v1/feeds/${post_id}`,
     getPostsByUserId: (
       user_id: number,
