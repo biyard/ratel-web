@@ -11,7 +11,7 @@ export default function TeamMembers({ username }: { username: string }) {
     .flat()
     .filter((g): g is User => g !== undefined);
 
-  let team = query.data;
+  const team = query.data;
 
   return (
     <div className="flex flex-col w-full max-w-[1152px] px-4 py-5 gap-[10px] bg-[#191919] rounded-lg h-fit">
