@@ -11,6 +11,7 @@ import { ratelApi } from '@/lib/api/ratel_api';
 import { checkEmailRequest } from '@/lib/api/models/group';
 import clsx from 'clsx';
 import { logger } from '@/lib/logger';
+import { checkString } from '@/lib/string-filter-utils';
 
 export default function InviteMemberPopup({
   team_id,
@@ -39,7 +40,9 @@ export default function InviteMemberPopup({
 
       for (const email of emails) {
         const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        if (!isValidEmail) continue;
+        if (checkString(email) || !isValidEmail) {
+          continue;
+        }
 
         const data = await get(ratelApi.users.getUserByEmail(email));
         const result = await post(
@@ -90,7 +93,7 @@ export default function InviteMemberPopup({
           <SearchInput
             value={searchValue}
             placeholder={
-              'Input the value (ex: test@test.test, test2@test.test, test3@test.test)'
+              'Input the value (ex: example@example.com, example2@example.com, example3@example.com)'
             }
             setValue={async (value) => {
               setValue(value, false);

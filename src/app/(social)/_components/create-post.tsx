@@ -58,6 +58,8 @@ import Image from 'next/image';
 import { createDraftRequest } from '@/lib/api/models/feeds/create-draft';
 import { useQueryClient } from '@tanstack/react-query';
 import { postByUserIdQk } from '../_hooks/use-posts';
+import { checkString } from '@/lib/string-filter-utils';
+import { showErrorToast } from '@/lib/toast';
 
 const editorTheme = {
   ltr: 'text-left',
@@ -204,7 +206,11 @@ export function CreatePost() {
     setImage(null);
   };
 
-  const isSubmitDisabled = !title.trim() || status !== 'idle';
+  const isSubmitDisabled =
+    !title.trim() ||
+    checkString(title) ||
+    checkString(content ?? '') ||
+    status !== 'idle';
 
   const createEditorStateFromHTML = useCallback(
     (editor: LexicalEditor, htmlString: string) => {
@@ -520,6 +526,11 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
 
       try {
         let currentDraftId = draftId;
+        if (checkString(currentTitle) || checkString(currentContent)) {
+          showErrorToast('Please remove the test keyword');
+          return;
+        }
+
         if (isCreating) {
           const data: Feed = await post(
             ratelApi.feeds.createDraft(),
@@ -591,6 +602,11 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [title, content, image, status, saveDraft]);
 
   const publishPost = useCallback(async () => {
+    if (checkString(title) || checkString(content ?? '')) {
+      showErrorToast('Please remove the test keyword');
+      return;
+    }
+
     if (!draftId || !title.trim() || status !== 'idle' || content == null)
       return;
 
