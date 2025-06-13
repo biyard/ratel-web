@@ -1,5 +1,9 @@
 import { FileInfo } from '../feeds';
 
+export interface removeDraftRequest {
+  delete: object;
+}
+
 export interface updateDraftRequest {
   update: {
     html_contents: string;
@@ -36,5 +40,11 @@ export function updateDraftRequest(
       url,
       url_type,
     },
+  };
+}
+
+export function removeDraftRequest(): removeDraftRequest {
+  return {
+    delete: {},
   };
 }
