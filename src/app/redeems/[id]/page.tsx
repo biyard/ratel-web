@@ -24,7 +24,6 @@ export default function RedeemPage() {
   useEffect(() => {
     const fetchRedeemDetails = async () => {
       try {
-        console.log(`Calling redeem API for ID: ${metaId}, Code: ${code}`);
         if (code === undefined || isNaN(metaId)) {
           router.replace('/');
         }

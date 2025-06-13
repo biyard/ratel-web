@@ -70,7 +70,6 @@ export default function MyPostsPage() {
                       e.stopPropagation();
 
                       await removeDraft(props.id);
-                      console.log('delete button clicked');
                     }}
                   >
                     {
