@@ -11,6 +11,8 @@ export default function TeamMembers({ username }: { username: string }) {
     .flat()
     .filter((g): g is User => g !== undefined);
 
+  let team = query.data;
+
   return (
     <div className="flex flex-col w-full max-w-[1152px] px-4 py-5 gap-[10px] bg-[#191919] rounded-lg h-fit">
       {members.map((member) => (
@@ -45,16 +47,16 @@ export default function TeamMembers({ username }: { username: string }) {
           </div>
 
           <div className="flex flex-wrap w-full justify-start items-start gap-[10px]">
-            {member.groups.map((group) => {
-              return (
+            {member.groups
+              .filter((group) => group.creator_id === team.id)
+              .map((group) => (
                 <div
                   key={group.id}
                   className="flex flex-row w-fit h-fit px-[5px] py-[3px] border border-neutral-800 bg-black rounded-lg font-medium text-base text-white"
                 >
                   {group.name}
                 </div>
-              );
-            })}
+              ))}
           </div>
         </div>
       ))}

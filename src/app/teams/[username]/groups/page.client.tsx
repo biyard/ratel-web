@@ -28,8 +28,6 @@ export default function TeamGroups({ username }: { username: string }) {
 
   const team = query.data;
 
-  console.log('my team: ', team);
-
   return (
     <div className="flex flex-col w-full gap-2.5">
       <div className="flex flex-row w-full justify-end items-end gap-[10px]">
@@ -42,7 +40,6 @@ export default function TeamGroups({ username }: { username: string }) {
                     team_id={team.id}
                     groups={groups}
                     onclick={async (group_id, users) => {
-                      console.log('group: ', team.id, group_id, users);
                       try {
                         await post(
                           ratelApi.groups.invite_member(team.id, group_id),
@@ -117,7 +114,7 @@ function ListGroups({ groups }: { groups: Group[] }) {
               {group.name}
             </div>
             <div className="font-semibold text-neutral-400 text-sm/[20px]">
-              {group.members.length} member
+              {group.member_count} member
             </div>
           </div>
         </div>
