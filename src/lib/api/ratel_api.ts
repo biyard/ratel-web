@@ -62,6 +62,8 @@ export const ratelApi = {
     getSpaceBySpaceId: (id: number) => `/v1/spaces/${id}`,
     getSpaceRedeemCodes: (space_id: number) =>
       `/v1/spaces/${space_id}/redeem-codes`,
+    getUserBadge: (space_id: number, page: number, size: number) =>
+      `/v1/spaces/${space_id}/badges?param-type=query&bookmark=${page}&size=${size}`,
     claimBadge: (space_id: number) => `/v1/spaces/${space_id}/badges`,
   },
   graphql: {
