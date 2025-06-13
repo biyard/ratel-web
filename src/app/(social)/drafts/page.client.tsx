@@ -11,8 +11,13 @@ import { Row } from '@/components/ui/row';
 import { FeedContents, IndustryTag, UserBadge } from '@/components/feed-card';
 import { UserType } from '@/lib/api/models/user';
 import TimeAgo from '@/components/time-ago';
+import { Delete2 } from '@/components/icons';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { removeDraftRequest } from '@/lib/api/models/feeds/update-draft-request';
 
 export default function MyPostsPage() {
+  const { post } = useApiCall();
   const { data: user } = useSuspenseUserInfo();
   const user_id = user?.id || 0;
   const posts = usePostByUserId(user_id, 1, 20, FeedStatus.Draft);
@@ -27,6 +32,16 @@ export default function MyPostsPage() {
     contents: item.html_contents,
     url: item.url,
   }));
+
+  const removeDraft = async (draft_id: number) => {
+    const res = await post(
+      ratelApi.feeds.removeDraft(draft_id),
+      removeDraftRequest(),
+    );
+    if (res) {
+      posts.refetch?.();
+    }
+  };
 
   return (
     <div className="flex flex-1 relative">
@@ -44,9 +59,27 @@ export default function MyPostsPage() {
                   evt.stopPropagation();
                 }}
               >
-                <Row className="justify-between px-5">
+                <Row className="justify-between px-5 items-center">
                   <Row>
                     <IndustryTag industry={'CRYPTO'} />
+                  </Row>
+                  <Row
+                    className="cursor-pointer w-[21px] h-[21px]"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+
+                      await removeDraft(props.id);
+                      console.log('delete button clicked');
+                    }}
+                  >
+                    {
+                      <Delete2
+                        width={24}
+                        height={24}
+                        className="[&>path]:stroke-neutral-500"
+                      />
+                    }
                   </Row>
                 </Row>
                 <div className="flex flex-row items-center gap-1 w-full line-clamp-2 font-bold text-xl/[25px] tracking-[0.5px] align-middle text-white px-5">
