@@ -28,8 +28,8 @@ export default function ProfileSection() {
 
       <div className="relative">
         <Image
-          src={team.profile_url || '/default-profile.png'}
-          alt={team.nickname}
+          src={team?.profile_url || '/default-profile.png'}
+          alt={team?.nickname ?? 'team profile'}
           width={80}
           height={80}
           className="rounded-full border-2 object-cover object-top"

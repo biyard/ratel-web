@@ -12,13 +12,14 @@ import {
 import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { ChevronDown } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import TeamCreationPopup from '../_popups/team-creation-popup';
 import { useUserInfo } from '@/lib/api/hooks/users';
 import { Team } from '@/lib/api/models/team';
 import Link from 'next/link';
 import { route } from '@/route';
 import { useAuth } from '@/lib/contexts/auth-context';
+import { TeamContext } from '@/lib/contexts/team-context';
 
 export interface TeamSelectorProps {
   onSelect?: (index: number) => void;
@@ -26,33 +27,22 @@ export interface TeamSelectorProps {
 }
 
 export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
-  const userInfo = useUserInfo();
-  const { logout } = useAuth();
-  const [selectedTeam, setSelectedTeam] = useState(0);
   const popup = usePopup();
-  const { data: user, isLoading } = userInfo;
-
-  let teams: Team[] = [];
-
-  if (user) {
-    teams = [
-      {
-        ...user,
-      },
-      ...(user.teams ?? []),
-    ];
-  }
+  const { logout } = useAuth();
+  const { teams, selectedIndex, setSelectedTeam } = useContext(TeamContext);
+  const userInfo = useUserInfo();
+  const { isLoading } = userInfo;
 
   useEffect(() => {
-    for (let i = 0; i < teams.length; i++) {
-      if (team && team.id === teams[i].id) {
-        setSelectedTeam(i);
-        return;
+    if (team) {
+      const index = teams.findIndex((t) => t.id === team.id);
+      if (index !== -1) {
+        setSelectedTeam(index);
       }
     }
-  }, [teams, team, userInfo]);
+  }, [team, teams, setSelectedTeam]);
 
-  if (isLoading || !user) {
+  if (isLoading || teams.length === 0) {
     return <div />;
   }
 
@@ -63,7 +53,7 @@ export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
       <DropdownMenuTrigger asChild>
         <button className="w-full flex items-center justify-between px-2 py-2 focus:outline-none">
           <span className="font-bold text-[18px] text-white">
-            {teams[selectedTeam].nickname}
+            {teams[selectedIndex].nickname}
           </span>
           <ChevronDown size={16} />
         </button>

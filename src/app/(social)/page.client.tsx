@@ -27,6 +27,7 @@ import { ratelApi } from '@/lib/api/ratel_api';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
+import CreatePostButton from './_components/create-post-button';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -98,32 +99,6 @@ export default function Home() {
         },
       }),
   });
-  // const handleCreatePost = async (
-  //   title: string,
-  //   html_contents: string,
-  //   image: string | null,
-  // ) => {
-  //   let url = '';
-  //   let url_type = UrlType.None;
-  //   if (image !== null && image !== '') {
-  //     url = image;
-  //     url_type = UrlType.Image;
-  //   }
-  //   await post(
-  //     ratelApi.feeds.writePost(),
-  //     writePostRequest(
-  //       html_contents,
-  //       user_id,
-  //       1, // Default industry_id to 1 (Crpyto)
-  //       title,
-  //       0,
-  //       [],
-  //       url,
-  //       url_type,
-  //     ),
-  //   );
-  //   posts.refetch();
-  // };
 
   const feeds: Post[] =
     posts.data != null
@@ -170,20 +145,13 @@ export default function Home() {
           </div>
         )}
       </Col>
-      {/* <div className="fixed bottom-0 left-0 right-0 z-10 flex flex-row items-center justify-center">
-        <div className="max-w-desktop w-full">
-          <CreatePost
-            onSubmit={async ({ title, content, image }) => {
-              await handleCreatePost(title, content, image);
-            }}
-          />
-        </div>
-      </div> */}
+
       {/* Right Sidebar */}
       <div className="w-80 pl-4 max-tablet:!hidden">
         {/* Hot Promotion */}
 
         <div>
+          <CreatePostButton />
           <BlackBox>
             <div className="flex flex-col gap-2.5">
               <h3 className="font-bold text-white text-[15px]/[20px]">
@@ -191,7 +159,7 @@ export default function Home() {
               </h3>
               <Link
                 href={
-                  feed.spaces.length > 0
+                  feed?.spaces.length > 0
                     ? route.spaceById(feed.spaces[0].id)
                     : route.threadByFeedId(feed.id)
                 }
