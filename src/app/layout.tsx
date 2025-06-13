@@ -5,7 +5,7 @@ import Providers from '@/providers/providers';
 import CookieProvider from './_providers/CookieProvider';
 import { PopupZone } from '@/components/popupzone';
 import ClientLayout from './(social)/_components/client-layout';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const raleway = Raleway({
