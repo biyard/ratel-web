@@ -57,7 +57,7 @@ export function NftSelectModal({
       </div>
 
       <Button
-        className="w-full bg-primary text-white text-xl disabled:bg-neutral-600 disabled:text-neutral-400"
+        className="w-full bg-primary text-white text-xl disabled:bg-neutral-600 disabled:text-neutral-400 hover:bg-[#ffb000]"
         disabled={selectNft.length === 0 || loading}
         onClick={async () => {
           if (selectNft.length > 0) {
