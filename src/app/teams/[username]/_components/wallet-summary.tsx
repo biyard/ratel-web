@@ -36,7 +36,7 @@ export default function WalletSummary() {
 
           <Button variant={'default'} onClick={connectWallet}>
             {address ? 'Change Wallet' : 'Connect Wallet'}
-            {/* Connect Wallet */}
+           
           </Button>
 
        
