@@ -19,7 +19,6 @@ export function useWallet() {
   const { post } = useApiCall();
 
   
-
   const connectWallet = async () => {
     const ethereum = (window as unknown as { ethereum?: EthereumProvider })
       .ethereum;
