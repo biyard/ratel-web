@@ -5,6 +5,7 @@ import { ratelApi } from '../ratel_api';
 import { useUserInfo } from './users';
 import { logger } from '@/lib/logger';
 
+
 interface EthereumProvider {
   isMetaMask?: boolean;
   request: (args: { method: string; params?: any[] }) => Promise<any>;
