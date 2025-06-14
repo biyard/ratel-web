@@ -93,7 +93,7 @@ export default function MyProfilePage({ team }: { team: Team }) {
       </Col>
 
       <Col>
-        <WalletSummary></WalletSummary>
+        <WalletSummary/>
       </Col>
     </div>
   );
