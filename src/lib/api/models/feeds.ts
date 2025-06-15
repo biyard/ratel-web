@@ -1,4 +1,4 @@
-import { UrlType } from './feeds/write-post-request';
+import { UrlType } from './feeds/update-draft-request';
 import { Industry } from './industry';
 import { Space } from './spaces';
 import { User } from './user';
@@ -45,6 +45,11 @@ export enum FeedType {
   Reply = 2,
   Repost = 3,
   DocReview = 4,
+}
+
+export enum FeedStatus {
+  Draft = 1,
+  Published = 2,
 }
 
 export interface FileInfo {

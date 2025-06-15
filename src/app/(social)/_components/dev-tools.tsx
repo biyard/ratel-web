@@ -1,11 +1,12 @@
 'use client';
 import { config, Env } from '@/config';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
-import { FileInfo } from '@/lib/api/models/feeds';
+import { Feed, FeedType, FileInfo } from '@/lib/api/models/feeds';
+import { createDraftRequest } from '@/lib/api/models/feeds/create-draft';
 import {
+  updateDraftRequest,
   UrlType,
-  writePostRequest,
-} from '@/lib/api/models/feeds/write-post-request';
+} from '@/lib/api/models/feeds/update-draft-request';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useApiCall } from '@/lib/api/use-send';
 import React, { Fragment } from 'react';
@@ -30,11 +31,15 @@ export default function DevTools() {
     const url =
       'https://metadata.ratel.foundation/metadata/0faf45ec-35e1-40e9-bff2-c61bb52c7d19';
 
+    const res: Feed = await post(
+      ratelApi.feeds.createDraft(),
+      createDraftRequest(FeedType.Post, user_id),
+    );
+
     await post(
-      ratelApi.feeds.writePost(),
-      writePostRequest(
+      ratelApi.feeds.updateDraft(res.id),
+      updateDraftRequest(
         html_contents,
-        user_id,
         industry_id,
         title,
         quote_feed_id,
@@ -43,6 +48,8 @@ export default function DevTools() {
         UrlType.Image,
       ),
     );
+
+    await post(ratelApi.feeds.publishDraft(res.id), { publish: {} });
   };
 
   return (

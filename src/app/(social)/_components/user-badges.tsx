@@ -6,7 +6,6 @@ export interface UserBadgesProps {
 }
 
 export default function UserBadges({ badges }: { badges: Badge[] }) {
-  console.log('badges: ', badges);
   return (
     <div className="grid grid-cols-5 gap-2.5 items-center justify-start">
       {badges.map((badge, index) => (

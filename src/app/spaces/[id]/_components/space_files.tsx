@@ -20,6 +20,7 @@ import { NftSelectModal } from './nft-select-modal';
 import { Badge } from '@/lib/api/models/badge';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
+import { useUserBadge } from '@/lib/api/hooks/user-badges';
 
 export interface SpaceFilesProps {
   files: FileInfo[];
@@ -33,6 +34,10 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
 
   const redeem = useRedeemCode(spaceId);
   const { post } = useApiCall();
+
+  const userBadges = useUserBadge(spaceId, 1, 20);
+
+  const badgeList = userBadges.data.items ?? [];
 
   const handlePdfDownload = async (file: FileInfo) => {
     const redeemId = redeem.data.id;
@@ -49,7 +54,12 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
       fileName: file.name,
     });
   };
-  const handleFileDownload = (file: FileInfo) => {
+  const handleFileDownload = async (file: FileInfo) => {
+    if (badgeList.length != 0) {
+      await handlePdfDownload(file);
+      return;
+    }
+
     popup
       .open(
         <NftSelectModal
@@ -62,9 +72,12 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
               },
             });
             if (res) {
+              userBadges.refetch();
               await handlePdfDownload(file);
+              popup.close();
               return true;
             } else {
+              popup.close();
               return false;
             }
           }}
@@ -96,7 +109,7 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
 function File({ file, onClick }: { file: FileInfo; onClick: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row justify-start items-center w-full gap-2 p-4 bg-neutral-800 rounded-[8px]"
+      className={`cursor-pointer flex flex-row justify-start items-center w-full gap-2 p-4 bg-neutral-800 rounded-[8px]`}
       onClick={onClick}
     >
       <div className="[&>svg]:size-9">
