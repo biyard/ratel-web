@@ -66,6 +66,9 @@ export default function SettingsPage({ username }: { username: string }) {
     router.push(route.teamByUsername(username));
   };
 
+  const invalidInput =
+    checkString(nickname ?? '') || checkString(htmlContents ?? '');
+
   return (
     <div className="w-full max-tablet:w-full flex flex-col gap-10 items-center">
       <FileUploader onUploadSuccess={handleProfileUrl}>
@@ -106,11 +109,8 @@ export default function SettingsPage({ username }: { username: string }) {
         </Col>
         <Row className="justify-end py-5">
           <Button
-            className={
-              checkString(nickname ?? '') || checkString(htmlContents ?? '')
-                ? 'cursor-not-allowed bg-neutral-600'
-                : 'cursor-pointer bg-primary'
-            }
+            disabled={invalidInput}
+            className={invalidInput ? 'bg-neutral-600' : 'bg-primary'}
             variant={'rounded_primary'}
             onClick={handleSave}
           >
