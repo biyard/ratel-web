@@ -13,6 +13,7 @@ import { useApiCall } from '@/lib/api/use-send';
 import { route } from '@/route';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import WalletSummary from './_components/wallet-summary';
 
 export default function MyProfilePage() {
   const { post } = useApiCall();
@@ -85,10 +86,13 @@ export default function MyProfilePage() {
         </Col>
         <Row className="justify-end py-5">
           <Button variant={'rounded_primary'} onClick={handleSave}>
-            Save
+          Save
           </Button>
         </Row>
+
+        <WalletSummary />
       </Col>
+
     </div>
   );
 }

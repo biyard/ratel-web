@@ -1,10 +1,11 @@
+
 import { useState } from 'react';
 import { ethers } from 'ethers';
 import { useApiCall } from '../use-send';
 import { ratelApi } from '../ratel_api';
 import { useUserInfo } from './users';
 import { logger } from '@/lib/logger';
-
+import { usePopup } from '@/lib/contexts/popup-service';
 
 interface EthereumProvider {
   isMetaMask?: boolean;
@@ -17,15 +18,19 @@ export function useWallet() {
   const [address, setAddress] = useState<string | null>(null);
   const { data: user } = useUserInfo();
   const { post } = useApiCall();
-
-  
+  const popup = usePopup(); 
 
   const connectWallet = async () => {
-    const ethereum = (window as unknown as { ethereum?: EthereumProvider })
-      .ethereum;
+    const ethereum = (window as unknown as { ethereum?: EthereumProvider }).ethereum;
 
     if (!ethereum) {
-      alert('Please install MetaMask');
+      popup
+        .open(
+          'Please Install MetaMask Extension'
+   
+        )
+        .withTitle('Wallet Not Found')
+       
       return;
     }
 
@@ -47,7 +52,7 @@ export function useWallet() {
         },
       });
 
-      logger.info('Evm_address update successfully');
+      logger.info('Evm_address updated successfully');
     } catch (err) {
       logger.error('Wallet connection failed:', err);
     }
@@ -55,3 +60,4 @@ export function useWallet() {
 
   return { address, connectWallet };
 }
+
