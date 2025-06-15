@@ -9,7 +9,6 @@ import UserSetupPopup from './user-setup-popup';
 import { logger } from '@/lib/logger';
 import { useAuth, useEd25519KeyPair } from '@/lib/contexts/auth-context';
 import { AuthUserInfo, EventType } from '@/lib/service/firebase-service';
-import { ratelApi } from '@/lib/api/ratel_api';
 import { send } from '@/lib/api/send';
 
 interface LoginModalProps {

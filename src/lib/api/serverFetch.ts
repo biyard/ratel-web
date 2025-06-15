@@ -1,7 +1,7 @@
-import { headers as getHeaders, cookies as getCookies } from 'next/headers';
+import { headers as getHeaders } from 'next/headers';
 import { NextRequest } from 'next/server';
 
-export type ServerFetchResponse<T = any> = {
+export type ServerFetchResponse<T = unknown> = {
   data: T;
   status: number;
   statusText: string;
@@ -9,7 +9,7 @@ export type ServerFetchResponse<T = any> = {
   ok: boolean;
 };
 
-export async function serverFetch<T = any>(
+export async function serverFetch<T = unknown>(
   url: string,
   options?: RequestInit & { nextRequest?: NextRequest; ignoreError?: boolean },
 ): Promise<ServerFetchResponse<T | null>> {
@@ -17,7 +17,7 @@ export async function serverFetch<T = any>(
   const clientCookies = headersList.get('cookie');
 
   let method = options?.method || 'GET';
-  let body = options?.body;
+  const body = options?.body;
   let contentType = headersList.get('content-type') || 'application/json';
 
   if (options?.nextRequest) {
@@ -46,7 +46,7 @@ export async function serverFetch<T = any>(
     if (!response.ok) {
       const errorBody = await response.text();
       console.log(
-        `Error fetching ${url}: ${response.status} ${response.statusText}`,
+        `Error fetching ${url}: ${response.status} ${response.statusText} ${errorBody}`,
       );
       if (options?.ignoreError) {
         return {
