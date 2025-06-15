@@ -3,6 +3,9 @@ import { gql } from '@apollo/client';
 
 export const ratelApi = {
   users: {
+    login: () => '/v1/users?action=login',
+    getTotalInfo: (page: number, size: number) =>
+      `/v1/totals?param-type=query&bookmark=${page}&size=${size}`,
     getUserInfo: () => '/v1/users?action=user-info',
     updateUserInfo: () => '/v1/users?action=signup',
     editProfile: (user_id: number) => `/v1/users/${user_id}`,

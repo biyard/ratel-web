@@ -63,10 +63,8 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
                 'edkeypair principal:',
                 ed25519KeyPair?.getPrincipal().toText(),
               );
-              const info = await send(
-                user.keyPair!,
-                ratelApi.users.getUserInfo(),
-              );
+              const info = await send(user.keyPair!, '/api/login', '');
+
               logger.debug('User info from API:', info);
 
               if (!info) {
