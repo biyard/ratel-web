@@ -16,6 +16,7 @@ import { Group } from '@/lib/api/models/user';
 import InviteMemberPopup from './_components/invite-member-popup';
 import { useTeamByUsername } from '../../_hooks/use-team';
 import { Folder } from 'lucide-react';
+import { checkString } from '@/lib/string-filter-utils';
 
 export default function TeamGroups({ username }: { username: string }) {
   const query = useTeamByUsername(username);
@@ -100,25 +101,28 @@ export default function TeamGroups({ username }: { username: string }) {
 }
 
 function ListGroups({ groups }: { groups: Group[] }) {
+  console.log('Groups: ', groups);
   return (
     <div className="flex flex-col w-full px-4 py-5 gap-[10px] bg-[#191919] rounded-lg">
-      {groups.map((group) => (
-        <div
-          key={group.id}
-          className="flex flex-row w-full h-fit gap-[15px] bg-transparent rounded-sm border border-neutral-800 p-5"
-        >
-          <Folder className="w-12 h-12 stroke-neutral-400" />
+      {groups
+        .filter((d) => !checkString(d.name))
+        .map((group) => (
+          <div
+            key={group.id}
+            className="flex flex-row w-full h-fit gap-[15px] bg-transparent rounded-sm border border-neutral-800 p-5"
+          >
+            <Folder className="w-12 h-12 stroke-neutral-400" />
 
-          <div className="flex flex-col justify-between items-start">
-            <div className="font-bold text-white text-base/[20px]">
-              {group.name}
-            </div>
-            <div className="font-semibold text-neutral-400 text-sm/[20px]">
-              {group.member_count} member
+            <div className="flex flex-col justify-between items-start">
+              <div className="font-bold text-white text-base/[20px]">
+                {group.name}
+              </div>
+              <div className="font-semibold text-neutral-400 text-sm/[20px]">
+                {group.member_count} member
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 }

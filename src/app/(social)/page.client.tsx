@@ -28,6 +28,7 @@ import { useAuth } from '@/lib/contexts/auth-context';
 import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
 import CreatePostButton from './_components/create-post-button';
+import { checkString } from '@/lib/string-filter-utils';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -130,14 +131,23 @@ export default function Home() {
       <Col className="flex-1 flex max-mobile:px-[10px]">
         {feeds.length != 0 ? (
           <Col className="flex-1">
-            {feeds.map((props) => (
-              <FeedCard
-                key={`feed-${props.id}`}
-                user_id={user_id ?? 0}
-                refetch={() => posts.refetch()}
-                {...props}
-              />
-            ))}
+            {feeds
+              .filter(
+                (d) =>
+                  !(
+                    checkString(d.title) ||
+                    checkString(d.contents) ||
+                    checkString(d.author_name)
+                  ),
+              )
+              .map((props) => (
+                <FeedCard
+                  key={`feed-${props.id}`}
+                  user_id={user_id ?? 0}
+                  refetch={() => posts.refetch()}
+                  {...props}
+                />
+              ))}
           </Col>
         ) : (
           <div className="flex flex-row w-full h-fit justify-start items-center px-[16px] py-[20px] border border-gray-500 rounded-[8px] font-medium text-base text-gray-500">
