@@ -4,6 +4,7 @@ import { useUserInfo } from '@/lib/api/hooks/users';
 import UserSidemenu from './_components/user-sidemenu';
 import Loading from '../loading';
 import { UserType } from '@/lib/api/models/user';
+import NewSideBar from './_components/news-right-sidebar';
 
 export default function SocialLayout({
   children,
@@ -29,6 +30,7 @@ export default function SocialLayout({
         >
           {children}
         </Suspense>
+        <NewSideBar/>
       </div>
     </div>
   );

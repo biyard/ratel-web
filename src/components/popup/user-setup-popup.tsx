@@ -110,6 +110,9 @@ const UserSetupPopup = ({
             className="w-full outline-none px-5 h-11 text-white text-base placeholder-gray-500 font-medium border rounded-lg border-gray-600"
             disabled={email === ''}
             value={email}
+            onChange={(e)=>{
+              // console.log()
+            }}
           />
         </div>
 
