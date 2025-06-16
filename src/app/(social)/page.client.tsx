@@ -29,6 +29,7 @@ import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
 import CreatePostButton from './_components/create-post-button';
 import { checkString } from '@/lib/string-filter-utils';
+import { useEffect } from 'react';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -82,12 +83,11 @@ export interface Post {
 
 export default function Home() {
   const { post } = useApiCall();
-
-  const posts = usePost(1, 20);
   const { data: promotion } = usePromotion();
   const { data: feed } = useFeedByID(promotion.feed_id);
   const { data: userInfo } = useSuspenseUserInfo();
   const auth = useAuth();
+  const posts = usePost(1, 20);
   logger.debug('user info: ', userInfo);
   const user_id = userInfo ? userInfo.id || 0 : 0;
 
