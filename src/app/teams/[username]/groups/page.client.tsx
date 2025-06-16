@@ -101,7 +101,6 @@ export default function TeamGroups({ username }: { username: string }) {
 }
 
 function ListGroups({ groups }: { groups: Group[] }) {
-  console.log('Groups: ', groups);
   return (
     <div className="flex flex-col w-full px-4 py-5 gap-[10px] bg-[#191919] rounded-lg">
       {groups
