@@ -1,0 +1,20 @@
+import { config } from '@/config';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  const apiBaseUrl: string = config.api_url;
+
+  const targetUrl = `${apiBaseUrl}${ratelApi.users.login()}`;
+  const headers = new Headers(request.headers);
+  const res = await fetch(targetUrl, {
+    method: 'GET',
+    headers,
+    credentials: 'include',
+  });
+
+  return new NextResponse(res.body, {
+    status: res.status,
+    headers: res.headers,
+  });
+}
