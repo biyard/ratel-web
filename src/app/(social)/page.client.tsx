@@ -29,7 +29,6 @@ import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
 import CreatePostButton from './_components/create-post-button';
 import { checkString } from '@/lib/string-filter-utils';
-import { useEffect } from 'react';
 
 export const metadata: Metadata = {
   title: 'Ratel',
