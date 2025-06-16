@@ -15,6 +15,8 @@ import { ratelApi } from '@/lib/api/ratel_api';
 import { useApiCall } from '@/lib/api/use-send';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
+import { checkString } from '@/lib/string-filter-utils';
+import { showErrorToast } from '@/lib/toast';
 import { checkLowerAlphaNumeric } from '@/lib/valid-utils';
 import { useApolloClient } from '@apollo/client';
 import React, { useState } from 'react';
@@ -36,6 +38,14 @@ export default function TeamCreationPopup() {
   };
 
   const handleCreate = async () => {
+    if (
+      checkString(nickname) ||
+      checkString(username) ||
+      checkString(htmlContents)
+    ) {
+      showErrorToast('Please remove the test keyword');
+      return;
+    }
     logger.debug('Team creation button clicked');
     await post(
       ratelApi.teams.createTeam(),
@@ -132,8 +142,14 @@ export default function TeamCreationPopup() {
           Cancel
         </Button>
         <Button
-          variant="rounded_primary"
-          className="w-full"
+          className={
+            checkString(nickname) ||
+            checkString(username) ||
+            checkString(htmlContents)
+              ? 'cursor-not-allowed bg-neutral-600'
+              : 'cursor-pointer bg-primary'
+          }
+          variant={'rounded_primary'}
           onClick={handleCreate}
         >
           Create

@@ -21,6 +21,7 @@ import { Badge } from '@/lib/api/models/badge';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useUserBadge } from '@/lib/api/hooks/user-badges';
+import { checkString } from '@/lib/string-filter-utils';
 
 export interface SpaceFilesProps {
   files: FileInfo[];
@@ -93,13 +94,15 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
         </div>
 
         <div className="grid grid-cols-2 max-tablet:grid-cols-1 gap-2.5">
-          {files?.map((file, index) => (
-            <File
-              file={file}
-              key={'file ' + index}
-              onClick={() => handleFileDownload(file)}
-            />
-          ))}
+          {files
+            ?.filter((file) => !checkString(file.name))
+            .map((file, index) => (
+              <File
+                file={file}
+                key={'file ' + index}
+                onClick={() => handleFileDownload(file)}
+              />
+            ))}
         </div>
       </div>
     </BlackBox>

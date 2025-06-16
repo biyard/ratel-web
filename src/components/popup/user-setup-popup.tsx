@@ -13,6 +13,8 @@ import { logger } from '@/lib/logger';
 import { useApolloClient } from '@apollo/client';
 import { useUserInfo } from '@/lib/api/hooks/users';
 import { useAuth } from '@/lib/contexts/auth-context';
+import { checkString } from '@/lib/string-filter-utils';
+import { showErrorToast } from '@/lib/toast';
 
 interface UserSetupPopupProps {
   id?: string;
@@ -52,6 +54,10 @@ const UserSetupPopup = ({
   const isValidUsername = (username: string) => /^[a-z0-9_-]+$/.test(username);
 
   const handleSubmit = async () => {
+    if (checkString(displayName) || checkString(userName)) {
+      showErrorToast('Please remove the test keyword');
+      return;
+    }
     if (!agreed || !isUserNameValid) return;
 
     if (announcementAgreed) {
@@ -177,7 +183,11 @@ const UserSetupPopup = ({
         </div>
 
         <PrimaryButton
-          disabled={!agreed || !isUserNameValid}
+          disabled={
+            !agreed ||
+            !isUserNameValid ||
+            !(checkString(displayName) || checkString(userName))
+          }
           onClick={handleSubmit}
         >
           {'Finished Sign-up'}
