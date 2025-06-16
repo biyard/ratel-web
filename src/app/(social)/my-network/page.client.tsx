@@ -6,7 +6,6 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent } from "@/app/(social)/_components/tabs"
 import { followingUsers, suggestedUsers } from "./data"
 
