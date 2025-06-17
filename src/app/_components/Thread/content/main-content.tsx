@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import type { AttachedFile } from '@/types';
 import { ExternalLink } from './external-link';
 import { FileAttachment } from './file-attachment';
+import Image from 'next/image';
 
 interface MainContentProps {
   files: AttachedFile[];
@@ -81,7 +82,7 @@ export function MainContent({ files, links }: MainContentProps) {
             </div>
           </div>
           <div className="relative h-64">
-            <img
+            <Image
               src="/ratel.png"
               alt="Staking rewards chart showing declining red line and blue area chart"
               className="w-full h-full object-contain"

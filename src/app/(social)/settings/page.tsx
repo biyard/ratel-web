@@ -15,6 +15,8 @@ import { showErrorToast } from '@/lib/toast';
 import { route } from '@/route';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import WalletSummary from './_components/wallet-summary';
+import Image from 'next/image';
 
 export default function MyProfilePage() {
   const { post } = useApiCall();
@@ -56,8 +58,10 @@ export default function MyProfilePage() {
     <div className="w-full max-tablet:w-full flex flex-col gap-10 items-center">
       <FileUploader onUploadSuccess={handleProfileUrl}>
         {profileUrl ? (
-          <img
+          <Image
             src={profileUrl}
+            width={40}
+            height={80}
             alt="Team Logo"
             className="w-40 h-40 rounded-full object-cover cursor-pointer"
           />
@@ -103,6 +107,8 @@ export default function MyProfilePage() {
             Save
           </Button>
         </Row>
+
+        <WalletSummary />
       </Col>
     </div>
   );

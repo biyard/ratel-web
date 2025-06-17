@@ -174,10 +174,19 @@ export default function Home() {
                 }
                 className="flex items-center gap-2.5 hover:bg-btn-hover rounded p-2 transition-colors"
               >
-                <img
+                {/* <img
                   src={promotion.image_url}
                   alt={promotion.name}
                   className="w-[60px] h-[60px] rounded object-cover cursor-pointer"
+                  
+                /> */}
+
+                <Image
+                  src={promotion.image_url}
+                  alt={promotion.name}
+                  width={60}
+                  height={60}
+                  className="rounded object-cover cursor-pointer"
                 />
                 <div>
                   <div className="font-medium text-white text-base/[25px]">
