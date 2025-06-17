@@ -8,21 +8,17 @@ import { User } from '../models/user';
 import { useApiCall } from '../use-send';
 import { QK_USERS_GET_INFO } from '@/constants';
 import { ratelApi } from '../ratel_api';
-import { useAuth } from '@/lib/contexts/auth-context';
-import { logger } from '@/lib/logger';
 
 export function useUserInfo(): UseQueryResult<User | undefined> {
   const { get } = useApiCall();
-  const auth = useAuth();
-  const principalText = auth.ed25519KeyPair?.getPrincipal().toText();
-
-  logger.debug('useUserInfo', [QK_USERS_GET_INFO, principalText]);
+  // const auth = useAuth();
+  // const principalText = auth.ed25519KeyPair?.getPrincipal().toText();
 
   const query = useQuery({
-    queryKey: [QK_USERS_GET_INFO, principalText],
+    queryKey: [QK_USERS_GET_INFO],
     queryFn: () => get(ratelApi.users.getUserInfo()),
-    enabled: !!principalText,
-    refetchOnWindowFocus: false,
+    // enabled: !!principalText,
+    // refetchOnWindowFocus: false,
   });
 
   return query;
@@ -30,15 +26,13 @@ export function useUserInfo(): UseQueryResult<User | undefined> {
 
 export function useSuspenseUserInfo(): UseSuspenseQueryResult<User> {
   const { get } = useApiCall();
-  const auth = useAuth();
-  const principalText = auth.ed25519KeyPair?.getPrincipal().toText();
-
-  logger.debug('useUserInfo', [QK_USERS_GET_INFO, principalText]);
+  // const auth = useAuth();
+  // const principalText = auth.ed25519KeyPair?.getPrincipal().toText();
 
   const query = useSuspenseQuery({
-    queryKey: [QK_USERS_GET_INFO, principalText],
+    queryKey: [QK_USERS_GET_INFO],
     queryFn: () => get(ratelApi.users.getUserInfo()),
-    refetchOnWindowFocus: false,
+    // refetchOnWindowFocus: false,
   });
 
   return query;

@@ -9,7 +9,6 @@ import UserSetupPopup from './user-setup-popup';
 import { logger } from '@/lib/logger';
 import { useAuth, useEd25519KeyPair } from '@/lib/contexts/auth-context';
 import { AuthUserInfo, EventType } from '@/lib/service/firebase-service';
-import { ratelApi } from '@/lib/api/ratel_api';
 import { send } from '@/lib/api/send';
 
 interface LoginModalProps {
@@ -63,10 +62,8 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
                 'edkeypair principal:',
                 ed25519KeyPair?.getPrincipal().toText(),
               );
-              const info = await send(
-                user.keyPair!,
-                ratelApi.users.getUserInfo(),
-              );
+              const info = await send(user.keyPair!, '/api/login', '');
+
               logger.debug('User info from API:', info);
 
               if (!info) {
