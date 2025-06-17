@@ -6,6 +6,7 @@ import Comment from '@/assets/icons/comment.svg';
 import { SpaceComment } from '@/lib/api/models/comments';
 import { getTimeAgo } from '@/lib/time-utils';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
+import { checkString } from '@/lib/string-filter-utils';
 
 export default function SpaceComments({
   spaceId,
@@ -26,9 +27,11 @@ export default function SpaceComments({
         </div>
       </div>
       <CreateComment setClose={setClose} />
-      {comments?.map((comment, index) => (
-        <CommentInfo comment={comment} key={'comment ' + index} />
-      ))}
+      {comments
+        ?.filter((v) => !checkString(v.html_contents))
+        .map((comment, index) => (
+          <CommentInfo comment={comment} key={'comment ' + index} />
+        ))}
     </div>
   );
 }

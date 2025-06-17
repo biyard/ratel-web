@@ -12,6 +12,8 @@ import { ratelApi } from '@/lib/api/ratel_api';
 import { QK_USERS_GET_INFO } from '@/constants';
 import { getQueryClient } from '@/providers/getQueryClient';
 import { dehydrate } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -53,6 +55,7 @@ export default async function RootLayout({
             <PopupZone />
           </Providers>
         </CookieProvider>
+        <ToastContainer />
       </body>
     </html>
   );
