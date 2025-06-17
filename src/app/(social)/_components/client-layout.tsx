@@ -16,11 +16,9 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   const popup = usePopup();
-  const userInfo = useUserInfo();
-  const { data, isLoading } = useUserInfo();
+  const { data, refetch, isLoading } = useUserInfo();
   const { logout } = useAuth();
   const [mobileExtends, setMobileExtends] = useState(false);
-
   return (
     <>
       <Header
@@ -67,7 +65,7 @@ export default function ClientLayout({
             className="cursor-pointer font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
             onClick={() => {
               logout();
-              userInfo.refetch();
+              refetch();
               setMobileExtends(false);
             }}
           >

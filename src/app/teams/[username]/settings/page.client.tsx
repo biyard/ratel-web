@@ -6,16 +6,23 @@ import { Col } from '@/components/ui/col';
 import { Input } from '@/components/ui/input';
 import { Row } from '@/components/ui/row';
 import { Textarea } from '@/components/ui/textarea';
-import { Team } from '@/lib/api/models/team';
 import { userEditProfileRequest } from '@/lib/api/models/user';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useApiCall } from '@/lib/api/use-send';
-import { route } from '@/route';
+
+import React, { useContext, useMemo, useState } from 'react';
+import { TeamContext } from '@/lib/contexts/team-context';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import { route } from '@/route';
+import { checkString } from '@/lib/string-filter-utils';
+import { showErrorToast } from '@/lib/toast';
 
+export default function SettingsPage({ username }: { username: string }) {
+  const { teams, updateSelectedTeam } = useContext(TeamContext);
+  const team = useMemo(() => {
+    return teams.find((t) => t.username === username);
+  }, [teams, username]);
 
-export default function MyProfilePage({ team }: { team: Team }) {
   const { post } = useApiCall();
   const router = useRouter();
 
@@ -23,8 +30,9 @@ export default function MyProfilePage({ team }: { team: Team }) {
   const [nickname, setNickname] = useState(team?.nickname);
   const [htmlContents, setHtmlContents] = useState(team?.html_contents);
 
-  console.log('team: ', team);
-
+  if (!team) {
+    return <></>;
+  }
   const handleContents = (evt: React.FormEvent<HTMLTextAreaElement>) => {
     setHtmlContents(evt.currentTarget.value);
   };
@@ -38,14 +46,28 @@ export default function MyProfilePage({ team }: { team: Team }) {
   };
 
   const handleSave = async () => {
-    post(
+    if (checkString(nickname ?? '') || checkString(htmlContents ?? '')) {
+      showErrorToast('Please remove the test keyword');
+      return;
+    }
+
+    await post(
       ratelApi.users.editProfile(team!.id),
       userEditProfileRequest(nickname!, htmlContents!, profileUrl),
     );
-    // FIXME: fix to enable refetch
-    // userinfo.refetch();
-    router.push(route.home());
+
+    updateSelectedTeam({
+      ...team!,
+      nickname: nickname!,
+      html_contents: htmlContents!,
+      profile_url: profileUrl,
+    });
+
+    router.push(route.teamByUsername(username));
   };
+
+  const invalidInput =
+    checkString(nickname ?? '') || checkString(htmlContents ?? '');
 
   return (
     <div className="w-full max-tablet:w-full flex flex-col gap-10 items-center">
@@ -86,7 +108,12 @@ export default function MyProfilePage({ team }: { team: Team }) {
           />
         </Col>
         <Row className="justify-end py-5">
-          <Button variant={'rounded_primary'} onClick={handleSave}>
+          <Button
+            disabled={invalidInput}
+            className={invalidInput ? 'bg-neutral-600' : 'bg-primary'}
+            variant={'rounded_primary'}
+            onClick={handleSave}
+          >
             Save
           </Button>
         </Row>

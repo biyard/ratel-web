@@ -4,6 +4,7 @@ import { gql } from '@apollo/client';
 
 export const ratelApi = {
   users: {
+    login: () => '/v1/users?action=login',
     getTotalInfo: (page: number, size: number) =>
       `/v1/totals?param-type=query&bookmark=${page}&size=${size}`,
     getUserInfo: () => '/v1/users?action=user-info',
@@ -19,6 +20,9 @@ export const ratelApi = {
   },
   teams: {
     createTeam: () => '/v1/teams',
+    getTeamById: (team_id: number) => `/v1/teams/${team_id}`,
+    getTeamByUsername: (username: string) =>
+      `/v1/teams?param-type=read&action=get-by-username&username=${username}`,
   },
   subscription: {
     subscribe: () => '/v1/subscriptions?action=subscribe',
@@ -30,6 +34,8 @@ export const ratelApi = {
     create_group: (team_id: number) => `/v1/teams/${team_id}/groups`,
     invite_member: (team_id: number, group_id: number) =>
       `/v1/teams/${team_id}/groups/${group_id}`,
+    check_email: (team_id: number, group_id: number) =>
+      `/v1/teams/${team_id}/groups/${group_id}`,
   },
   feeds: {
     comment: () => '/v1/feeds',
@@ -37,7 +43,7 @@ export const ratelApi = {
     createDraft: () => '/v1/feeds',
     updateDraft: (post_id: number) => `/v1/feeds/${post_id}`,
     publishDraft: (post_id: number) => `/v1/feeds/${post_id}`,
-
+    removeDraft: (post_id: number) => `/v1/feeds/${post_id}?action=delete`,
     likePost: (post_id: number) => `/v1/feeds/${post_id}`,
     getPostsByUserId: (
       user_id: number,
@@ -57,6 +63,8 @@ export const ratelApi = {
     getSpaceBySpaceId: (id: number) => `/v1/spaces/${id}`,
     getSpaceRedeemCodes: (space_id: number) =>
       `/v1/spaces/${space_id}/redeem-codes`,
+    getUserBadge: (space_id: number, page: number, size: number) =>
+      `/v1/spaces/${space_id}/badges?param-type=query&bookmark=${page}&size=${size}`,
     claimBadge: (space_id: number) => `/v1/spaces/${space_id}/badges`,
   },
   graphql: {

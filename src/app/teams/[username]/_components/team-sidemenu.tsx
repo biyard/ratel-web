@@ -1,16 +1,27 @@
-import React from 'react';
+'use client';
+import React, { useContext, useMemo } from 'react';
 // import { Users, MessageSquare } from 'lucide-react';
-import { Team } from '@/lib/api/models/team';
+// import { Team } from '@/lib/api/models/team';
 import TeamProfile from './team-profile';
 import Link from 'next/link';
 import { route } from '@/route';
 import { Home, UserGroup, Settings, User } from '@/components/icons';
+import { TeamContext } from '@/lib/contexts/team-context';
 
 export interface TeamSidemenuProps {
-  team: Team;
+  username: string;
 }
 
-export default function TeamSidemenu({ team }: TeamSidemenuProps) {
+export default function TeamSidemenu({ username }: TeamSidemenuProps) {
+  const { teams } = useContext(TeamContext);
+  const team = useMemo(() => {
+    return teams.find((t) => t.username === username);
+  }, [teams, username]);
+
+  if (!team) {
+    return <></>;
+  }
+
   return (
     <div className="w-64 flex flex-col max-mobile:!hidden gap-2.5">
       <TeamProfile team={team} />
