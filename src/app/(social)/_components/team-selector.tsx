@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { route } from '@/route';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { TeamContext } from '@/lib/contexts/team-context';
+import Image from 'next/image';
 
 export interface TeamSelectorProps {
   onSelect?: (index: number) => void;
@@ -80,7 +81,7 @@ export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
                   onSelect!(index);
                 }}
               >
-                <img
+                <Image
                   src={team.profile_url || '/default-profile.png'}
                   alt={team.nickname}
                   className="w-6 h-6 rounded-full object-cover object-top"

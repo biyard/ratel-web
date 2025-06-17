@@ -20,6 +20,7 @@ import { showErrorToast } from '@/lib/toast';
 import { checkLowerAlphaNumeric } from '@/lib/valid-utils';
 import { useApolloClient } from '@apollo/client';
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 export default function TeamCreationPopup() {
   const popup = usePopup();
@@ -91,9 +92,11 @@ export default function TeamCreationPopup() {
     <div className="w-100 max-tablet:w-full flex flex-col gap-10 items-center">
       <FileUploader onUploadSuccess={setProfileUrl}>
         {profileUrl ? (
-          <img
+          <Image
             src={profileUrl}
             alt="Team Logo"
+            width={80}
+            height={80}
             className="w-40 h-40 rounded-full object-cover cursor-pointer"
           />
         ) : (

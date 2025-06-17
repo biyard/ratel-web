@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { route } from '@/route';
 import { checkString } from '@/lib/string-filter-utils';
 import { showErrorToast } from '@/lib/toast';
+import Image from 'next/image';
 
 export default function SettingsPage({ username }: { username: string }) {
   const { teams, updateSelectedTeam } = useContext(TeamContext);
@@ -73,9 +74,11 @@ export default function SettingsPage({ username }: { username: string }) {
     <div className="w-full max-tablet:w-full flex flex-col gap-10 items-center">
       <FileUploader onUploadSuccess={handleProfileUrl}>
         {profileUrl ? (
-          <img
+          <Image
             src={profileUrl}
             alt="Team Logo"
+            width={80}
+            height={80}
             className="w-40 h-40 rounded-full object-cover cursor-pointer"
           />
         ) : (
@@ -118,7 +121,6 @@ export default function SettingsPage({ username }: { username: string }) {
           </Button>
         </Row>
       </Col>
-
     </div>
   );
 }
