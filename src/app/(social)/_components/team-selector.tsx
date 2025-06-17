@@ -84,6 +84,8 @@ export default function TeamSelector({ onSelect, team }: TeamSelectorProps) {
                 <Image
                   src={team.profile_url || '/default-profile.png'}
                   alt={team.nickname}
+                  width={24}
+                  height={24}
                   className="w-6 h-6 rounded-full object-cover object-top"
                 />
                 <span>{team.nickname}</span>
