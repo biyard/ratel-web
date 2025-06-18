@@ -11,27 +11,30 @@ import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { followRequest } from '@/lib/api/models/networks/follow';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 
 export default function MyNetwork() {
   const network = useNetwork();
   const { post } = useApiCall();
-  const data = network.data;
+  const networkData = network.data;
+  const data = useSuspenseUserInfo();
 
   const handleFollow = async (userId: number) => {
     await post(ratelApi.networks.follow(userId), followRequest());
   };
 
-  logger.debug('query response of networks', data);
+  logger.debug('query response of networks', networkData);
   return (
     <div className="flex flex-col w-full gap-3">
-      <SelectedIndustry industries={data.industries} />
+      <SelectedIndustry industries={networkData.industries} />
       <FollowingContents
         label="Suggested teams"
-        users={data.suggested_teams}
+        users={networkData.suggested_teams}
         follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
           try {
             await handleFollow(userId);
+            data.refetch();
             network.refetch();
 
             showSuccessToast('success to follow user');
@@ -43,11 +46,12 @@ export default function MyNetwork() {
       />
       <FollowingContents
         label="Suggested users"
-        users={data.suggested_users}
+        users={networkData.suggested_users}
         follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
           try {
             await handleFollow(userId);
+            data.refetch();
             network.refetch();
 
             showSuccessToast('success to follow user');
