@@ -24,6 +24,9 @@ export interface User {
   html_contents: string;
 
   evm_address?: string;
+
+  followers_count: number;
+  followings_count: number;
 }
 
 export enum UserType {

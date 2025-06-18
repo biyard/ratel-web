@@ -28,20 +28,20 @@ export default function ProfileSection() {
 
       <div className="relative">
         <Image
-          src={team?.profile_url || '/default-profile.png'}
-          alt={team?.nickname ?? 'team profile'}
+          src={user?.profile_url || '/default-profile.png'}
+          alt={user?.nickname ?? 'team profile'}
           width={80}
           height={80}
           className="rounded-full border-2 object-cover object-top"
         />
       </div>
 
-      <div className="font-medium">{team.nickname}</div>
+      <div className="font-medium">{user.nickname}</div>
 
       <div
         id="user-profile-description"
         className="text-xs text-gray-400"
-        dangerouslySetInnerHTML={{ __html: team.html_contents }}
+        dangerouslySetInnerHTML={{ __html: user.html_contents }}
       />
 
       <UserTier />
