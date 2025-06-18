@@ -27,3 +27,4 @@ export { default as Clear } from '@/assets/icons/clear.svg';
 export { default as Folder } from '@/assets/icons/folder.svg';
 export { default as Delete2 } from '@/assets/icons/delete_2.svg';
 export { default as Add } from '@/assets/icons/add.svg';
+export { default as ChevronRight } from '@/assets/icons/chevron-right.svg';

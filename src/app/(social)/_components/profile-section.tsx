@@ -6,6 +6,7 @@ import UserTier from './UserTier';
 import UserBadges from './user-badges';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { TeamContext } from '@/lib/contexts/team-context';
+import UserFollows from './user-follows';
 
 export default function ProfileSection() {
   const { data } = useSuspenseUserInfo();
@@ -46,6 +47,10 @@ export default function ProfileSection() {
 
       <UserTier />
       <UserBadges badges={user.badges ? user.badges : []} />
+      <UserFollows
+        followers_count={user.followers_count}
+        followings_count={user.followings_count}
+      />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { Follower } from './network';
 import { Team } from './team';
 
 export interface User {
@@ -27,6 +28,9 @@ export interface User {
 
   followers_count: number;
   followings_count: number;
+
+  followers: Follower[];
+  followings: Follower[];
 }
 
 export enum UserType {
