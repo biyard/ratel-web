@@ -26,6 +26,19 @@ export async function GET(request: NextRequest) {
   }
 
   logger.debug('response header', res.headers);
+  const setCookie = res.headers.get('set-cookie') ?? '';
+  const idCookie = setCookie
+    .split(',')
+    .find((cookie) => cookie.trim().startsWith('id='))
+    ?.trim();
+  let cookie = `${idCookie}; Path=/; HttpOnly; Domain=.${host};`;
+
+  if (proctocol === 'https') {
+    cookie += 'SameSite=None; Secure;';
+  } else {
+    cookie += 'SameSite=Lax;';
+  }
+  logger.debug('cookie', cookie);
 
   return new NextResponse(res.body, {
     status: res.status,
@@ -33,7 +46,7 @@ export async function GET(request: NextRequest) {
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Set-Cookie': res.headers.get('set-cookie') || '',
+      'Set-Cookie': cookie,
       'Access-Control-Allow-Credentials': 'true',
     },
   });

@@ -53,6 +53,7 @@ export function useApiCall(): ApiCallFns {
       const response = await fetch(`${apiBaseUrl}${path}`, {
         method: 'GET',
         headers,
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -95,6 +96,7 @@ export function useApiCall(): ApiCallFns {
       const response = await fetch(`${apiBaseUrl}${path}`, {
         method: 'POST',
         headers,
+        credentials: 'include',
         body: body ? JSON.stringify(body) : undefined,
       });
 
