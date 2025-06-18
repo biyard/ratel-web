@@ -26,10 +26,12 @@ export default function MyNetwork() {
   logger.debug('query response of networks', networkData);
   return (
     <div className="flex flex-col w-full gap-3">
-      <SelectedIndustry industries={networkData.industries} />
+      <SelectedIndustry
+        industries={networkData ? networkData.industries : []}
+      />
       <FollowingContents
         label="Suggested teams"
-        users={networkData.suggested_teams}
+        users={networkData ? networkData.suggested_teams : []}
         follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
           try {
@@ -46,7 +48,7 @@ export default function MyNetwork() {
       />
       <FollowingContents
         label="Suggested users"
-        users={networkData.suggested_users}
+        users={networkData ? networkData.suggested_users : []}
         follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
           try {
