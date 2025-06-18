@@ -17,7 +17,12 @@ export async function GET(request: NextRequest) {
 
   return new NextResponse(res.body, {
     status: res.status,
-    headers: res.headers,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      ...res.headers,
+    },
   });
 }
 
