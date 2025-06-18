@@ -63,7 +63,7 @@ export default function FeedCard(props: FeedCardProps) {
           return;
         }
 
-        router.push(`/spaces/${spaceId}`);
+        router.push(`/threads/${spaceId}`);
       }}
     >
       <FeedBody {...props} />

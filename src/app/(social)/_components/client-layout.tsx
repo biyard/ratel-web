@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Header from '@/components/header';
 import Loading from '@/app/loading';
 import Link from 'next/link';
@@ -20,6 +20,18 @@ export default function ClientLayout({
   const { data, isLoading } = useUserInfo();
   const { logout } = useAuth();
   const [mobileExtends, setMobileExtends] = useState(false);
+
+  useEffect(() => {
+    if (mobileExtends) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileExtends]);
 
   return (
     <>
@@ -45,18 +57,14 @@ export default function ClientLayout({
       >
         <Link
           href={route.settings()}
-          onClick={() => {
-            setMobileExtends(false);
-          }}
+          onClick={() => setMobileExtends(false)}
           className="font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
         >
           {data?.nickname}
         </Link>
         <Link
           href={route.home()}
-          onClick={() => {
-            setMobileExtends(false);
-          }}
+          onClick={() => setMobileExtends(false)}
           className="font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
         >
           Home
