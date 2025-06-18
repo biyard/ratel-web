@@ -1,4 +1,5 @@
 import {
+  QueryClient,
   useQuery,
   UseQueryResult,
   useSuspenseQuery,
@@ -36,4 +37,12 @@ export function useSuspenseUserInfo(): UseSuspenseQueryResult<User> {
   });
 
   return query;
+}
+
+export function removeUserInfo(queryClient: QueryClient) {
+  queryClient.removeQueries({ queryKey: [QK_USERS_GET_INFO] });
+}
+
+export function refetchUserInfo(queryClient: QueryClient) {
+  queryClient.refetchQueries({ queryKey: [QK_USERS_GET_INFO] });
 }

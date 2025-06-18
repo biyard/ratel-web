@@ -13,6 +13,7 @@ import { QK_USERS_GET_INFO } from '@/constants';
 import { getQueryClient } from '@/providers/getQueryClient';
 import { dehydrate } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import 'react-toastify/dist/ReactToastify.css';
 
 const raleway = Raleway({
@@ -53,6 +54,7 @@ export default async function RootLayout({
           <Providers dehydratedState={dehydratedState}>
             <ClientLayout>{children}</ClientLayout>
             <PopupZone />
+            <ReactQueryDevtools initialIsOpen={false} />
           </Providers>
         </CookieProvider>
         <ToastContainer />
