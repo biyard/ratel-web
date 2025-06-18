@@ -26,3 +26,4 @@ export { default as User } from '@/assets/icons/user.svg';
 export { default as Clear } from '@/assets/icons/clear.svg';
 export { default as Folder } from '@/assets/icons/folder.svg';
 export { default as Delete2 } from '@/assets/icons/delete_2.svg';
+export { default as Add } from '@/assets/icons/add.svg';
