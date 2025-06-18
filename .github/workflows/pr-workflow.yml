@@ -2,7 +2,7 @@ name: PR Workflow
 
 on:
   pull_request:
-    branches: [dev,stage]
+    branches: [dev, stage]
 
 jobs:
   lint-and-build:

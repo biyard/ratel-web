@@ -1,27 +1,27 @@
 'use client';
-import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import React from 'react';
-import { usePostByUserId } from '../_hooks/use-posts';
 import { Col } from '@/components/ui/col';
 import { logger } from '@/lib/logger';
 import { FeedStatus } from '@/lib/api/models/feeds';
-import { usePostDraft } from '../_components/create-post';
-import CreatePostButton from '../_components/create-post-button';
 import { Row } from '@/components/ui/row';
 import { FeedContents, IndustryTag, UserBadge } from '@/components/feed-card';
 import { UserType } from '@/lib/api/models/user';
 import TimeAgo from '@/components/time-ago';
 import { Delete2 } from '@/components/icons';
+import { checkString } from '@/lib/string-filter-utils';
+import { useTeamByUsername } from '../../_hooks/use-team';
+import { usePostDraft } from '../_components/create-post';
+import { usePostByUserId } from '@/app/(social)/_hooks/use-posts';
+import CreatePostButton from '../_components/create-post-button';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { removeDraftRequest } from '@/lib/api/models/feeds/update-draft-request';
-import { checkString } from '@/lib/string-filter-utils';
 
-export default function MyPostsPage() {
+export default function TeamPostsPage({ username }: { username: string }) {
   const { post } = useApiCall();
-  const { data: user } = useSuspenseUserInfo();
-  const user_id = user?.id || 0;
-  const posts = usePostByUserId(user_id, 1, 20, FeedStatus.Draft);
+  const query = useTeamByUsername(username);
+  const team = query.data;
+  const posts = usePostByUserId(team.id, 1, 20, FeedStatus.Draft);
   const data = posts.data;
   logger.debug('query response of posts', data);
   const { setExpand, loadDraft } = usePostDraft();
@@ -55,7 +55,7 @@ export default function MyPostsPage() {
                   !(
                     checkString(d.title) ||
                     checkString(d.contents) ||
-                    checkString(user.username)
+                    checkString(team.nickname)
                   ),
               )
               .map((props) => (
@@ -97,9 +97,9 @@ export default function MyPostsPage() {
                   </div>
                   <Row className="justify-between items-center px-5">
                     <UserBadge
-                      profile_url={user.profile_url ?? ''}
-                      name={user.username}
-                      author_type={UserType.Individual}
+                      profile_url={team.profile_url ?? ''}
+                      name={team.nickname}
+                      author_type={UserType.Team}
                     />
                     <TimeAgo timestamp={props.updated_at} />
                   </Row>

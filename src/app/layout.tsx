@@ -5,6 +5,16 @@ import Providers from '@/providers/providers';
 import CookieProvider from './_providers/CookieProvider';
 import { PopupZone } from '@/components/popupzone';
 import ClientLayout from './(social)/_components/client-layout';
+import { prefetchQuery } from '@/lib/query-utils';
+import { serverFetch } from '@/lib/api/serverFetch';
+import { config } from '@/config';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { QK_USERS_GET_INFO } from '@/constants';
+import { getQueryClient } from '@/providers/getQueryClient';
+import { dehydrate } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import 'react-toastify/dist/ReactToastify.css';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -12,11 +22,28 @@ const raleway = Raleway({
   subsets: ['latin'],
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const queryClient = getQueryClient();
+
+  try {
+    await prefetchQuery(queryClient, [QK_USERS_GET_INFO], async () => {
+      const res = await serverFetch(
+        `${config.api_url}${ratelApi.users.getUserInfo()}`,
+        {
+          ignoreError: true,
+        },
+      );
+      return res.data;
+    });
+  } catch (error) {
+    console.warn('prefetchQuery failed:', error);
+  }
+  const dehydratedState = dehydrate(queryClient);
+
   return (
     <html lang="en">
       <head>
@@ -24,11 +51,13 @@ export default function RootLayout({
       </head>
       <body className={`${raleway.variable} antialiased bg-bg`}>
         <CookieProvider>
-          <Providers>
+          <Providers dehydratedState={dehydratedState}>
             <ClientLayout>{children}</ClientLayout>
             <PopupZone />
+            <ReactQueryDevtools initialIsOpen={false} />
           </Providers>
         </CookieProvider>
+        <ToastContainer />
       </body>
     </html>
   );

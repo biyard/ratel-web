@@ -3,13 +3,18 @@ import React from 'react';
 import { useTeamByUsername } from '../../_hooks/use-team';
 import { User } from '@/lib/api/models/user';
 import Image from 'next/image';
+import { checkString } from '@/lib/string-filter-utils';
 
 export default function TeamMembers({ username }: { username: string }) {
   const query = useTeamByUsername(username);
 
   const members: User[] = (query.data?.members ?? [])
     .flat()
-    .filter((g): g is User => g !== undefined);
+    .filter(
+      (g): g is User =>
+        g !== undefined &&
+        !(checkString(g.nickname) || checkString(g.html_contents)),
+    );
 
   const team = query.data;
 
@@ -48,7 +53,10 @@ export default function TeamMembers({ username }: { username: string }) {
 
           <div className="flex flex-wrap w-full justify-start items-start gap-[10px]">
             {member.groups
-              .filter((group) => group.creator_id === team.id)
+              .filter(
+                (group) =>
+                  group.creator_id === team.id && !checkString(group.name),
+              )
               .map((group) => (
                 <div
                   key={group.id}

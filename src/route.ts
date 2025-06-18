@@ -17,6 +17,7 @@ export const route = {
   teamGroups: (username: string) => `/teams/${username}/groups`,
   teamMembers: (username: string) => `/teams/${username}/members`,
   teamSettings: (username: string) => `/teams/${username}/settings`,
+  teamDrafts: (username: string) => `/teams/${username}/drafts`,
   spaceById: (spaceId: number) => `/spaces/${spaceId}`,
   // FIXME: correct to `threads/${feedId}`
   threadByFeedId: (feedId: number) => {

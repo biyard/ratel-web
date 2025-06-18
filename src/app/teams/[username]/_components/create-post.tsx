@@ -57,9 +57,10 @@ import { Feed, FeedStatus, FeedType } from '@/lib/api/models/feeds';
 import Image from 'next/image';
 import { createDraftRequest } from '@/lib/api/models/feeds/create-draft';
 import { useQueryClient } from '@tanstack/react-query';
-import { postByUserIdQk } from '../_hooks/use-posts';
 import { checkString } from '@/lib/string-filter-utils';
 import { showErrorToast } from '@/lib/toast';
+import { postByUserIdQk } from '@/app/(social)/_hooks/use-posts';
+import { useTeamByUsername } from '../../_hooks/use-team';
 
 const editorTheme = {
   ltr: 'text-left',
@@ -426,15 +427,18 @@ export const PostDraftContext = createContext<PostDraftContextType | undefined>(
   undefined,
 );
 
-export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const PostDraftProvider: React.FC<{
+  children: React.ReactNode;
+  username: string;
+}> = ({ children, username }) => {
+  const query = useTeamByUsername(username);
   const [expand, setExpand] = useState(false);
   const [draftId, setDraftId] = useState<number | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState<string | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [status, setStatus] = useState<DraftStatus>('idle');
+  const team = query.data;
 
   const lastSavedRef = useRef({
     title: '',
@@ -443,15 +447,13 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   const { get, post } = useApiCall();
-  const { data: user } = useUserInfo();
   const queryClient = useQueryClient();
 
   const refetchDrafts = useCallback(() => {
-    if (!user) return;
     queryClient.invalidateQueries({
-      queryKey: postByUserIdQk(user.id, 1, 20, FeedStatus.Draft),
+      queryKey: postByUserIdQk(team.id, 1, 20, FeedStatus.Draft),
     });
-  }, [user, queryClient]);
+  }, [queryClient]);
 
   const resetState = useCallback(() => {
     setDraftId(null);
@@ -508,7 +510,7 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
       currentContent: string,
       currentImage: string | null,
     ) => {
-      if (status === 'saving' || status === 'creating' || !user) return;
+      if (status === 'saving' || status === 'creating' || !team) return;
 
       if (!currentTitle.trim()) return;
 
@@ -534,7 +536,7 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
         if (isCreating) {
           const data: Feed = await post(
             ratelApi.feeds.createDraft(),
-            createDraftRequest(FeedType.Post, user.id),
+            createDraftRequest(FeedType.Post, team.id),
           );
           currentDraftId = data.id;
           setDraftId(currentDraftId);
@@ -575,7 +577,7 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
         setStatus('idle');
       }
     },
-    [draftId, user, post, refetchDrafts, status],
+    [draftId, team, post, refetchDrafts, status],
   );
 
   useEffect(() => {

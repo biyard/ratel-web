@@ -28,6 +28,7 @@ import { useAuth } from '@/lib/contexts/auth-context';
 import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
 import CreatePostButton from './_components/create-post-button';
+import { checkString } from '@/lib/string-filter-utils';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -81,12 +82,11 @@ export interface Post {
 
 export default function Home() {
   const { post } = useApiCall();
-
-  const posts = usePost(1, 20);
   const { data: promotion } = usePromotion();
   const { data: feed } = useFeedByID(promotion.feed_id);
   const { data: userInfo } = useSuspenseUserInfo();
   const auth = useAuth();
+  const posts = usePost(1, 20);
   logger.debug('user info: ', userInfo);
   const user_id = userInfo ? userInfo.id || 0 : 0;
 
@@ -130,14 +130,23 @@ export default function Home() {
       <Col className="flex-1 flex max-mobile:px-[10px]">
         {feeds.length != 0 ? (
           <Col className="flex-1">
-            {feeds.map((props) => (
-              <FeedCard
-                key={`feed-${props.id}`}
-                user_id={user_id ?? 0}
-                refetch={() => posts.refetch()}
-                {...props}
-              />
-            ))}
+            {feeds
+              .filter(
+                (d) =>
+                  !(
+                    checkString(d.title) ||
+                    checkString(d.contents) ||
+                    checkString(d.author_name)
+                  ),
+              )
+              .map((props) => (
+                <FeedCard
+                  key={`feed-${props.id}`}
+                  user_id={user_id ?? 0}
+                  refetch={() => posts.refetch()}
+                  {...props}
+                />
+              ))}
           </Col>
         ) : (
           <div className="flex flex-row w-full h-fit justify-start items-center px-[16px] py-[20px] border border-gray-500 rounded-[8px] font-medium text-base text-gray-500">
@@ -165,10 +174,19 @@ export default function Home() {
                 }
                 className="flex items-center gap-2.5 hover:bg-btn-hover rounded p-2 transition-colors"
               >
-                <img
+                {/* <img
                   src={promotion.image_url}
                   alt={promotion.name}
                   className="w-[60px] h-[60px] rounded object-cover cursor-pointer"
+                  
+                /> */}
+
+                <Image
+                  src={promotion.image_url}
+                  alt={promotion.name}
+                  width={60}
+                  height={60}
+                  className="rounded object-cover cursor-pointer"
                 />
                 <div>
                   <div className="font-medium text-white text-base/[25px]">

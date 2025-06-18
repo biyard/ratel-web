@@ -7,6 +7,7 @@ import Badge from '@/assets/icons/badge.svg';
 import { getTimeAgo } from '@/lib/time-utils';
 import { useRouter } from 'next/navigation';
 import { UserType } from '@/lib/api/models/user';
+import Image from 'next/image';
 
 export interface SpaceHeaderProps {
   title: string;
@@ -52,7 +53,7 @@ export default function SpaceHeader({
 
       <div className="flex flex-row w-full justify-between items-center">
         <div className="flex flex-row w-fit gap-2 justify-between items-center">
-          <img
+          <Image
             src={proposerImage || '/default-profile.png'}
             alt={proposerName}
             width={20}
