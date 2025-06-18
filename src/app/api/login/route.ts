@@ -32,12 +32,12 @@ export async function GET(request: NextRequest) {
     .find((cookie) => cookie.trim().startsWith('id='))
     ?.trim();
 
-  let cookie = `${idCookie}; Path=/; HttpOnly; Domain=.${host};`;
+  let cookie = `${idCookie}; Path=/; HttpOnly; Max-Age=2586226;`;
 
   if (proctocol === 'https') {
-    cookie += 'SameSite=None; Secure;';
+    cookie += ` SameSite=None; Secure; Domain=${host};`;
   } else {
-    cookie += 'SameSite=Lax;';
+    cookie += ` SameSite=Lax; Domain=${host};`;
   }
   logger.debug('cookie', cookie);
 
