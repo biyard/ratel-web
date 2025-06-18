@@ -8,7 +8,7 @@ import Saved from './Saved';
 import { useUserInfo } from '@/lib/api/hooks/users';
 import Link from 'next/link';
 import { route } from '@/route';
-import { Post, Settings } from '@/components/icons';
+import { Post, Settings, UserGroup } from '@/components/icons';
 // import DevTools from './dev-tools';
 
 export default function UserSidemenu() {
@@ -24,15 +24,19 @@ export default function UserSidemenu() {
       {/* Navigation */}
       <nav className="px-2 py-5 px-3 w-full rounded-[10px] bg-component-bg">
         <Link href={route.myPosts()} className="sidemenu-link">
-          <Post />
+          <Post className="w-[24px] h-[24px]" />
           <span>My Posts</span>
         </Link>
         <Link href={route.drafts()} className="sidemenu-link">
-          <Post />
+          <Post className="w-[24px] h-[24px]" />
           <span>Drafts</span>
         </Link>
+        <Link href={route.myNetwork()} className="sidemenu-link">
+          <UserGroup className="w-[24px] h-[24px]" />
+          <span>My Networks</span>
+        </Link>
         <Link href={route.settings()} className="sidemenu-link">
-          <Settings />
+          <Settings className="w-[24px] h-[24px]" />
           <span>Settings</span>
         </Link>
       </nav>
