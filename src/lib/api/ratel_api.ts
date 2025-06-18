@@ -39,6 +39,8 @@ export const ratelApi = {
   },
   networks: {
     getNetworks: () => '/v1/network?param-type=read&action=find-one',
+    follow: (user_id: number) => `/v1/my-networks/${user_id}`,
+    unfollow: (user_id: number) => `/v1/my-networks/${user_id}`,
   },
   feeds: {
     comment: () => '/v1/feeds',

@@ -7,10 +7,19 @@ import { Follower } from '@/lib/api/models/network';
 import { UserType } from '@/lib/api/models/user';
 import Image from 'next/image';
 import { Add } from '@/components/icons';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { followRequest } from '@/lib/api/models/networks/follow';
+import { showErrorToast, showSuccessToast } from '@/lib/toast';
 
 export default function MyNetwork() {
   const network = useNetwork();
+  const { post } = useApiCall();
   const data = network.data;
+
+  const handleFollow = async (userId: number) => {
+    await post(ratelApi.networks.follow(userId), followRequest());
+  };
 
   logger.debug('query response of networks', data);
   return (
@@ -19,15 +28,33 @@ export default function MyNetwork() {
       <FollowingContents
         label="Suggested teams"
         users={data.suggested_teams}
-        follow={(userId: number) => {
+        follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
+          try {
+            await handleFollow(userId);
+            network.refetch();
+
+            showSuccessToast('success to follow user');
+          } catch (err) {
+            showErrorToast('failed to follow user');
+            logger.error('failed to follow user with error: ', err);
+          }
         }}
       />
       <FollowingContents
         label="Suggested users"
         users={data.suggested_users}
-        follow={(userId: number) => {
+        follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
+          try {
+            await handleFollow(userId);
+            network.refetch();
+
+            showSuccessToast('success to follow user');
+          } catch (err) {
+            showErrorToast('failed to follow user');
+            logger.error('failed to follow user with error: ', err);
+          }
         }}
       />
     </div>
@@ -37,7 +64,7 @@ export default function MyNetwork() {
 function FollowButton({ onClick }: { onClick: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row w-fit h-fit px-[12px] py-[8px] bg-white rounded-[50px]"
+      className="cursor-pointer flex flex-row w-fit h-fit px-[12px] py-[8px] bg-white hover:bg-gray-100 rounded-[50px]"
       onClick={() => {
         onClick();
       }}
