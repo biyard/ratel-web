@@ -10,9 +10,13 @@ import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { userEditProfileRequest } from '@/lib/api/models/user';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useApiCall } from '@/lib/api/use-send';
+import { checkString } from '@/lib/string-filter-utils';
+import { showErrorToast } from '@/lib/toast';
 import { route } from '@/route';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import WalletSummary from './_components/wallet-summary';
+import Image from 'next/image';
 
 export default function MyProfilePage() {
   const { post } = useApiCall();
@@ -37,6 +41,11 @@ export default function MyProfilePage() {
   };
 
   const handleSave = async () => {
+    if (checkString(nickname) || checkString(htmlContents)) {
+      showErrorToast('Please remove the test keyword');
+      return;
+    }
+
     post(
       ratelApi.users.editProfile(user!.id),
       userEditProfileRequest(nickname!, htmlContents!, profileUrl),
@@ -49,8 +58,10 @@ export default function MyProfilePage() {
     <div className="w-full max-tablet:w-full flex flex-col gap-10 items-center">
       <FileUploader onUploadSuccess={handleProfileUrl}>
         {profileUrl ? (
-          <img
+          <Image
             src={profileUrl}
+            width={40}
+            height={80}
             alt="Team Logo"
             className="w-40 h-40 rounded-full object-cover cursor-pointer"
           />
@@ -84,10 +95,20 @@ export default function MyProfilePage() {
           />
         </Col>
         <Row className="justify-end py-5">
-          <Button variant={'rounded_primary'} onClick={handleSave}>
+          <Button
+            className={
+              checkString(nickname) || checkString(htmlContents)
+                ? 'cursor-not-allowed bg-neutral-600'
+                : 'cursor-pointer bg-primary'
+            }
+            variant={'rounded_primary'}
+            onClick={handleSave}
+          >
             Save
           </Button>
         </Row>
+
+        <WalletSummary />
       </Col>
     </div>
   );

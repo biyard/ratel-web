@@ -19,8 +19,7 @@ interface Member {
   avatar: string;
   status: 'online' | 'offline' | 'away';
 }
-
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
 interface NavItem {
   id: string;
   label: string;
@@ -55,7 +54,7 @@ interface CollapsibleSection {
   isOpen: boolean;
 }
 
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
 const CollapsibleSectionComponent = ({
   section,
   onToggle,
@@ -94,7 +93,7 @@ const CollapsibleSectionComponent = ({
   </div>
 );
 
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
 const MemberItem = ({ member }: { member: Member }) => (
   <div className="flex items-center gap-2 p-1 rounded hover:bg-[#404040] cursor-pointer transition-colors">
     <div className="relative">
@@ -118,7 +117,7 @@ const MemberItem = ({ member }: { member: Member }) => (
   </div>
 );
 
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
 const FileAttachment = ({ file }: { file: AttachedFile }) => {
   const getFileColor = (type: string) => {
     switch (type) {
@@ -149,7 +148,7 @@ const FileAttachment = ({ file }: { file: AttachedFile }) => {
   );
 };
 
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
 const ChatMessageComponent = ({
   message,
   onLike,

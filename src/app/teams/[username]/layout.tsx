@@ -1,9 +1,8 @@
 import { Suspense } from 'react';
 import Loading from '@/app/loading';
-import { ratelApi } from '@/lib/api/ratel_api';
-import { client } from '@/lib/apollo';
 import { logger } from '@/lib/logger';
 import TeamSidemenu from './_components/team-sidemenu';
+import { CreatePost, PostDraftProvider } from './_components/create-post';
 
 export interface TeamLayoutProps {
   params: Promise<{ username: string }>;
@@ -18,17 +17,10 @@ export default async function TeamLayout({
   TeamLayoutProps) {
   const { username } = await params;
   logger.debug('TeamLayout: username', username);
-  const {
-    data: { users },
-  } = await client.query(ratelApi.graphql.getTeamByTeamname(username));
-  logger.debug('TeamLayout: users', users);
-
-  const [team] = users;
-  logger.debug('TeamLayout: team', team);
 
   return (
     <div className="flex min-h-screen justify-between max-w-6xl mx-auto text-white pt-3 gap-[20px]">
-      <TeamSidemenu team={team} />
+      <TeamSidemenu username={username} />
       <div className="flex-1 flex">
         <Suspense
           fallback={
@@ -37,7 +29,15 @@ export default async function TeamLayout({
             </div>
           }
         >
-          {children}
+          <PostDraftProvider username={username}>
+            {children}
+
+            <div className="fixed bottom-0 left-0 right-0 z-10 flex flex-row items-center justify-center">
+              <div className="max-w-desktop w-full">
+                <CreatePost />
+              </div>
+            </div>
+          </PostDraftProvider>
         </Suspense>
       </div>
     </div>

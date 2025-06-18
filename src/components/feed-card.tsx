@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { UserType } from '@/lib/api/models/user';
+import Image from 'next/image';
 
 export interface FeedCardProps {
   id: number;
@@ -59,7 +60,7 @@ export default function FeedCard(props: FeedCardProps) {
       className="cursor-pointer bg-component-bg rounded-[10px]"
       onClick={() => {
         const spaceId = props.space_id;
-        if (spaceId == 0) {
+        if (!spaceId || spaceId == 0) {
           return;
         }
 
@@ -81,8 +82,8 @@ export function FeedBody({
   url,
   created_at,
   author_type,
-  user_id,
-  author_id,
+  // user_id,
+  // author_id,
   space_id,
   onboard,
 }: FeedCardProps) {
@@ -146,12 +147,18 @@ export function FeedContents({
         className="feed-content font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30 px-5"
         dangerouslySetInnerHTML={{ __html: c }}
       ></p>
+
       {url && (
         <div className="px-5">
-          <img
-            className="w-full max-h-80 object-cover rounded-[8px]"
-            src={url}
-          />
+          <div className="relative w-full max-h-80 aspect-video">
+            <Image
+              src={url}
+              alt="Uploaded image"
+              fill
+              className="object-cover rounded-[8px]"
+              sizes="100vw"
+            />
+          </div>
         </div>
       )}
     </Col>
@@ -160,7 +167,7 @@ export function FeedContents({
 
 export function IconText({
   children,
-  className,
+  className = '',
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }) {
   return (
@@ -184,7 +191,7 @@ export function UserBadge({
 }) {
   return (
     <Row className="w-fit items-center med-16 text-white">
-      <img
+      <Image
         src={profile_url}
         alt="User Profile"
         width={24}
