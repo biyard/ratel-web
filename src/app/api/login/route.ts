@@ -16,15 +16,25 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  console.log('header', res.headers);
+  const proctocol = request.headers.get('x-forwarded-proto') || 'http';
+  const host = request.headers.get('host') || 'localhost';
+  const port = request.headers.get('x-forwarded-port') || '8080';
+  let origin = `${proctocol}://${host}`;
+
+  if (port && port !== '80' && port !== '443') {
+    origin += `:${port}`;
+  }
+
+  logger.debug('response header', res.headers);
 
   return new NextResponse(res.body, {
     status: res.status,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      ...res.headers,
+      'Set-Cookie': res.headers.get('set-cookie') || '',
+      'Access-Control-Allow-Credentials': 'true',
     },
   });
 }
