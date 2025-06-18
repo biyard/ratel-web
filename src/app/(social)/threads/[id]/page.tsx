@@ -12,15 +12,17 @@ import { notFound } from 'next/navigation';
 import { logger } from '@/lib/logger';
 
 interface Props {
-  params: { id: number };
+  params: Promise<{ id: string }>;
 }
 
-export const getCachedFeedByID = cache(async (id: number) => {
+const getCachedFeedByID = cache(async (id: number) => {
   return requestFeedByID(id);
 });
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const feed_id = (await params).id;
+  const { id } = await params;
+  const feed_id = parseInt(id, 10);
+
   let title = 'Ratel Thread';
   let description = 'Ratel Thread';
   let image = '';
@@ -51,7 +53,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Props) {
-  const feed_id = (await params).id;
+  const { id } = await params;
+  const feed_id = parseInt(id, 10);
   const queryClient = getQueryClient();
   const { data } = await getCachedFeedByID(feed_id);
   if (!data) {

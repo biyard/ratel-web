@@ -76,7 +76,7 @@ export async function apiFetch<T = unknown>(
 
     if (!response.ok) {
       const errorBody = await response.text();
-      logger.log(
+      logger.error(
         `Error fetching ${url}: ${response.status} ${response.statusText} ${errorBody}`,
       );
       if (options?.ignoreError) {
