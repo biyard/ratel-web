@@ -156,7 +156,7 @@ export default function Home() {
       </Col>
 
       {/* Right Sidebar */}
-      <div className="w-80 pl-4 max-tablet:!hidden">
+      <div className="w-70 pl-4 max-tablet:!hidden">
         {/* Hot Promotion */}
 
         <div>
