@@ -35,9 +35,9 @@ export async function GET(request: NextRequest) {
   let cookie = `${idCookie}; Path=/; HttpOnly; Max-Age=2586226;`;
 
   if (proctocol === 'https') {
-    cookie += ` SameSite=None; Secure; Domain=${host};`;
+    cookie += ` SameSite=None; Secure; Domain=.${host};`;
   } else {
-    cookie += ` SameSite=Lax; Domain=${host};`;
+    cookie += ` SameSite=Lax;`;
   }
   logger.debug('cookie', cookie);
 
