@@ -69,6 +69,7 @@ export default function MyFollower() {
         <FollowingInfo
           users={followers}
           selectedType={selectedType}
+          followings={followings.map((f) => f.id)}
           unfollow={() => {}}
           follow={async (index: number) => {
             try {
@@ -124,6 +125,7 @@ export default function MyFollower() {
 function FollowingInfo({
   users,
   selectedType,
+  followings = [],
   unfollow,
   follow,
 }: {
@@ -131,6 +133,7 @@ function FollowingInfo({
   selectedType: FollowTabType;
   unfollow: (index: number) => void;
   follow: (index: number) => void;
+  followings?: number[];
 }) {
   return (
     <div className="flex flex-col w-full rounded-lg bg-[#191919] px-4 py-5 gap-2.5">
@@ -184,11 +187,13 @@ function FollowingInfo({
                     }}
                   />
                 ) : (
-                  <FollowButton
-                    onClick={() => {
-                      follow(index);
-                    }}
-                  />
+                  !followings.includes(user.id) && (
+                    <FollowButton
+                      onClick={() => {
+                        follow(index);
+                      }}
+                    />
+                  )
                 )}
               </div>
 
