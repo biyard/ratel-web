@@ -10,6 +10,8 @@ import { logger } from '@/lib/logger';
 import { useAuth, useEd25519KeyPair } from '@/lib/contexts/auth-context';
 import { AuthUserInfo, EventType } from '@/lib/service/firebase-service';
 import { send } from '@/lib/api/send';
+import { refetchUserInfo } from '@/lib/api/hooks/users';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface LoginModalProps {
   id?: string;
@@ -24,6 +26,7 @@ interface LoginBoxProps {
 export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
   const popup = usePopup();
   const anonKeyPair = useEd25519KeyPair();
+  const queryClient = useQueryClient();
 
   const { login, ed25519KeyPair } = useAuth();
 
@@ -80,6 +83,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
                   />,
                 );
               } else if (user?.event == EventType.Login) {
+                refetchUserInfo(queryClient);
                 loader.close();
               }
             } catch (err) {
