@@ -43,6 +43,7 @@ export async function send(
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
   };
 
   if (token !== '') {
