@@ -12,8 +12,6 @@ export const QK_GET_FEED_BY_FEED_ID = 'get-feeds-by-feed-id';
 
 export const QK_GET_SPACE_BY_SPACE_ID = 'get-space-by-space-id';
 
-export const QK_GET_THREAD_BY_THREAD_ID = 'get-thread-by-thread-id'
-
 export const QK_GET_TEAM_BY_ID = 'get-team-by-id';
 export const QK_GET_TEAM_BY_USERNAME = 'get-team-by-username';
 
