@@ -28,9 +28,10 @@ export async function GET(request: NextRequest) {
   logger.debug('response header', res.headers);
   const setCookie = res.headers.get('set-cookie') ?? '';
   const idCookie = setCookie
-    .split(',')
+    .split(';')
     .find((cookie) => cookie.trim().startsWith('id='))
     ?.trim();
+
   let cookie = `${idCookie}; Path=/; HttpOnly; Domain=.${host};`;
 
   if (proctocol === 'https') {
