@@ -20,14 +20,14 @@ export default function MyNetwork() {
         label="Suggested teams"
         users={data.suggested_teams}
         follow={(userId: number) => {
-          console.log('user id: ', userId);
+          logger.debug('follow button clicked user id: ', userId);
         }}
       />
       <FollowingContents
         label="Suggested users"
         users={data.suggested_users}
         follow={(userId: number) => {
-          console.log('user id: ', userId);
+          logger.debug('follow button clicked user id: ', userId);
         }}
       />
     </div>
