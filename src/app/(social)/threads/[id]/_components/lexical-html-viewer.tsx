@@ -13,6 +13,7 @@ import { $getRoot, $insertNodes } from 'lexical';
 // 기본적인 Lexical 노드들
 import { ParagraphNode, TextNode } from 'lexical';
 import { editorTheme } from '@/app/(social)/_components/create-post';
+import { logger } from '@/lib/logger';
 
 const editorConfig = {
   namespace: 'html-viewer-editor',
@@ -20,7 +21,7 @@ const editorConfig = {
   nodes: [ParagraphNode, TextNode],
   theme: editorTheme,
   onError(error: unknown) {
-    console.error('Lexical Viewer Error:', error);
+    logger.error('Lexical Viewer Error:', error);
   },
 };
 

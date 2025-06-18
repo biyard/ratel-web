@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { logger } from '../logger';
 
 export type FetchResponse<T = unknown> = {
   data: T;
@@ -47,7 +48,7 @@ export async function apiFetch<T = unknown>(
         requestHeaders.set('Content-Type', contentType);
       }
     } catch (error) {
-      console.warn(
+      logger.warn(
         'Failed to get server headers, falling back to client mode',
         error,
       );
@@ -75,7 +76,7 @@ export async function apiFetch<T = unknown>(
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.log(
+      logger.log(
         `Error fetching ${url}: ${response.status} ${response.statusText} ${errorBody}`,
       );
       if (options?.ignoreError) {
@@ -99,7 +100,7 @@ export async function apiFetch<T = unknown>(
       ok: true,
     };
   } catch (error) {
-    console.error(`Error during server-side fetch to ${url}:`, error);
+    logger.error(`Error during server-side fetch to ${url}:`, error);
     if (options?.ignoreError) {
       return {
         data: null,

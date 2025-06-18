@@ -9,13 +9,13 @@ import { Metadata } from 'next';
 import striptags from 'striptags';
 import { cache, Suspense } from 'react';
 import { notFound } from 'next/navigation';
+import { logger } from '@/lib/logger';
 
 interface Props {
   params: { id: number };
 }
 
 export const getCachedFeedByID = cache(async (id: number) => {
-  console.log(`🔄 Actually fetching feed ${id}`);
   return requestFeedByID(id);
 });
 
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       image = feed.url || '';
     }
   } catch (error) {
-    console.error(`Failed to generate metadata for feed ${feed_id}:`, error);
+    logger.error(`Failed to generate metadata for feed ${feed_id}:`, error);
   }
 
   return {
