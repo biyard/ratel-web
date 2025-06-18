@@ -11,6 +11,7 @@ export const route = {
   groups: () => '/groups',
 
   myNetwork: () => '/my-network',
+  myFollower: () => '/my-follower',
   messages: () => '/messages',
   notifications: () => '/notifications',
   teamByUsername: (username: string) => `/teams/${username}/home`,
