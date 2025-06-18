@@ -1,16 +1,19 @@
 import { config } from '@/config';
 import { ratelApi } from '@/lib/api/ratel_api';
+import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const apiBaseUrl: string = config.api_url;
 
   const targetUrl = `${apiBaseUrl}${ratelApi.users.login()}`;
-  const headers = new Headers(request.headers);
+  logger.debug('request headers', request.headers);
   const res = await fetch(targetUrl, {
     method: 'GET',
-    headers,
-    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: request.headers.get('authorization') || '',
+    },
   });
 
   console.log('header', res.headers);
@@ -31,8 +34,8 @@ export async function OPTIONS() {
     status: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Methods': '*',
+      'Access-Control-Allow-Headers': '*',
     },
   });
 }
