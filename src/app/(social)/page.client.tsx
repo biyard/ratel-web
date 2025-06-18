@@ -12,7 +12,6 @@ import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 //   writePostRequest,
 // } from '@/lib/api/models/feeds/write-post-request';
 
-
 import { Metadata } from 'next';
 import { useApiCall } from '@/lib/api/use-send';
 import { useQuery } from '@tanstack/react-query';
@@ -21,10 +20,7 @@ import { useAuth } from '@/lib/contexts/auth-context';
 import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
 import NewSideBar from './_components/news-right-sidebar';
-import CreatePostButton from './_components/create-post-button';
 import { checkString } from '@/lib/string-filter-utils';
-import { usePromotion } from './_hooks/use_promotion';
-import { useFeedByID } from './_hooks/use-feed';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -78,9 +74,6 @@ export interface Post {
 
 export default function Home() {
   const { post } = useApiCall();
-
-  const { data: promotion } = usePromotion();
-  const { data: feed } = useFeedByID(promotion.feed_id);
   const { data: userInfo } = useSuspenseUserInfo();
   const auth = useAuth();
   const posts = usePost(1, 20);
@@ -153,7 +146,7 @@ export default function Home() {
       </Col>
 
       {/* Right Sidebar */}
-      <NewSideBar/>
+      <NewSideBar />
     </div>
   );
 }

@@ -32,6 +32,5 @@ export const metadata: Metadata = {
 };
 
 export default function MyNetworkPage() {
-    return <MyNetworkClientPage />;
-  }
-  
+  return <MyNetworkClientPage />;
+}

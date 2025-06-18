@@ -39,7 +39,7 @@ export default function SocialLayout({
             </div>
           </PostDraftProvider>
         </Suspense>
-        <NewSideBar/>
+        <NewSideBar />
       </div>
     </div>
   );
