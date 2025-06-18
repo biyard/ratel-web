@@ -17,13 +17,6 @@ export default function MyNetworkClientPage() {
     communities: false,
   })
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }))
-  }
-
   const [activeCategory, setActiveCategory] = useState(0)
 
   const categories = [
