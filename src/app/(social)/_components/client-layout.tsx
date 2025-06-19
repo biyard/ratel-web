@@ -9,33 +9,6 @@ import { useUserInfo } from '@/lib/api/hooks/users';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { LoginModal } from '@/components/popup/login-popup';
-import { useLayout } from '@/contexts/layoutContext';
-import { LayoutType } from '@/types';
-import NotificationHeader from '@/app/(notifications)/notifications/components/header';
-
-function setHeader(layout: LayoutType, mobileExtends: boolean, setMobileExtends: any)
-  {
-    switch (layout) {
-      case 'default':
-        return(
-            <Header
-              mobileExtends={mobileExtends}
-              setMobileExtends={setMobileExtends}
-            />
-        ) 
-      case 'notification':
-        return(
-            <NotificationHeader />
-        )    
-      default:
-        return(
-          <Header
-            mobileExtends={mobileExtends}
-            setMobileExtends={setMobileExtends}
-          />
-      )
-    }
-}
 
 export default function ClientLayout({
   children,
@@ -46,13 +19,12 @@ export default function ClientLayout({
   const { data, refetch, isLoading } = useUserInfo();
   const { logout } = useAuth();
   const [mobileExtends, setMobileExtends] = useState(false);
-  const { layout } = useLayout();
-
   return (
     <>
-    {
-      setHeader(layout, mobileExtends, setMobileExtends)
-    }
+      <Header
+        mobileExtends={mobileExtends}
+        setMobileExtends={setMobileExtends}
+      />
       <Suspense
         fallback={
           <div className="w-full h-full flex items-center justify-center">
