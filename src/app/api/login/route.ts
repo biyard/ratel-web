@@ -4,10 +4,20 @@ import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
+  logger.debug('[GET /api/login] incoming');
+  const password = request.nextUrl.searchParams.get('password');
+  const email = request.nextUrl.searchParams.get('email');
+
   const apiBaseUrl: string = config.api_url;
 
-  const targetUrl = `${apiBaseUrl}${ratelApi.users.login()}`;
+  let targetUrl = `${apiBaseUrl}${ratelApi.users.login()}`;
+  if (email && password && password !== '') {
+    const path = ratelApi.users.loginWithPassword(email, password);
+    targetUrl = `${apiBaseUrl}${path}`;
+  }
+
   logger.debug('request headers', request.headers);
+  logger.debug('targetUrl', targetUrl);
   const res = await fetch(targetUrl, {
     method: 'GET',
     headers: {
@@ -32,10 +42,10 @@ export async function GET(request: NextRequest) {
     .find((cookie) => cookie.trim().startsWith('id='))
     ?.trim();
 
-  let cookie = `${idCookie}; Path=/; HttpOnly; Max-Age=2586226;`;
+  let cookie = `${idCookie}; Path=/; Max-Age=2586226;`;
 
   if (proctocol === 'https') {
-    cookie += ` SameSite=None; Secure; Domain=.${host};`;
+    cookie += ` HttpOnly; SameSite=None; Secure; Domain=.${host};`;
   } else {
     cookie += ` SameSite=Lax;`;
   }

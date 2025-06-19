@@ -21,9 +21,7 @@ import Link from 'next/link';
 import { route } from '@/route';
 import { Metadata } from 'next';
 import { useApiCall } from '@/lib/api/use-send';
-import { useQuery } from '@tanstack/react-query';
 import { ratelApi } from '@/lib/api/ratel_api';
-import { useAuth } from '@/lib/contexts/auth-context';
 import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
 import CreatePostButton from './_components/create-post-button';
@@ -91,9 +89,7 @@ export default function Home() {
   const { data: feed } = useFeedByID(promotion.feed_id);
   const data = useSuspenseUserInfo();
   const userInfo = data.data;
-  const auth = useAuth();
   const posts = usePost(1, 20);
-  logger.debug('user info: ', userInfo);
   const user_id = userInfo ? userInfo.id || 0 : 0;
 
   const selected_teams = networkData
@@ -108,16 +104,6 @@ export default function Home() {
   const handleFollow = async (userId: number) => {
     await post(ratelApi.networks.follow(userId), followRequest());
   };
-
-  useQuery({
-    queryKey: ['updateEvmAddress', auth.evmWallet?.address ?? ''],
-    queryFn: () =>
-      post(ratelApi.users.updateEvmAddress(), {
-        update_evm_address: {
-          evm_address: auth.evmWallet!.address,
-        },
-      }),
-  });
 
   const feeds: Post[] =
     posts.data != null
