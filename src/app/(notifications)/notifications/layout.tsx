@@ -18,7 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-3 mb-3">
               {/* <div className="w-12 h-12 bg-[#fcb300] rounded-lg flex items-center justify-center">
                 </div> */}
-              <Image src="/images/poll.png" width={100} height={100} />
+              <Image src="/images/poll.png" width={100} height={100} alt="Poll image" />
               <div>
                 <h4 className="font-medium text-white">
                   Presidential Election
@@ -86,7 +86,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10">
-                  <AvatarImage src="/placeholder.svg?height=40&width=40" />
+                  <AvatarImage src="/trump.jpg?height=40&width=40" />
                   <AvatarFallback>DT</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
@@ -106,7 +106,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10">
-                  <AvatarImage src="/placeholder.svg?height=40&width=40" />
+                  <AvatarImage src="/elon.png?height=40&width=40" />
                   <AvatarFallback>EM</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
@@ -126,7 +126,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10">
-                  <AvatarImage src="/placeholder.svg?height=40&width=40" />
+                  <AvatarImage src="/jongsook.png?height=40&width=40" />
                   <AvatarFallback>JP</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
