@@ -18,10 +18,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-3 mb-3">
               {/* <div className="w-12 h-12 bg-[#fcb300] rounded-lg flex items-center justify-center">
                 </div> */}
-              <Image src="/images/poll.png" 
-                width={100} 
-                height={100} 
-                alt="Poll image" />
+              <Image
+                src="/images/poll.png"
+                width={100}
+                height={100}
+                alt="Poll image"
+              />
               <div>
                 <h4 className="font-medium text-white">
                   Presidential Election
