@@ -27,7 +27,6 @@ export type DeliberationTabType =
   (typeof DeliberationTab)[keyof typeof DeliberationTab];
 
 export interface Thread {
-  title: string;
   html_contents: string;
   files: FileInfo[];
 }
@@ -43,10 +42,10 @@ export default function SpaceByIdPage() {
   );
   const [isEdit, setIsEdit] = useState(false);
   const [thread, setThread] = useState<Thread>({
-    title: space.title ?? '',
     html_contents: space.html_contents ?? '',
     files: space.files ?? [],
   });
+  const [title, setTitle] = useState(space.title ?? '');
 
   const handleUpdate = async (
     title: string,
@@ -63,9 +62,13 @@ export default function SpaceByIdPage() {
     <div className="flex flex-row w-full gap-5">
       {selectedType == DeliberationTab.THREAD ? (
         <ThreadPage
+          title={title}
           thread={thread}
           setThread={(t: Thread) => {
             setThread(t);
+          }}
+          setTitle={(t: string) => {
+            setTitle(t);
           }}
           isEdit={isEdit}
           userType={space.author[0].user_type ?? 0}
@@ -74,7 +77,17 @@ export default function SpaceByIdPage() {
           createdAt={space?.created_at}
         />
       ) : selectedType == DeliberationTab.DELIBERATION ? (
-        <DeliberationPage />
+        <DeliberationPage
+          title={title}
+          setTitle={(t: string) => {
+            setTitle(t);
+          }}
+          isEdit={isEdit}
+          userType={space.author[0].user_type ?? 0}
+          proposerImage={space.author[0].profile_url ?? ''}
+          proposerName={space.author[0].nickname ?? ''}
+          createdAt={space?.created_at}
+        />
       ) : selectedType == DeliberationTab.POLL ? (
         <PollPage />
       ) : (
@@ -91,18 +104,14 @@ export default function SpaceByIdPage() {
           setIsEdit(true);
         }}
         onsave={async () => {
-          if (checkString(thread.title) || checkString(thread.html_contents)) {
+          if (checkString(title) || checkString(thread.html_contents)) {
             showErrorToast('Please remove the test keyword');
             setIsEdit(false);
             return;
           }
 
           try {
-            await handleUpdate(
-              thread.title,
-              thread.html_contents,
-              thread.files,
-            );
+            await handleUpdate(title, thread.html_contents, thread.files);
             data.refetch();
 
             showSuccessToast('success to update space');

@@ -8,7 +8,9 @@ import { Thread } from '../page.client';
 import { FileInfo } from '@/lib/api/models/feeds';
 
 export default function ThreadPage({
+  title,
   thread,
+  setTitle,
   setThread,
 
   userType,
@@ -17,9 +19,10 @@ export default function ThreadPage({
   createdAt,
   isEdit,
 }: {
+  title: string;
   thread: Thread;
   setThread: (thread: Thread) => void;
-
+  setTitle: (title: string) => void;
   userType: number;
   proposerImage: string;
   proposerName: string;
@@ -31,16 +34,13 @@ export default function ThreadPage({
       <div className="flex flex-col w-full">
         <SpaceHeader
           isEdit={isEdit}
-          title={thread.title}
+          title={title}
           userType={userType}
           proposerImage={proposerImage}
           proposerName={proposerName}
           createdAt={createdAt}
           setTitle={(title: string) => {
-            setThread({
-              ...thread,
-              title,
-            });
+            setTitle(title);
           }}
         />
         <div className="flex flex-col w-full mt-7.5 gap-2.5">
