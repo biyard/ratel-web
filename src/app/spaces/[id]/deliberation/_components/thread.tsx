@@ -1,25 +1,77 @@
 'use client';
 
-import { Space } from '@/lib/api/models/spaces';
 import React from 'react';
 import SpaceHeader from '../../_components/space_header';
 import SpaceContents from '../../_components/space_contents';
 import SpaceFiles from './space_files';
+import { Thread } from '../page.client';
+import { FileInfo } from '@/lib/api/models/feeds';
 
-export default function ThreadPage({ space }: { space: Space }) {
+export default function ThreadPage({
+  thread,
+  setThread,
+
+  userType,
+  proposerImage,
+  proposerName,
+  createdAt,
+  isEdit,
+}: {
+  thread: Thread;
+  setThread: (thread: Thread) => void;
+
+  userType: number;
+  proposerImage: string;
+  proposerName: string;
+  createdAt: number;
+  isEdit: boolean;
+}) {
   return (
     <div className="flex flex-row w-full gap-5">
       <div className="flex flex-col w-full">
         <SpaceHeader
-          title={space?.title ?? ''}
-          userType={space?.author[0].user_type ?? 0}
-          proposerImage={space?.author[0].profile_url ?? ''}
-          proposerName={space?.author[0].nickname ?? ''}
-          createdAt={space?.created_at}
+          isEdit={isEdit}
+          title={thread.title}
+          userType={userType}
+          proposerImage={proposerImage}
+          proposerName={proposerName}
+          createdAt={createdAt}
+          setTitle={(title: string) => {
+            setThread({
+              ...thread,
+              title,
+            });
+          }}
         />
         <div className="flex flex-col w-full mt-7.5 gap-2.5">
-          <SpaceContents htmlContents={space?.html_contents} />
-          <SpaceFiles files={space?.files} />
+          <SpaceContents
+            isEdit={isEdit}
+            htmlContents={thread.html_contents}
+            setContents={(html_contents: string) => {
+              setThread({
+                ...thread,
+                html_contents,
+              });
+            }}
+          />
+          <SpaceFiles
+            isEdit={isEdit}
+            files={thread.files}
+            onremove={(index: number) => {
+              const newFiles = [...thread.files];
+              newFiles.splice(index, 1);
+              setThread({
+                ...thread,
+                files: newFiles,
+              });
+            }}
+            onadd={(file: FileInfo) => {
+              setThread({
+                ...thread,
+                files: [...thread.files, file],
+              });
+            }}
+          />
         </div>
       </div>
     </div>

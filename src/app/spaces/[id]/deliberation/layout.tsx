@@ -1,9 +1,9 @@
 'use client';
 import Loading from '@/app/loading';
-import React, { Suspense, useState } from 'react';
-import CreateCommentBox from '../_components/create_comment_box';
-import SpaceComments from '../_components/space_comments';
-import { useParams } from 'next/navigation';
+import React, { Suspense } from 'react';
+// import CreateCommentBox from '../_components/create_comment_box';
+// import SpaceComments from '../_components/space_comments';
+// import { useParams } from 'next/navigation';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,10 +13,10 @@ interface LayoutProps {
 }
 
 export default function SpaceByIdLayout({ children }: LayoutProps) {
-  const [expand, setExpand] = useState(false);
-  const [close, setClose] = useState(true);
-  const params = useParams();
-  const spaceId = Number(params.id);
+  // const [expand, setExpand] = useState(false);
+  // const [close, setClose] = useState(true);
+  // const params = useParams();
+  // const spaceId = Number(params.id);
 
   return (
     <div className="flex flex-col w-full min-h-screen justify-between max-w-6xl mx-auto text-white pt-3 gap-5 max-tablet:px-5 mb-8">
@@ -34,7 +34,7 @@ export default function SpaceByIdLayout({ children }: LayoutProps) {
         </div>
         {/* <SpaceSideMenu spaceId={spaceId} /> */}
       </div>
-      <SpaceComments
+      {/* <SpaceComments
         spaceId={spaceId}
         setClose={() => {
           const c = close;
@@ -43,8 +43,8 @@ export default function SpaceByIdLayout({ children }: LayoutProps) {
             setExpand(true);
           }
         }}
-      />
-      <div
+      /> */}
+      {/* <div
         className={
           close
             ? 'fixed bottom-0 w-[1152px] max-[1152px]:w-full max-[1152px]:px-[10px] max-tablet:pr-[40px] hidden'
@@ -70,7 +70,7 @@ export default function SpaceByIdLayout({ children }: LayoutProps) {
             }
           }}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

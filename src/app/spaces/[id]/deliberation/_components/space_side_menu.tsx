@@ -5,7 +5,7 @@ import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 import { getTimeWithFormat } from '@/lib/time-utils';
 import React from 'react';
 import Clock from '@/assets/icons/clock.svg';
-import { Discuss } from '@/components/icons';
+import { BottomTriangle, Discuss, Edit1 } from '@/components/icons';
 import { File, Vote, CheckCircle } from 'lucide-react';
 import { DeliberationTab, DeliberationTabType } from '../page.client';
 
@@ -13,15 +13,22 @@ export default function SpaceSideMenu({
   spaceId,
   selectedType,
   setSelectedType,
+  isEdit,
+  onedit,
+  onsave,
 }: {
   spaceId: number;
   selectedType: DeliberationTabType;
   setSelectedType: (tab: DeliberationTabType) => void;
+  isEdit: boolean;
+  onedit: () => void;
+  onsave: () => void;
 }) {
   const { data: space } = useSpaceBySpaceId(spaceId);
 
   return (
     <div className="flex flex-col max-w-[250px] max-tablet:!hidden w-full gap-[10px]">
+      <EditSplitButton isEdit={isEdit} onedit={onedit} onsave={onsave} />
       <BlackBox>
         <div className="flex flex-col gap-2.5 w-full">
           <div
@@ -79,6 +86,48 @@ export default function SpaceSideMenu({
           </div>
         </div>
       </BlackBox>
+    </div>
+  );
+}
+
+function EditSplitButton({
+  isEdit,
+  onedit,
+  onsave,
+}: {
+  isEdit: boolean;
+  onedit: () => void;
+  onsave: () => void;
+}) {
+  return (
+    <div className="flex items-center rounded-full overflow-hidden w-full h-[46px] gap-2">
+      {/* Left "Edit" Button */}
+      <button
+        className="flex items-center justify-start flex-row w-full bg-white text-black px-4 py-3 gap-1 rounded-l-[100px] rounded-r-[4px]"
+        onClick={() => {
+          if (isEdit) {
+            onsave();
+          } else {
+            onedit();
+          }
+        }}
+      >
+        <Edit1 className="w-[18px] h-[18px]" />
+        {isEdit ? (
+          <span className="font-bold text-neutral-900 text-base/[22px]">
+            Save
+          </span>
+        ) : (
+          <span className="font-bold text-neutral-900 text-base/[22px]">
+            Edit
+          </span>
+        )}
+      </button>
+
+      {/* Right Dropdown Button */}
+      <button className="w-[48px] h-full flex items-center justify-center bg-neutral-500 rounded-r-[100px] rounded-l-[4px]">
+        <BottomTriangle />
+      </button>
     </div>
   );
 }

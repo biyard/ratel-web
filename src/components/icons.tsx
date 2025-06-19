@@ -32,3 +32,4 @@ export { default as CheckCircle } from '@/assets/icons/check-circle.svg';
 export { default as Discuss } from '@/assets/icons/discuss.svg';
 export { default as File } from '@/assets/icons/file.svg';
 export { default as Vote } from '@/assets/icons/vote.svg';
+export { default as BottomTriangle } from '@/assets/icons/bottom-triangle.svg';

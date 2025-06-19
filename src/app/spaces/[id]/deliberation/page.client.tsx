@@ -8,6 +8,13 @@ import ThreadPage from './_components/thread';
 import DeliberationPage from './_components/deliberation';
 import PollPage from './_components/poll';
 import FinalConsensusPage from './_components/final_consensus';
+import { FileInfo } from '@/lib/api/models/feeds';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { spaceUpdateRequest } from '@/lib/api/models/spaces';
+import { showErrorToast, showSuccessToast } from '@/lib/toast';
+import { logger } from '@/lib/logger';
+import { checkString } from '@/lib/string-filter-utils';
 
 export const DeliberationTab = {
   THREAD: 'Thread',
@@ -19,18 +26,53 @@ export const DeliberationTab = {
 export type DeliberationTabType =
   (typeof DeliberationTab)[keyof typeof DeliberationTab];
 
+export interface Thread {
+  title: string;
+  html_contents: string;
+  files: FileInfo[];
+}
+
 export default function SpaceByIdPage() {
+  const { post } = useApiCall();
   const params = useParams();
   const spaceId = Number(params.id);
-  const { data: space } = useSpaceBySpaceId(spaceId);
+  const data = useSpaceBySpaceId(spaceId);
+  const space = data.data;
   const [selectedType, setSelectedType] = useState<DeliberationTabType>(
     DeliberationTab.THREAD,
   );
+  const [isEdit, setIsEdit] = useState(false);
+  const [thread, setThread] = useState<Thread>({
+    title: space.title ?? '',
+    html_contents: space.html_contents ?? '',
+    files: space.files ?? [],
+  });
+
+  const handleUpdate = async (
+    title: string,
+    html_contents: string,
+    files: FileInfo[],
+  ) => {
+    await post(
+      ratelApi.spaces.getSpaceBySpaceId(spaceId),
+      spaceUpdateRequest(html_contents, files, title),
+    );
+  };
 
   return (
     <div className="flex flex-row w-full gap-5">
       {selectedType == DeliberationTab.THREAD ? (
-        <ThreadPage space={space} />
+        <ThreadPage
+          thread={thread}
+          setThread={(t: Thread) => {
+            setThread(t);
+          }}
+          isEdit={isEdit}
+          userType={space.author[0].user_type ?? 0}
+          proposerImage={space.author[0].profile_url ?? ''}
+          proposerName={space.author[0].nickname ?? ''}
+          createdAt={space?.created_at}
+        />
       ) : selectedType == DeliberationTab.DELIBERATION ? (
         <DeliberationPage />
       ) : selectedType == DeliberationTab.POLL ? (
@@ -43,6 +85,33 @@ export default function SpaceByIdPage() {
         selectedType={selectedType}
         setSelectedType={(tab: DeliberationTabType) => {
           setSelectedType(tab);
+        }}
+        isEdit={isEdit}
+        onedit={() => {
+          setIsEdit(true);
+        }}
+        onsave={async () => {
+          if (checkString(thread.title) || checkString(thread.html_contents)) {
+            showErrorToast('Please remove the test keyword');
+            setIsEdit(false);
+            return;
+          }
+
+          try {
+            await handleUpdate(
+              thread.title,
+              thread.html_contents,
+              thread.files,
+            );
+            data.refetch();
+
+            showSuccessToast('success to update space');
+            setIsEdit(false);
+          } catch (err) {
+            showErrorToast('failed to update space');
+            logger.error('failed to update space with error: ', err);
+            setIsEdit(false);
+          }
         }}
       />
     </div>
