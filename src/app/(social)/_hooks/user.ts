@@ -40,7 +40,10 @@ export async function prefetchUserInfo(queryClient: QueryClient) {
 }
 
 export function requestUserInfo(): Promise<FetchResponse<User | null>> {
-  return apiFetch<User>(`${config.api_url}${ratelApi.users.getUserInfo()}`, {
-    ignoreError: true,
-  });
+  return apiFetch<User | null>(
+    `${config.api_url}${ratelApi.users.getUserInfo()}`,
+    {
+      ignoreError: true,
+    },
+  );
 }

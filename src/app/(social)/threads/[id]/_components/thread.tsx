@@ -31,7 +31,7 @@ export default function Thread({ post_id }: { post_id: number }) {
           </div>
 
           <div className="grid grid-cols-2 max-tablet:grid-cols-1 gap-2.5">
-            {post?.files.map((file, index) => (
+            {(post?.files ?? []).map((file, index) => (
               <File file={file} key={'file ' + index} />
             ))}
           </div>

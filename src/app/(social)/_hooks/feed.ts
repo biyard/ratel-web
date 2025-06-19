@@ -53,7 +53,7 @@ export function setInitialFeedByID(
 export function requestFeedByID(
   id: number,
 ): Promise<FetchResponse<Feed | null>> {
-  return apiFetch<Feed>(
+  return apiFetch<Feed | null>(
     `${config.api_url}${ratelApi.feeds.getFeedsByFeedId(id)}`,
     {
       ignoreError: true,

@@ -20,7 +20,7 @@ export default function Header({ post_id }: { post_id: number }) {
       </div>
       <div className="flex flex-row justify-between">
         <div>
-          {post?.industry.map((industry) => (
+          {post?.industry?.map((industry) => (
             <Badge
               key={industry.id}
               variant="outline"
