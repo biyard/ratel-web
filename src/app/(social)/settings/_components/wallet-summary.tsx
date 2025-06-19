@@ -2,13 +2,16 @@
 
 import { useState } from 'react';
 import { Col } from '@/components/ui/col';
-import { Row } from '@/components/ui/row';
-import { Button } from '@/components/ui/button';
 import { useWallet } from '@/lib/api/hooks/wallet';
 import { ClipboardCopy } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 
-export default function WalletSummary() {
+export type WalletSummaryProps = {
+  onUpdate?: (address: string) => void;
+};
+
+export default function WalletSummary({ onUpdate }: WalletSummaryProps) {
   const { address, connectWallet } = useWallet();
   const [copied, setCopied] = useState(false);
 
@@ -21,13 +24,12 @@ export default function WalletSummary() {
   };
 
   return (
-    <div className="bg-zinc-900 text-white p-4 rounded-lg">
+    <div className="w-full">
       <Col>
-        <h3 className="mb-2 text-lg font-semibold">Wallet Summary</h3>
-      </Col>
-
-      <Col>
-        <div className="flex items-center justify-between p-4 bg-zinc-800 rounded-lg">
+        <div
+          className="flex items-center justify-between p-4 bg-component-bg rounded-lg hover:bg-component-bg/70 transition-colors cursor-pointer"
+          onClick={connectWallet}
+        >
           <div className="flex items-center space-x-3">
             <Image
               src="/logos/meta-mask-icon.png"
@@ -58,13 +60,16 @@ export default function WalletSummary() {
               </div>
             </div>
           </div>
+
+          {address && (
+            <Button variant={'default'} onClick={() => onUpdate?.(address)}>
+              Save
+            </Button>
+          )}
         </div>
 
-        <Row className="justify-end mt-4">
-          <Button variant={'default'} onClick={connectWallet}>
-            {address ? 'Change Wallet' : 'Connect Wallet'}
-          </Button>
-        </Row>
+        {/* <Row className="justify-end mt-4 hidden">
+        </Row> */}
       </Col>
     </div>
   );
