@@ -29,15 +29,15 @@ export default function UserSidemenu() {
       {/* Navigation */}
       <nav className="py-5 px-3 w-full rounded-[10px] bg-component-bg">
         <Link href={route.myPosts()} className="sidemenu-link">
-          <Post />
+          <Post className="w-[24px] h-[24px]" />
           <span>My Posts</span>
         </Link>
         <Link href={route.drafts()} className="sidemenu-link">
-          <Post />
+          <Post className="w-[24px] h-[24px]" />
           <span>Drafts</span>
         </Link>
         <Link href={route.settings()} className="sidemenu-link">
-          <Settings />
+          <Settings className="w-[24px] h-[24px]" />
           <span>Settings</span>
         </Link>
       </nav>
