@@ -70,8 +70,8 @@ export async function apiFetch<T = unknown>(
       method,
       headers: requestHeaders,
       credentials: 'include',
-      body: body,
       cache: options?.cache || 'no-store',
+      ...(method === 'GET' || method === 'HEAD' ? {} : { body }),
     });
 
     if (!response.ok) {
@@ -90,8 +90,13 @@ export async function apiFetch<T = unknown>(
       }
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
-
-    const data: T = await response.json();
+    let data: T | null = null;
+    if (response.status !== 204) {
+      const contentType = response.headers.get('Content-Type') ?? '';
+      data = contentType.includes('application/json')
+        ? ((await response.json()) as T)
+        : ((await response.text()) as unknown as T);
+    }
     return {
       data,
       status: response.status,

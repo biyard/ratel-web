@@ -3,7 +3,7 @@
 import { useFeedByID } from '@/app/(social)/_hooks/feed';
 import { requestUserInfo } from '@/app/(social)/_hooks/user';
 
-export default function Thread({ post_id }: { post_id: number }) {
+export default function Comment({ post_id }: { post_id: number }) {
   const { data: post } = useFeedByID(post_id);
 
   return (
