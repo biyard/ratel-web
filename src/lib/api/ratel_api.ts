@@ -4,6 +4,7 @@ import { gql } from '@apollo/client';
 
 export const ratelApi = {
   users: {
+    login: () => '/v1/users?action=login',
     getTotalInfo: (page: number, size: number) =>
       `/v1/totals?param-type=query&bookmark=${page}&size=${size}`,
     getUserInfo: () => '/v1/users?action=user-info',
@@ -35,6 +36,11 @@ export const ratelApi = {
       `/v1/teams/${team_id}/groups/${group_id}`,
     check_email: (team_id: number, group_id: number) =>
       `/v1/teams/${team_id}/groups/${group_id}`,
+  },
+  networks: {
+    getNetworks: () => '/v1/network?param-type=read&action=find-one',
+    follow: (user_id: number) => `/v1/my-networks/${user_id}`,
+    unfollow: (user_id: number) => `/v1/my-networks/${user_id}`,
   },
   feeds: {
     comment: () => '/v1/feeds',

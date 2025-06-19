@@ -8,6 +8,7 @@ import { encode_base64 } from '../base64';
 export async function send(
   keyPair: Ed25519KeyIdentity,
   path: string,
+  apiBaseUrl: string = config.api_url,
 ): Promise<any | undefined> {
   const pk = keyPair.getPublicKey().rawKey;
   const publicKey = encode_base64(new Uint8Array(pk));
@@ -26,7 +27,7 @@ export async function send(
   const token = `${timestamp}:eddsa:${publicKey}:${s}`;
 
   logger.debug('sending request', path);
-  const apiBaseUrl = config.api_url;
+  // const apiBaseUrl = config.api_url;
   logger.debug('send', token, apiBaseUrl);
 
   logger.debug(
@@ -42,6 +43,7 @@ export async function send(
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
   };
 
   if (token !== '') {

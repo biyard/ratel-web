@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-
 import React from 'react';
 import Comment from '@/assets/icons/comment.svg';
 import { SpaceComment } from '@/lib/api/models/comments';
 import { getTimeAgo } from '@/lib/time-utils';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
+import { checkString } from '@/lib/string-filter-utils';
+import Image from 'next/image';
 
 export default function SpaceComments({
   spaceId,
@@ -26,9 +26,11 @@ export default function SpaceComments({
         </div>
       </div>
       <CreateComment setClose={setClose} />
-      {comments?.map((comment, index) => (
-        <CommentInfo comment={comment} key={'comment ' + index} />
-      ))}
+      {comments
+        ?.filter((v) => !checkString(v.html_contents))
+        .map((comment, index) => (
+          <CommentInfo comment={comment} key={'comment ' + index} />
+        ))}
     </div>
   );
 }
@@ -54,7 +56,7 @@ function CommentInfo({ comment }: { comment: SpaceComment }) {
     <div className="flex flex-col gap-[14px] pb-5 border-b border-b-neutral-800">
       <div className="flex flex-row gap-2 items-center">
         {comment.author[0].profile_url ? (
-          <img
+          <Image
             alt={comment.author[0].nickname ?? ''}
             src={comment.author[0].profile_url ?? ''}
             width={40}

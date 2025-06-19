@@ -18,6 +18,8 @@ import {
 } from '@/lib/wallet/ed25519';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { HDNodeWallet } from 'ethers';
+import { removeUserInfo } from '@/lib/api/hooks/users';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | undefined>(undefined);
@@ -28,6 +30,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     undefined,
   );
 
+  const queryClient = useQueryClient();
   useEffect(() => {
     const stored = localStorage.getItem(SK_IDENTITY_KEY);
     let identity = null;
@@ -126,6 +129,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logoutUser = async () => {
     await logout();
+    await fetch('/api/logout', { method: 'POST' });
     setUser(undefined);
     setAuthUser(undefined);
     localStorage.removeItem(SK_IDENTITY_KEY);
@@ -136,6 +140,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     logger.debug('Created new principal:', identity.getPrincipal().toText());
 
     setEd25519KeyPair(identity);
+
+    removeUserInfo(queryClient);
 
     const secret = identity!.getKeyPair().secretKey;
     logger.debug('secret', secret);
