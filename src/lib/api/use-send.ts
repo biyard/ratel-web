@@ -17,6 +17,7 @@ export interface ApiCallFns {
 export function useApiCall(): ApiCallFns {
   const auth = useAuth();
   const cookie = useCookie();
+  logger.debug('cookie', cookie);
 
   return {
     get: async (path: string): Promise<any> => {
