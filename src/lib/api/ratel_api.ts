@@ -64,9 +64,6 @@ export const ratelApi = {
   redeems: {
     useRedeemCode: (redeem_id: number) => `/v1/redeems/${redeem_id}`,
   },
-  thread: {
-    getThreadByThreadId: (id: number) => `/v1/spaces/${id}`,
-  },
   spaces: {
     getSpaceBySpaceId: (id: number) => `/v1/spaces/${id}`,
     getSpaceRedeemCodes: (space_id: number) =>
