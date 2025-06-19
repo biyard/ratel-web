@@ -1,5 +1,9 @@
 import { logger } from '@/lib/logger';
-import { isServer, QueryClient } from '@tanstack/react-query';
+import {
+  defaultShouldDehydrateQuery,
+  isServer,
+  QueryClient,
+} from '@tanstack/react-query';
 
 export function makeQueryClient() {
   return new QueryClient({
@@ -9,10 +13,19 @@ export function makeQueryClient() {
           logger.error('Query mutation error:', error);
         },
       },
+      dehydrate: {
+        // include pending queries in dehydration
+        shouldDehydrateQuery: (query) =>
+          defaultShouldDehydrateQuery(query) ||
+          query.state.status === 'pending',
+      },
+
       queries: {
         // With SSR, we usually want to set some default staleTime
         // above 0 to avoid refetching immediately on the client
         staleTime: 60 * 1000,
+        retry: 3,
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       },
     },
   });

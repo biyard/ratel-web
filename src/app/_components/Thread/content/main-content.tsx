@@ -22,7 +22,7 @@ export function MainContent({ files, links }: MainContentProps) {
           <Badge className="bg-green-600 hover:bg-green-600">Active</Badge>
         </div>
         <Button className="bg-white p-12 hover:bg-[#fcb300]/80 text-black">
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="siz-e" />
           Create a Space
         </Button>
       </div>

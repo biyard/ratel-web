@@ -61,7 +61,7 @@ import { postByUserIdQk } from '../_hooks/use-posts';
 import { checkString } from '@/lib/string-filter-utils';
 import { showErrorToast } from '@/lib/toast';
 
-const editorTheme = {
+export const editorTheme = {
   ltr: 'text-left',
   rtl: 'text-right',
   paragraph: 'relative mb-1',

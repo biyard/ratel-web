@@ -62,7 +62,7 @@ import { showErrorToast } from '@/lib/toast';
 import { postByUserIdQk } from '@/app/(social)/_hooks/use-posts';
 import { useTeamByUsername } from '../../_hooks/use-team';
 
-const editorTheme = {
+export const editorTheme = {
   ltr: 'text-left',
   rtl: 'text-right',
   paragraph: 'relative mb-1',
@@ -453,7 +453,7 @@ export const PostDraftProvider: React.FC<{
     queryClient.invalidateQueries({
       queryKey: postByUserIdQk(team.id, 1, 20, FeedStatus.Draft),
     });
-  }, [queryClient]);
+  }, [queryClient, team.id]);
 
   const resetState = useCallback(() => {
     setDraftId(null);

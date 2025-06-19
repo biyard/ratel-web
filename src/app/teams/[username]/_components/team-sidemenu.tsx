@@ -26,7 +26,7 @@ export default function TeamSidemenu({ username }: TeamSidemenuProps) {
     <div className="w-64 flex flex-col max-mobile:!hidden gap-2.5">
       <TeamProfile team={team} />
 
-      <nav className="px-2 py-5 px-3 w-full rounded-[10px] bg-component-bg">
+      <nav className="py-5 px-3 w-full rounded-[10px] bg-component-bg">
         <Link
           href={route.teamByUsername(team.username)}
           className="sidemenu-link"
