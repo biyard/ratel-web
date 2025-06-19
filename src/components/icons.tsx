@@ -28,3 +28,7 @@ export { default as Folder } from '@/assets/icons/folder.svg';
 export { default as Delete2 } from '@/assets/icons/delete_2.svg';
 export { default as Add } from '@/assets/icons/add.svg';
 export { default as ChevronRight } from '@/assets/icons/chevron-right.svg';
+export { default as CheckCircle } from '@/assets/icons/check-circle.svg';
+export { default as Discuss } from '@/assets/icons/discuss.svg';
+export { default as File } from '@/assets/icons/file.svg';
+export { default as Vote } from '@/assets/icons/vote.svg';
