@@ -4,10 +4,10 @@ import type { Metadata } from 'next';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { Space } from '@/lib/api/models/spaces';
 import { Feed } from '@/lib/api/models/feeds';
-import SpaceByIdPage from './page.client';
 import { logger } from '@/lib/logger';
 import { config } from '@/config';
 import striptags from 'striptags';
+import SpaceByIdPage from './page.client';
 
 type Props = {
   params: Promise<{ id: number }>;

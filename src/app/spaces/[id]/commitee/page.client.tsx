@@ -1,14 +1,13 @@
 'use client';
 
 import React from 'react';
-import SpaceHeader from './_components/space_header';
-import SpaceContents from './_components/space_contents';
-import SpaceCouponProgress from './_components/coupon-progress';
-
-import SpaceFiles from './_components/space_files';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 import { useParams } from 'next/navigation';
 import { useRedeemCode } from '@/lib/api/hooks/redeem-codes';
+import SpaceHeader from '../_components/space_header';
+import SpaceCouponProgress from '../_components/coupon-progress';
+import SpaceContents from '../_components/space_contents';
+import SpaceFiles from '../_components/space_files';
 
 export default function SpaceByIdPage() {
   const params = useParams();

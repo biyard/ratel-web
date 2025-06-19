@@ -14,7 +14,7 @@ import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useUserBadge } from '@/lib/api/hooks/user-badges';
 import { checkString } from '@/lib/string-filter-utils';
-import { File } from '@/components/file';
+import SpaceFile from './space_file';
 
 export interface SpaceFilesProps {
   files: FileInfo[];
@@ -90,7 +90,7 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
           {files
             ?.filter((file) => !checkString(file.name))
             .map((file, index) => (
-              <File
+              <SpaceFile
                 file={file}
                 key={'file ' + index}
                 onClick={() => handleFileDownload(file)}

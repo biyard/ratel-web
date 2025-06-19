@@ -8,6 +8,7 @@ import { getTimeAgo } from '@/lib/time-utils';
 import { useRouter } from 'next/navigation';
 import { UserType } from '@/lib/api/models/user';
 import Image from 'next/image';
+import { Input } from '@/components/ui/input';
 
 export interface SpaceHeaderProps {
   title: string;
@@ -15,6 +16,9 @@ export interface SpaceHeaderProps {
   proposerImage: string;
   proposerName: string;
   createdAt: number;
+
+  isEdit?: boolean;
+  setTitle?: (title: string) => void;
 }
 
 export default function SpaceHeader({
@@ -23,6 +27,8 @@ export default function SpaceHeader({
   proposerImage,
   proposerName,
   createdAt,
+  isEdit = false,
+  setTitle = () => {},
 }: SpaceHeaderProps) {
   const router = useRouter();
   return (
@@ -46,7 +52,18 @@ export default function SpaceHeader({
       <div className="flex flex-col gap-2.5">
         <SpaceType />
         <div className="flex flex-row w-full justify-between items-center">
-          <div className="font-bold text-white text-[20px]/[30px]">{title}</div>
+          {isEdit ? (
+            <Input
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+            />
+          ) : (
+            <div className="font-bold text-white text-[20px]/[30px]">
+              {title}
+            </div>
+          )}
           {/* <Bookmark width={20} height={20} /> */}
         </div>
       </div>
