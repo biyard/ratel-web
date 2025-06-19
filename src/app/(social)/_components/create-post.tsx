@@ -47,7 +47,7 @@ import { checkString } from '@/lib/string-filter-utils';
 import { showErrorToast } from '@/lib/toast';
 import ToolbarPlugin from '@/components/toolbar/toolbar';
 
-const editorTheme = {
+export const editorTheme = {
   ltr: 'text-left',
   rtl: 'text-right',
   paragraph: 'relative mb-1',

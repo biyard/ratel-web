@@ -9,11 +9,16 @@ import { useUserInfo } from '@/lib/api/hooks/users';
 import Link from 'next/link';
 import { route } from '@/route';
 import { Post, Settings } from '@/components/icons';
+import { UserType } from '@/lib/api/models/user';
 // import DevTools from './dev-tools';
 
 export default function UserSidemenu() {
   const { data: user, isLoading } = useUserInfo();
-  if (isLoading || !user) {
+  if (
+    isLoading ||
+    !user ||
+    (user.user_type !== UserType.Individual && user.user_type !== UserType.Team)
+  ) {
     return <div />;
   }
 
@@ -22,7 +27,7 @@ export default function UserSidemenu() {
       <ProfileSection />
 
       {/* Navigation */}
-      <nav className="px-2 py-5 px-3 w-full rounded-[10px] bg-component-bg">
+      <nav className="py-5 px-3 w-full rounded-[10px] bg-component-bg">
         <Link href={route.myPosts()} className="sidemenu-link">
           <Post className="w-[24px] h-[24px]" />
           <span>My Posts</span>

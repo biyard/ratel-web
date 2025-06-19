@@ -1,20 +1,15 @@
-// app/layout.tsx
 import { Raleway } from 'next/font/google';
 import '@/assets/css/globals.css';
 import Providers from '@/providers/providers';
 import CookieProvider from './_providers/CookieProvider';
 import { PopupZone } from '@/components/popupzone';
 import ClientLayout from './(social)/_components/client-layout';
-import { prefetchQuery } from '@/lib/query-utils';
-import { serverFetch } from '@/lib/api/serverFetch';
-import { config } from '@/config';
-import { ratelApi } from '@/lib/api/ratel_api';
-import { QK_USERS_GET_INFO } from '@/constants';
-import { getQueryClient } from '@/providers/getQueryClient';
 import { dehydrate } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import 'react-toastify/dist/ReactToastify.css';
+import { prefetchUserInfo } from './(social)/_hooks/user';
+import { getQueryClient } from '@/providers/getQueryClient';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -29,21 +24,8 @@ export default async function RootLayout({
 }) {
   const queryClient = getQueryClient();
 
-  try {
-    await prefetchQuery(queryClient, [QK_USERS_GET_INFO], async () => {
-      const res = await serverFetch(
-        `${config.api_url}${ratelApi.users.getUserInfo()}`,
-        {
-          ignoreError: true,
-        },
-      );
-      return res.data;
-    });
-  } catch (error) {
-    console.warn('prefetchQuery failed:', error);
-  }
+  await prefetchUserInfo(queryClient);
   const dehydratedState = dehydrate(queryClient);
-
   return (
     <html lang="en">
       <head>

@@ -1,5 +1,3 @@
-import { logger } from './lib/logger';
-
 export const route = {
   home: () => '/',
   myProfile: () => '/my-profile',
@@ -21,9 +19,7 @@ export const route = {
   teamDrafts: (username: string) => `/teams/${username}/drafts`,
   commiteeSpaceById: (spaceId: number) => `/spaces/${spaceId}/commitee`,
   deliberationSpaceById: (spaceId: number) => `/spaces/${spaceId}/deliberation`,
-  // FIXME: correct to `threads/${feedId}`
   threadByFeedId: (feedId: number) => {
-    logger.debug('route.threadByFeedId: ', feedId);
-    return '/';
+    return `/threads/${feedId}`;
   },
 };

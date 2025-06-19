@@ -1,3 +1,6 @@
+/**
+ * @deprecated Use `useFeedById` in '_hooks/feed.ts'.
+ */
 import { QK_GET_FEED_BY_FEED_ID } from '@/constants';
 import { Feed } from '@/lib/api/models/feeds';
 import { ratelApi } from '@/lib/api/ratel_api';

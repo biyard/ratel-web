@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import React from 'react';
 import { Col } from './ui/col';
@@ -178,7 +177,7 @@ export function IconText({
 }: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }) {
   return (
     <Row
-      className="justify-center items-center gap-1.25 text-white font-normal text-[15px] px-4 py-5"
+      className={`justify-center items-center gap-1.25 text-white font-normal text-[15px] px-4 py-5 ${className}`}
       {...props}
     >
       {children}

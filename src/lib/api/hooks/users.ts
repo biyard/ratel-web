@@ -10,6 +10,10 @@ import { useApiCall } from '../use-send';
 import { QK_USERS_GET_INFO } from '@/constants';
 import { ratelApi } from '../ratel_api';
 
+/**
+ * @deprecated Use `useUserInfo` in '_hooks/user.ts'.
+ */
+
 export function useUserInfo(): UseQueryResult<User | undefined> {
   const { get } = useApiCall();
   // const auth = useAuth();
