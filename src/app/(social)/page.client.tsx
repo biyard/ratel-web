@@ -5,7 +5,6 @@ import FeedCard from '@/components/feed-card';
 import { usePost } from './_hooks/use-posts';
 import { Col } from '@/components/ui/col';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
-import { config } from '@/config';
 // import News from './_components/News';
 // import { CreatePost } from './_components/create-post';
 // import { useApiCall } from '@/lib/api/use-send';
@@ -29,6 +28,9 @@ import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
 import CreatePostButton from './_components/create-post-button';
 import { checkString } from '@/lib/string-filter-utils';
+import { useNetwork } from './_hooks/use-network';
+import { followRequest } from '@/lib/api/models/networks/follow';
+import { showErrorToast, showSuccessToast } from '@/lib/toast';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -81,14 +83,30 @@ export interface Post {
 }
 
 export default function Home() {
+  const network = useNetwork();
   const { post } = useApiCall();
+  const networkData = network.data;
   const { data: promotion } = usePromotion();
   const { data: feed } = useFeedByID(promotion.feed_id);
-  const { data: userInfo } = useSuspenseUserInfo();
+  const data = useSuspenseUserInfo();
+  const userInfo = data.data;
   const auth = useAuth();
   const posts = usePost(1, 20);
   logger.debug('user info: ', userInfo);
   const user_id = userInfo ? userInfo.id || 0 : 0;
+
+  const selected_teams = networkData
+    ? networkData.suggested_teams.slice(0, 1)
+    : [];
+  const selected_users = networkData
+    ? networkData.suggested_users.slice(0, 2)
+    : [];
+
+  const suggestions = [...selected_teams, ...selected_users];
+
+  const handleFollow = async (userId: number) => {
+    await post(ratelApi.networks.follow(userId), followRequest());
+  };
 
   useQuery({
     queryKey: ['updateEvmAddress', auth.evmWallet?.address ?? ''],
@@ -156,7 +174,7 @@ export default function Home() {
       </Col>
 
       {/* Right Sidebar */}
-      <div className="w-80 pl-4 max-tablet:!hidden">
+      <div className="w-70 pl-4 max-tablet:!hidden">
         {/* Hot Promotion */}
 
         <div>
@@ -200,70 +218,85 @@ export default function Home() {
 
         <News />
 
-        {/* Add to your feed */}
-        <div
-          className="mt-6 block aria-hidden:hidden"
-          aria-hidden={!config.experiment}
-        >
-          <h3 className="font-medium mb-3">Add to your feed</h3>
+        <div className="mt-[10px]">
+          <BlackBox>
+            <h3 className="font-medium mb-3">Suggested</h3>
 
-          <div className="mb-3 flex items-center gap-3">
-            <Image
-              src="/trump.jpg?height=40&width=40"
-              alt="Donald Trump"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <div className="flex-1">
-              <div className="font-medium text-sm">Donald Trump</div>
-              <div className="text-xs text-gray-400">President of the US</div>
+            <div className="flex flex-col gap-[35px]">
+              {suggestions.map((user) => (
+                <div
+                  key={user.id}
+                  className="flex flex-col items-start justify-start gap-3"
+                >
+                  <div className="flex flex-row gap-[10px]">
+                    {user.user_type == UserType.Team ? (
+                      user.profile_url ? (
+                        <Image
+                          width={32}
+                          height={32}
+                          src={user.profile_url || '/default-profile.png'}
+                          alt="Profile"
+                          className="w-8 h-8 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-lg bg-neutral-500" />
+                      )
+                    ) : user.profile_url ? (
+                      <Image
+                        width={32}
+                        height={32}
+                        src={user.profile_url || '/default-profile.png'}
+                        alt="Profile"
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-neutral-500" />
+                    )}
+                    <div className="flex-1">
+                      <div className="font-medium text-base/[25px] text-white">
+                        {user.username}
+                      </div>
+                      <div className="font-light text-xs text-neutral-300">
+                        {user.email}
+                      </div>
+                      <button
+                        className="font-bold text-xs text-white rounded-full bg-neutral-700 px-[15px] py-[8px] mt-[10px]"
+                        onClick={async () => {
+                          logger.debug(
+                            'follow button clicked user id: ',
+                            user.id,
+                          );
+                          try {
+                            await handleFollow(user.id);
+                            data.refetch();
+                            network.refetch();
+
+                            showSuccessToast('success to follow user');
+                          } catch (err) {
+                            showErrorToast('failed to follow user');
+                            logger.error(
+                              'failed to follow user with error: ',
+                              err,
+                            );
+                          }
+                        }}
+                      >
+                        + Follow
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <button className="text-xs bg-gray-700 rounded-full px-3 py-1">
-              + Follow
-            </button>
-          </div>
 
-          <div className="mb-3 flex items-center gap-3">
-            <Image
-              src="/elon.png?height=40&width=40"
-              alt="Elon Musk"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <div className="flex-1">
-              <div className="font-medium text-sm">Elon Musk</div>
-              <div className="text-xs text-gray-400">
-                CEO of Tesla and SpaceX
-              </div>
-            </div>
-            <button className="text-xs bg-gray-700 rounded-full px-3 py-1">
-              + Follow
-            </button>
-          </div>
-
-          <div className="mb-3 flex items-center gap-3">
-            <Image
-              src="/jongsook.png?height=40&width=40"
-              alt="Jongsook Park"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <div className="flex-1">
-              <div className="font-medium text-sm">Jongsook Park</div>
-              <div className="text-xs text-gray-400">National Assembly of</div>
-            </div>
-            <button className="text-xs bg-gray-700 rounded-full px-3 py-1">
-              + Follow
-            </button>
-          </div>
-
-          <div className="mt-2 text-xs text-gray-400 flex items-center">
-            <span>View all</span>
-            <ChevronRight size={14} />
-          </div>
+            <Link
+              href={route.myNetwork()}
+              className="mt-5 text-xs text-gray-400 flex items-center"
+            >
+              <span>View all</span>
+              <ChevronRight size={14} />
+            </Link>
+          </BlackBox>
         </div>
       </div>
     </div>

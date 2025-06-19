@@ -1,16 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { AuthProvider } from '@/app/_providers/auth-provider';
 import { client } from '@/lib/apollo';
 import { PopupProvider } from '@/lib/contexts/popup-service';
 import { TeamProvider } from '@/lib/service/team-provider';
 import { ApolloProvider } from '@apollo/client';
-import {
-  QueryClient,
-  QueryClientProvider,
-  hydrate,
-} from '@tanstack/react-query';
+import { hydrate, QueryClientProvider } from '@tanstack/react-query';
+import { getQueryClient } from './getQueryClient';
 
 export default function Providers({
   children,
@@ -19,17 +15,7 @@ export default function Providers({
   children: React.ReactNode;
   dehydratedState: unknown;
 }) {
-  // 클라이언트에서 새 QueryClient 생성 후 Hydrate로 복원.
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60000,
-          },
-        },
-      }),
-  );
+  const queryClient = getQueryClient();
   hydrate(queryClient, dehydratedState);
   return (
     <ApolloProvider client={client}>
