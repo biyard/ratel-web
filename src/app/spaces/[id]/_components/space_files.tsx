@@ -31,7 +31,7 @@ export default function SpaceFiles({ files, badges }: SpaceFilesProps) {
 
   const userBadges = useUserBadge(spaceId, 1, 20);
 
-  const badgeList = userBadges.data.items ?? [];
+  const badgeList = userBadges?.data?.items ?? [];
 
   const handlePdfDownload = async (file: FileInfo) => {
     const redeemId = redeem.data.id;

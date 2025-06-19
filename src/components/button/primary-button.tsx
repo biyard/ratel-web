@@ -1,5 +1,7 @@
 import React from 'react';
-
+import { Button } from '../ui/button';
+import Loading from '@/app/loading';
+import { cn } from '@/lib/utils';
 interface PrimaryButtonProps {
   disabled: boolean;
   onClick: () => void;
@@ -19,5 +21,27 @@ export const PrimaryButton = ({
     <button className={className} disabled={disabled} onClick={onClick}>
       {children}
     </button>
+  );
+};
+
+interface LoadablePrimaryButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  isLoading: boolean;
+}
+
+export const LoadablePrimaryButton = ({
+  isLoading,
+  children,
+  disabled,
+  className,
+  ...props
+}: LoadablePrimaryButtonProps) => {
+  if (disabled) {
+    className = cn(className, 'opacity-50 cursor-not-allowed');
+  }
+  return (
+    <Button variant="rounded_primary" className={className} {...props}>
+      {isLoading ? <Loading className="w-10 h-5" /> : children}
+    </Button>
   );
 };

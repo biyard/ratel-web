@@ -39,3 +39,8 @@ export { default as Add } from '@/assets/icons/add.svg';
 export { default as ChevronRight } from '@/assets/icons/chevron-right.svg';
 
 export { default as BendArrowRight } from '@/assets/icons/bend-arrow-right.svg';
+
+export { default as Palace } from '@/assets/icons/palace.svg';
+export { default as Cube } from '@/assets/icons/cube.svg';
+export { default as Vote } from '@/assets/icons/vote.svg';
+export { default as Discuss } from '@/assets/icons/discuss.svg';

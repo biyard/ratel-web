@@ -10,7 +10,7 @@ export default function Thread({ post_id }: { post_id: number }) {
   const { data: post } = useFeedByID(post_id);
 
   return (
-    <div className="flex flex-col w-full h-full gap-2.5">
+    <div className="flex flex-col w-full gap-2.5">
       <BlackBox>
         <div className="flex flex-col gap-5">
           <LexicalHtmlViewer htmlString={post?.html_contents || ''} />

@@ -14,6 +14,7 @@ import { validateString } from '@/lib/string-filter-utils';
 import { ChevronDoubleDownIcon } from '@heroicons/react/20/solid';
 import { cn } from '@/lib/utils';
 import { useEffect, useRef, useState } from 'react';
+import { logger } from '@/lib/logger';
 
 interface CommentProps {
   comment: CommentType;
@@ -208,6 +209,7 @@ export function NewComment({
         await onSubmit(content);
         onClose();
       } catch (error) {
+        logger.debug('Error submitting comment:', error);
       } finally {
         setLoading(false);
         editorRef.current?.clear();

@@ -65,6 +65,7 @@ export const ratelApi = {
     useRedeemCode: (redeem_id: number) => `/v1/redeems/${redeem_id}`,
   },
   spaces: {
+    createSpace: () => '/v1/spaces',
     getSpaceBySpaceId: (id: number) => `/v1/spaces/${id}`,
     getSpaceRedeemCodes: (space_id: number) =>
       `/v1/spaces/${space_id}/redeem-codes`,
