@@ -1,8 +1,8 @@
 import { SSRHydration } from '@/lib/query-utils';
 import { getQueryClient } from '@/providers/getQueryClient';
 import Header from './_components/header';
-import Thread from './_components/thread';
-import Comment from './_components/comment';
+import ThreadPost from './_components/thread';
+import ThreadComment from './_components/comment';
 
 import { requestFeedByID, setInitialFeedByID } from '../../_hooks/feed';
 import { Metadata } from 'next';
@@ -68,8 +68,8 @@ export default async function Page({ params }: Props) {
       <Suspense fallback={<div>Loading...</div>}>
         <div className="flex flex-col gap-6 w-full">
           <Header post_id={feed_id} />
-          <Thread post_id={feed_id} />
-          <Comment post_id={feed_id} />
+          <ThreadPost post_id={feed_id} />
+          <ThreadComment post_id={feed_id} />
         </div>
       </Suspense>
     </SSRHydration>

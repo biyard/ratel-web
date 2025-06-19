@@ -5,14 +5,7 @@ import FeedCard from '@/components/feed-card';
 import { usePost } from './_hooks/use-posts';
 import { Col } from '@/components/ui/col';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
-// import News from './_components/News';
-// import { CreatePost } from './_components/create-post';
-// import { useApiCall } from '@/lib/api/use-send';
-// import { ratelApi } from '@/lib/api/ratel_api';
-// import {
-//   UrlType,
-//   writePostRequest,
-// } from '@/lib/api/models/feeds/write-post-request';
+
 import News from './_components/News';
 import BlackBox from './_components/black-box';
 import { usePromotion } from './_hooks/use_promotion';

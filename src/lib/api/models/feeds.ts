@@ -1,3 +1,4 @@
+import Comment from '@/components/comment';
 import { UrlType } from './feeds/update-draft-request';
 import { Industry } from './industry';
 import { Space } from './spaces';
@@ -26,7 +27,7 @@ export interface Feed {
   likes: number;
   is_liked: boolean;
   comments: number;
-
+  comment_list: Comment[];
   files: FileInfo[];
   rewards: number;
   shares: number;
@@ -40,6 +41,27 @@ export interface Feed {
   onboard?: boolean;
 }
 
+export interface Comment {
+  id: number;
+  created_at: number;
+  feed_type: FeedType;
+  user_id: number;
+  parent_id?: number | null;
+  quote_feed_id?: number | null;
+  html_contents: string;
+  num_of_likes: number;
+  is_liked: boolean;
+  num_of_replies: number;
+  author: [User];
+  quote_comment?: Comment | null;
+  replies: Reply[];
+}
+
+export interface Reply {
+  id: number;
+  html_contents: string;
+  author: [User];
+}
 export enum FeedType {
   Post = 1,
   Reply = 2,
