@@ -73,6 +73,7 @@ export interface Post {
   author_name: string;
   author_type: UserType;
   space_id?: number;
+  space_type?: number;
   likes: number;
   is_liked: boolean;
   comments: number;
@@ -133,6 +134,7 @@ export default function Home() {
           author_type:
             item.author != null ? item.author[0].user_type : UserType.Anonymous,
           space_id: item.spaces?.length ? item.spaces[0].id : 0,
+          space_type: item.spaces?.length ? item.spaces[0].space_type : 0,
           likes: item.likes,
           is_liked: item.is_liked,
           comments: item.comments,
@@ -187,7 +189,9 @@ export default function Home() {
               <Link
                 href={
                   feed?.spaces.length > 0
-                    ? route.spaceById(feed.spaces[0].id)
+                    ? feed.spaces[0].space_type == 3
+                      ? route.deliberationSpaceById(feed.spaces[0].id)
+                      : route.commiteeSpaceById(feed.spaces[0].id)
                     : route.threadByFeedId(feed.id)
                 }
                 className="flex items-center gap-2.5 hover:bg-btn-hover rounded p-2 transition-colors"

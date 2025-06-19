@@ -19,7 +19,8 @@ export const route = {
   teamMembers: (username: string) => `/teams/${username}/members`,
   teamSettings: (username: string) => `/teams/${username}/settings`,
   teamDrafts: (username: string) => `/teams/${username}/drafts`,
-  spaceById: (spaceId: number) => `/spaces/${spaceId}`,
+  commiteeSpaceById: (spaceId: number) => `/spaces/${spaceId}/commitee`,
+  deliberationSpaceById: (spaceId: number) => `/spaces/${spaceId}/deliberation`,
   // FIXME: correct to `threads/${feedId}`
   threadByFeedId: (feedId: number) => {
     logger.debug('route.threadByFeedId: ', feedId);
