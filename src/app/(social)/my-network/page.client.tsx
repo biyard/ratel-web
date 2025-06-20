@@ -169,25 +169,27 @@ function FollowingContents({
 function SelectedIndustry({ industries }: { industries: Industry[] }) {
   const [selectedIndustry, setSelectedIndustry] = useState('All');
   return (
-    <div className="flex flex-row w-full justify-start items-center gap-2.5">
-      <IndustryLabel
-        name="All"
-        selected={selectedIndustry == 'All'}
-        setSelectedIndustry={(name: string) => {
-          setSelectedIndustry(name);
-        }}
-      />
-
-      {industries.map((industry) => (
+    <div className="w-full">
+      <div className="flex flex-row justify-start items-center gap-2.5 overflow-x-scroll hide-scrollbar">
         <IndustryLabel
-          key={industry.name}
-          name={industry.name.toUpperCase()}
-          selected={selectedIndustry == industry.name.toUpperCase()}
+          name="All"
+          selected={selectedIndustry == 'All'}
           setSelectedIndustry={(name: string) => {
             setSelectedIndustry(name);
           }}
         />
-      ))}
+
+        {industries.map((industry) => (
+          <IndustryLabel
+            key={industry.name}
+            name={industry.name.toUpperCase()}
+            selected={selectedIndustry == industry.name.toUpperCase()}
+            setSelectedIndustry={(name: string) => {
+              setSelectedIndustry(name);
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -203,7 +205,8 @@ function IndustryLabel({
 }) {
   return (
     <div
-      className={`cursor-pointer flex flex-row w-fit h-fit px-2.5 py-2 rounded-lg font-semibold text-white text-sm/[20px] ${selected ? 'border-none bg-neutral-700' : 'border border-neutral-700 bg-transparent hover:bg-neutral-700'}`}
+      className="cursor-pointer flex flex-row w-fit h-fit px-2.5 py-2 rounded-lg font-semibold text-white text-sm/[20px] whitespace-nowrap border border-neutral-700 bg-transparent hover:bg-neutral-700 aria-selected:border-none aria-selected:bg-neutral-700"
+      aria-selected={selected}
       onClick={() => {
         setSelectedIndustry(name);
       }}

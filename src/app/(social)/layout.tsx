@@ -11,7 +11,7 @@ export default function SocialLayout({
   return (
     <div className="flex min-h-screen gap-5 justify-between max-w-6xl mx-auto text-white py-3 px-2.5">
       <UserSidemenu />
-      <div className="flex-1 flex">
+      <div className="flex grow overflow-hidden">
         <Suspense
           fallback={
             <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center">
