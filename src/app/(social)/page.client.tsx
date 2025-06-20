@@ -238,7 +238,7 @@ export default function Home() {
                       )}
                       <div className="flex-1">
                         <div className="font-medium text-base/[25px] text-white">
-                          @{user.username}
+                          {user.nickname}
                         </div>
                         <div className="font-light text-xs text-neutral-300 truncate max-w-full overflow-hidden whitespace-nowrap min-h-[20px]">
                           {user.html_contents

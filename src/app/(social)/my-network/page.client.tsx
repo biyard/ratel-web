@@ -12,6 +12,7 @@ import { ratelApi } from '@/lib/api/ratel_api';
 import { followRequest } from '@/lib/api/models/networks/follow';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
+import { checkString } from '@/lib/string-filter-utils';
 
 export default function MyNetwork() {
   const { post } = useApiCall();
@@ -41,7 +42,13 @@ export default function MyNetwork() {
       />
       <FollowingContents
         label="Suggested teams"
-        users={networkData ? networkData.suggested_teams : []}
+        users={
+          networkData
+            ? networkData.suggested_teams.filter(
+                (team) => !checkString(team.username),
+              )
+            : []
+        }
         follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
           try {
@@ -58,7 +65,13 @@ export default function MyNetwork() {
       />
       <FollowingContents
         label="Suggested users"
-        users={networkData ? networkData.suggested_users : []}
+        users={
+          networkData
+            ? networkData.suggested_users.filter(
+                (user) => !checkString(user.username),
+              )
+            : []
+        }
         follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
           try {
