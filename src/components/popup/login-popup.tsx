@@ -134,14 +134,16 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
       }
 
       if (user?.event == EventType.SignUp) {
-        popup.open(
-          <UserSetupPopup
-            email={user.email ?? ''}
-            nickname={user.displayName ?? ''}
-            profileUrl={user.photoURL ?? ''}
-            principal={user.principal ?? ''}
-          />,
-        );
+        popup
+          .open(
+            <UserSetupPopup
+              email={user.email ?? ''}
+              nickname={user.displayName ?? ''}
+              profileUrl={user.photoURL ?? ''}
+              principal={user.principal ?? ''}
+            />,
+          )
+          .withoutBackdropClose();
       } else if (user?.event == EventType.Login) {
         refetchUserInfo(queryClient);
         network.refetch();
@@ -164,7 +166,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
 
   const handleSignUp = () => {
     logger.debug('Sign up button clicked');
-    popup.open(<UserSetupPopup email="" />);
+    popup.open(<UserSetupPopup email="" />).withoutBackdropClose();
   };
 
   return (
