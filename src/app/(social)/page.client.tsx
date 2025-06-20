@@ -240,7 +240,7 @@ export default function Home() {
                         <div className="font-medium text-base/[25px] text-white">
                           {user.nickname}
                         </div>
-                        <div className="font-light text-xs text-neutral-300 truncate max-w-full overflow-hidden whitespace-nowrap min-h-[20px]">
+                        <div className="font-light text-xs text-neutral-300 truncate max-w-full overflow-hidden whitespace-nowrap min-h-[20px] w-[170px]">
                           {user.html_contents
                             ? stripHtml(user.html_contents)
                             : ''}
