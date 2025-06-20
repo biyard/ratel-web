@@ -121,6 +121,21 @@ export const ratelApi = {
       };
     },
 
+    getUserByEmail: (email: string) => {
+      return {
+        query: gql`
+          query GetUserByEmail($email: String!) {
+            users(where: { email: { _eq: $email } }) {
+              id
+            }
+          }
+        `,
+        variables: {
+          email,
+        },
+      };
+    },
+
     getTeamByTeamname: (teamname: string) => {
       return {
         query: gql`

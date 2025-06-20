@@ -179,7 +179,6 @@ export default function Home() {
                   src={promotion.image_url}
                   alt={promotion.name}
                   className="w-[60px] h-[60px] rounded object-cover cursor-pointer"
-                  
                 /> */}
 
                 <Image
@@ -202,84 +201,92 @@ export default function Home() {
         <News />
 
         <div className="mt-[10px]">
-          <BlackBox>
-            <h3 className="font-medium mb-3">Suggested</h3>
+          {suggestions.length != 0 ? (
+            <BlackBox>
+              <h3 className="font-medium mb-3">Suggested</h3>
 
-            <div className="flex flex-col gap-[35px]">
-              {suggestions.map((user) => (
-                <div
-                  key={user.id}
-                  className="flex flex-col items-start justify-start gap-3"
-                >
-                  <div className="flex flex-row gap-[10px]">
-                    {user.user_type == UserType.Team ? (
-                      user.profile_url ? (
+              <div className="flex flex-col gap-[35px]">
+                {suggestions.map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex flex-col items-start justify-start gap-3"
+                  >
+                    <div className="flex flex-row gap-[10px]">
+                      {user.user_type == UserType.Team ? (
+                        user.profile_url ? (
+                          <Image
+                            width={32}
+                            height={32}
+                            src={user.profile_url || '/default-profile.png'}
+                            alt="Profile"
+                            className="w-8 h-8 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-lg bg-neutral-500" />
+                        )
+                      ) : user.profile_url ? (
                         <Image
                           width={32}
                           height={32}
                           src={user.profile_url || '/default-profile.png'}
                           alt="Profile"
-                          className="w-8 h-8 rounded-lg object-cover"
+                          className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="w-8 h-8 rounded-lg bg-neutral-500" />
-                      )
-                    ) : user.profile_url ? (
-                      <Image
-                        width={32}
-                        height={32}
-                        src={user.profile_url || '/default-profile.png'}
-                        alt="Profile"
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-neutral-500" />
-                    )}
-                    <div className="flex-1">
-                      <div className="font-medium text-base/[25px] text-white">
-                        {user.username}
-                      </div>
-                      <div className="font-light text-xs text-neutral-300">
-                        {user.email}
-                      </div>
-                      <button
-                        className="font-bold text-xs text-white rounded-full bg-neutral-700 px-[15px] py-[8px] mt-[10px]"
-                        onClick={async () => {
-                          logger.debug(
-                            'follow button clicked user id: ',
-                            user.id,
-                          );
-                          try {
-                            await handleFollow(user.id);
-                            data.refetch();
-                            network.refetch();
-
-                            showSuccessToast('success to follow user');
-                          } catch (err) {
-                            showErrorToast('failed to follow user');
-                            logger.error(
-                              'failed to follow user with error: ',
-                              err,
+                        <div className="w-8 h-8 rounded-full bg-neutral-500" />
+                      )}
+                      <div className="flex-1">
+                        <div className="font-medium text-base/[25px] text-white">
+                          {user.username}
+                        </div>
+                        <div className="font-light text-xs text-neutral-300">
+                          {user.email}
+                        </div>
+                        <button
+                          className="font-bold text-xs text-white rounded-full bg-neutral-700 px-[15px] py-[8px] mt-[10px]"
+                          onClick={async () => {
+                            logger.debug(
+                              'follow button clicked user id: ',
+                              user.id,
                             );
-                          }
-                        }}
-                      >
-                        + Follow
-                      </button>
+                            try {
+                              await handleFollow(user.id);
+                              data.refetch();
+                              network.refetch();
+
+                              showSuccessToast('success to follow user');
+                            } catch (err) {
+                              showErrorToast('failed to follow user');
+                              logger.error(
+                                'failed to follow user with error: ',
+                                err,
+                              );
+                            }
+                          }}
+                        >
+                          + Follow
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            <Link
-              href={route.myNetwork()}
-              className="mt-5 text-xs text-gray-400 flex items-center"
-            >
-              <span>View all</span>
-              <ChevronRight size={14} />
-            </Link>
-          </BlackBox>
+              {suggestions.length >= 3 ? (
+                <Link
+                  href={route.myNetwork()}
+                  className="mt-5 text-xs text-gray-400 flex items-center"
+                >
+                  <span>View all</span>
+                  <ChevronRight size={14} />
+                </Link>
+              ) : (
+                <></>
+              )}
+            </BlackBox>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </div>
