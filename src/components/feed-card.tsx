@@ -12,6 +12,8 @@ import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { UserType } from '@/lib/api/models/user';
 import Image from 'next/image';
+import { route } from '@/route';
+import { SpaceType } from '@/lib/api/models/spaces';
 
 export interface FeedCardProps {
   id: number;
@@ -30,8 +32,8 @@ export interface FeedCardProps {
   rewards: number;
   shares: number;
 
-  space_type?: number;
   space_id?: number;
+  space_type?: SpaceType;
   author_id: number;
   user_id: number;
   onboard: boolean;
@@ -59,17 +61,7 @@ export default function FeedCard(props: FeedCardProps) {
     <Col
       className="cursor-pointer bg-component-bg rounded-[10px]"
       onClick={() => {
-        const spaceId = props.space_id;
-        const spaceType = props.space_type;
-        if (!spaceId || spaceId == 0) {
-          return;
-        }
-
-        if (spaceType == 5) {
-          router.push(`/spaces/${spaceId}/commitee`);
-        } else {
-          router.push(`/spaces/${spaceId}/deliberation`);
-        }
+        router.push(route.threadByFeedId(props.id));
       }}
     >
       <FeedBody {...props} />
@@ -89,9 +81,11 @@ export function FeedBody({
   author_type,
   // user_id,
   // author_id,
+  space_type,
   space_id,
   onboard,
 }: FeedCardProps) {
+  const router = useRouter();
   return (
     <Col className="pt-5 pb-2.5">
       <Row className="justify-between px-5">
@@ -108,10 +102,18 @@ export function FeedBody({
           </Button>
         )} */}
 
-        {space_id ? (
+        {space_id && space_type ? (
           <Button
             variant="rounded_primary"
             className="text-[10px] font-semibold align-middle uppercase py-1 px-3"
+            onClick={(e) => {
+              e.preventDefault();
+              if (space_type === SpaceType.Commitee) {
+                router.push(route.commiteeSpaceById(space_id));
+              } else {
+                router.push(route.deliberationSpaceById(space_id));
+              }
+            }}
           >
             Join
           </Button>
@@ -172,12 +174,11 @@ export function FeedContents({
 
 export function IconText({
   children,
-  className = '',
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }) {
   return (
     <Row
-      className={`justify-center items-center gap-1.25 text-white font-normal text-[15px] px-4 py-5 ${className}`}
+      className="justify-center items-center gap-1.25 text-white font-normal text-[15px] px-4 py-5"
       {...props}
     >
       {children}

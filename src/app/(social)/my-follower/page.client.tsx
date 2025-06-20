@@ -16,6 +16,7 @@ import {
 } from '@/lib/api/models/networks/follow';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { logger } from '@/lib/logger';
+import { RelationType } from '@/types/relation-type';
 
 const FollowTab = {
   FOLLOWERS: 'Followers',
@@ -24,14 +25,17 @@ const FollowTab = {
 
 type FollowTabType = (typeof FollowTab)[keyof typeof FollowTab];
 
-export default function MyFollower() {
+export default function MyFollower({ type }: { type: RelationType }) {
   const { post } = useApiCall();
   const popup = usePopup();
   const data = useSuspenseUserInfo();
   const router = useRouter();
-  const [selectedType, setSelectedType] = useState<FollowTabType>(
-    FollowTab.FOLLOWERS,
-  );
+  let initTab: FollowTabType = FollowTab.FOLLOWERS;
+
+  if (type === RelationType.FOLLOWING) {
+    initTab = FollowTab.FOLLOWINGS;
+  }
+  const [selectedType, setSelectedType] = useState<FollowTabType>(initTab);
 
   const userInfo = data.data;
 
@@ -57,7 +61,7 @@ export default function MyFollower() {
           <ArrowLeft width={24} height={24} />
         </div>
 
-        <div className="font-semibold text-white text-[20px]">My Follower</div>
+        <div className="font-semibold text-white text-[20px]">My Network</div>
       </div>
 
       <SelectedType
