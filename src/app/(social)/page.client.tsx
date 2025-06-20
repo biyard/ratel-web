@@ -179,7 +179,6 @@ export default function Home() {
                   src={promotion.image_url}
                   alt={promotion.name}
                   className="w-[60px] h-[60px] rounded object-cover cursor-pointer"
-                  
                 /> */}
 
                 <Image
