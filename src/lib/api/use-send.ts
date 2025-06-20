@@ -17,13 +17,12 @@ export interface ApiCallFns {
 export function useApiCall(): ApiCallFns {
   const auth = useAuth();
   const cookie = useCookie();
-  logger.debug('cookie', cookie);
 
   return {
     get: async (path: string): Promise<any> => {
       const apiBaseUrl: string = config.api_url;
       let token = cookie?.token;
-      let token_type = '';
+      let token_type = 'Bearer';
 
       if (!token && auth.ed25519KeyPair) {
         const keyPair = auth.ed25519KeyPair;
@@ -66,7 +65,7 @@ export function useApiCall(): ApiCallFns {
     post: async (path: string, body?: any): Promise<any> => {
       const apiBaseUrl: string = config.api_url;
       let token = cookie?.token;
-      let token_type = '';
+      let token_type = 'Bearer';
 
       if (!token && auth.ed25519KeyPair) {
         const keyPair = auth.ed25519KeyPair;
