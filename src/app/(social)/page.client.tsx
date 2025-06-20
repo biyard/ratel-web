@@ -75,13 +75,14 @@ export interface Post {
 }
 
 export default function Home() {
-  const network = useNetwork();
   const { post } = useApiCall();
-  const networkData = network.data;
+
   const { data: promotion } = usePromotion();
   const { data: feed } = useFeedByID(promotion.feed_id);
   const data = useSuspenseUserInfo();
   const userInfo = data.data;
+  const network = useNetwork();
+  const networkData = network.data;
   const posts = usePost(1, 20);
   const user_id = userInfo ? userInfo.id || 0 : 0;
 
