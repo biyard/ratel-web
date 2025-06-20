@@ -176,10 +176,10 @@ function FollowingInfo({
 
                   <div className="flex flex-col">
                     <div className="font-semibold text-white text-sm/[20px]">
-                      {user.username}
+                      {user.nickname}
                     </div>
                     <div className="font-medium text-neutral-500 text-[12px]">
-                      {user.email}
+                      @{user.username}
                     </div>
                   </div>
                 </div>
@@ -221,7 +221,7 @@ function FollowingInfo({
 function FollowButton({ onClick }: { onClick: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row w-fit h-fit px-[12px] py-[8px] bg-white hover:bg-gray-100 rounded-[50px]"
+      className="cursor-pointer flex flex-row w-fit h-fit px-[10px] py-[5px] bg-white hover:bg-gray-300 rounded-[50px]"
       onClick={() => {
         onClick();
       }}
@@ -235,7 +235,7 @@ function FollowButton({ onClick }: { onClick: () => void }) {
 function UnFollowButton({ onClick }: { onClick: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row w-fit h-fit px-[12px] py-[8px] bg-white hover:bg-gray-100 rounded-[50px]"
+      className="cursor-pointer flex flex-row w-fit h-fit px-[10px] py-[5px] bg-white hover:bg-gray-300 rounded-[50px]"
       onClick={() => {
         onClick();
       }}
