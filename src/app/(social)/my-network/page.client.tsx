@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNetwork } from '../_hooks/use-network';
 import { logger } from '@/lib/logger';
 import { Industry } from '@/lib/api/models/industry';
@@ -14,10 +14,20 @@ import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 
 export default function MyNetwork() {
-  const network = useNetwork();
   const { post } = useApiCall();
-  const networkData = network.data;
+
   const data = useSuspenseUserInfo();
+
+  const network = useNetwork();
+  const networkData = network.data;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      network.refetch();
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleFollow = async (userId: number) => {
     await post(ratelApi.networks.follow(userId), followRequest());
