@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import React from 'react';
 import { Col } from './ui/col';
@@ -175,7 +174,6 @@ export function FeedContents({
 
 export function IconText({
   children,
-  className = '',
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }) {
   return (

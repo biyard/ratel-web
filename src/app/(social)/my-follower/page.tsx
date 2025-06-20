@@ -1,17 +1,13 @@
+import { RelationType } from '@/types/relation-type';
 import PageClient from './page.client';
 
-export enum FollowType {
-  FOLLOWER = 'followers',
-  FOLLOWING = 'followings',
-}
-
 type Props = {
-  searchParams: Promise<{ type?: FollowType }>;
+  searchParams: Promise<{ type?: RelationType }>;
 };
 
 export default async function Page({ searchParams }: Props) {
   const { type } = await searchParams;
-  const selectedType = type || FollowType.FOLLOWER;
+  const selectedType = type || RelationType.FOLLOWER;
 
   return <PageClient type={selectedType} />;
 }
