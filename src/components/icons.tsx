@@ -1,6 +1,6 @@
 export { default as AlertCircle } from '@/assets/icons/alert-circle.svg';
 export { default as ArrowLeft } from '@/assets/icons/arrow-left.svg';
-export { default as ArrowRight } from '@/assets/icons/arrow-right.svg';
+export { default as ArrowRight } from '@/assets/icons/right.svg';
 export { default as Bell } from '@/assets/icons/bell.svg';
 export { default as Character } from '@/assets/icons/character.svg';
 export { default as CheckboxIcon } from '@/assets/icons/checkbox-icon.svg';
@@ -36,6 +36,7 @@ export { default as Pptx } from '@/assets/icons/files/pptx.svg';
 export { default as Excel } from '@/assets/icons/files/xlsx.svg';
 export { default as Upload } from '@/assets/icons/upload.svg';
 export { default as Add } from '@/assets/icons/add.svg';
+export { default as ChevronLeft } from '@/assets/icons/arrow-left.svg';
 export { default as ChevronRight } from '@/assets/icons/chevron-right.svg';
 
 export { default as BendArrowRight } from '@/assets/icons/bend-arrow-right.svg';
