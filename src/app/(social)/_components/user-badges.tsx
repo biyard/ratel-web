@@ -9,7 +9,7 @@ export interface UserBadgesProps {
 export default function UserBadges({ badges }: { badges: Badge[] }) {
   return (
     <div className="grid grid-cols-5 gap-2.5 items-center justify-start">
-      {badges.map((badge, index) => (
+      {badges.map((badge) => (
         <div className="relative aspect-square" key={`user-badge-${badge.id}`}>
           <Image
             fill
