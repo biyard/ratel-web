@@ -66,6 +66,8 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
     if (info) {
       refetchUserInfo(queryClient);
     }
+
+    popup.close();
   };
 
   const handleContinue = () => {
