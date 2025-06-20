@@ -16,6 +16,7 @@ interface SpaceForm {
   Icon: React.JSX.Element;
   label: string;
   description: string;
+  disabled?: boolean;
 }
 
 const SpaceForms: SpaceForm[] = [
@@ -24,12 +25,14 @@ const SpaceForms: SpaceForm[] = [
     Icon: <Palace />,
     label: 'Legislation',
     description: 'Propose and decide on new rules or policies.',
+    disabled: true,
   },
   {
     type: SpaceType.Poll,
     Icon: <Vote />,
     label: 'Poll',
     description: 'Collect quick opinions or preferences.',
+    disabled: true,
   },
   {
     type: SpaceType.Deliberation,
@@ -42,6 +45,7 @@ const SpaceForms: SpaceForm[] = [
     Icon: <Cube />,
     label: 'NFT',
     description: 'Submit information to issue an NFT.',
+    disabled: true,
   },
 ];
 export default function SelectSpaceForm({
@@ -77,7 +81,9 @@ export default function SelectSpaceForm({
       if (res.data) {
         logger.debug('Space created successfully:', res.data.id);
         popup.close();
-        router.push(route.spaceById(res.data.id));
+        if (res.data.space_type === SpaceType.Deliberation) {
+          router.push(route.deliberationSpaceById(res.data.id));
+        }
       }
     } catch (error) {
       logger.error('Error creating space:', error);
@@ -122,7 +128,7 @@ function SpaceForm({
       className={`flex flex-row gap-2.5 justify-center items-center w-full p-5 border rounded-[10px] ${selected ? 'border-primary' : 'border-neutral-800'}`}
       onClick={onClick}
     >
-      {form.Icon}
+      <div className="size-8 [&>svg]:size-8">{form.Icon}</div>
       <div className="flex flex-col flex-1 gap-1">
         <span className="font-bold text-[15px]/[20px] text-white">
           {form.label}

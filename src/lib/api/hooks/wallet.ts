@@ -1,8 +1,5 @@
 import { useState } from 'react';
 import { ethers } from 'ethers';
-import { useApiCall } from '../use-send';
-import { ratelApi } from '../ratel_api';
-import { useUserInfo } from './users';
 import { logger } from '@/lib/logger';
 import { usePopup } from '@/lib/contexts/popup-service';
 
@@ -15,8 +12,6 @@ interface EthereumProvider {
 
 export function useWallet() {
   const [address, setAddress] = useState<string | null>(null);
-  const { data: user } = useUserInfo();
-  const { post } = useApiCall();
   const popup = usePopup();
 
   const connectWallet = async () => {
@@ -37,18 +32,22 @@ export function useWallet() {
 
       setAddress(walletAddress);
 
-      if (!user) {
-        logger.warn('User info is not loaded yet');
-        return;
-      }
-
-      await post(ratelApi.users.updateEvmAddress(), {
-        update_evm_address: {
-          evm_address: walletAddress,
-        },
+      ethereum.on?.('accountsChanged', (accounts: string[]) => {
+        if (accounts.length > 0) {
+          setAddress(accounts[0]);
+          logger.debug('Evm_address updated due to account change');
+        } else {
+          setAddress(null);
+          logger.debug('Evm_address cleared due to account change');
+        }
       });
 
-      logger.info('Evm_address updated successfully');
+      ethereum.on?.('chainChanged', () => {
+        setAddress(null);
+        logger.debug('Evm_address cleared due to chain change');
+      });
+
+      logger.debug('Evm_address updated successfully');
     } catch (err) {
       logger.error('Wallet connection failed:', err);
     }

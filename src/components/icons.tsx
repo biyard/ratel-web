@@ -42,5 +42,9 @@ export { default as BendArrowRight } from '@/assets/icons/bend-arrow-right.svg';
 
 export { default as Palace } from '@/assets/icons/palace.svg';
 export { default as Cube } from '@/assets/icons/cube.svg';
-export { default as Vote } from '@/assets/icons/vote.svg';
+export { default as CheckCircle } from '@/assets/icons/check-circle.svg';
 export { default as Discuss } from '@/assets/icons/discuss.svg';
+export { default as File } from '@/assets/icons/file.svg';
+export { default as Vote } from '@/assets/icons/vote.svg';
+export { default as BottomTriangle } from '@/assets/icons/bottom-triangle.svg';
+export { default as Calendar } from '@/assets/icons/calendar.svg';
