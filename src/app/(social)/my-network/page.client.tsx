@@ -13,6 +13,7 @@ import { followRequest } from '@/lib/api/models/networks/follow';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { checkString } from '@/lib/string-filter-utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function MyNetwork() {
   const { post } = useApiCall();
@@ -180,29 +181,50 @@ function FollowingContents({
 }
 
 function SelectedIndustry({ industries }: { industries: Industry[] }) {
-  const [selectedIndustry, setSelectedIndustry] = useState('All');
-  return (
-    <div className="w-full">
-      <div className="flex flex-row justify-start items-center gap-2.5 overflow-x-scroll hide-scrollbar">
-        <IndustryLabel
-          name="All"
-          selected={selectedIndustry == 'All'}
-          setSelectedIndustry={(name: string) => {
-            setSelectedIndustry(name);
-          }}
-        />
+  const PAGE_SIZE = 5;
+  const [selectedIndustry, setSelectedIndustry] = useState('ALL');
+  const [page, setPage] = useState(0);
 
-        {industries.map((industry) => (
-          <IndustryLabel
-            key={industry.name}
-            name={industry.name.toUpperCase()}
-            selected={selectedIndustry == industry.name.toUpperCase()}
-            setSelectedIndustry={(name: string) => {
-              setSelectedIndustry(name);
-            }}
-          />
-        ))}
+  const totalPages = Math.ceil(industries.length / PAGE_SIZE);
+  const visibleItems = industries.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE,
+  );
+
+  return (
+    <div className="flex items-center gap-2">
+      {page > 0 && (
+        <ChevronLeft
+          className="cursor-pointer stroke-neutral-500"
+          onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+        ></ChevronLeft>
+      )}
+
+      <div className="flex gap-2 flex-1 flex-wrap">
+        <IndustryLabel
+          name="ALL"
+          selected={selectedIndustry === 'ALL'}
+          setSelectedIndustry={() => setSelectedIndustry('ALL')}
+        />
+        {visibleItems.map((industry) => {
+          const name = industry.name.toUpperCase();
+          return (
+            <IndustryLabel
+              key={name}
+              name={name}
+              selected={selectedIndustry === name}
+              setSelectedIndustry={() => setSelectedIndustry(name)}
+            />
+          );
+        })}
       </div>
+
+      {page < totalPages - 1 && (
+        <ChevronRight
+          className="cursor-pointer stroke-neutral-500"
+          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
+        ></ChevronRight>
+      )}
     </div>
   );
 }
