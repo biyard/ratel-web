@@ -176,10 +176,10 @@ function FollowingInfo({
 
                   <div className="flex flex-col">
                     <div className="font-semibold text-white text-sm/[20px]">
-                      {user.username}
+                      {user.nickname}
                     </div>
                     <div className="font-medium text-neutral-500 text-[12px]">
-                      {user.email}
+                      @{user.username}
                     </div>
                   </div>
                 </div>
@@ -221,7 +221,7 @@ function FollowingInfo({
 function FollowButton({ onClick }: { onClick: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row w-fit h-fit px-[12px] py-[8px] bg-white hover:bg-gray-100 rounded-[50px]"
+      className="cursor-pointer flex flex-row w-fit h-fit px-[10px] py-[5px] bg-white hover:bg-gray-300 rounded-[50px]"
       onClick={() => {
         onClick();
       }}
@@ -233,14 +233,20 @@ function FollowButton({ onClick }: { onClick: () => void }) {
 }
 
 function UnFollowButton({ onClick }: { onClick: () => void }) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div
-      className="cursor-pointer flex flex-row w-fit h-fit px-[12px] py-[8px] bg-white hover:bg-gray-100 rounded-[50px]"
-      onClick={() => {
-        onClick();
-      }}
+      className="cursor-pointer flex flex-row w-fit h-fit px-[10px] py-[5px] bg-transparent border border-neutral-700 hover:border-[#ff4d4f] hover:bg-[#ffe3e3] rounded-[50px]"
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="font-bold text-[#000203] text-xs">Following</div>
+      <div
+        className={`font-bold  ${isHovered ? 'text-[#ff4d4f]' : 'text-neutral-700'} text-xs`}
+      >
+        {isHovered ? 'Unfollow' : 'Following'}
+      </div>
     </div>
   );
 }

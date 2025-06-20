@@ -75,7 +75,10 @@ export default function ClientLayout({
           <button
             className="cursor-pointer font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
             onClick={() => {
-              popup.open(<LoginModal />).withTitle('Join the Movement');
+              popup
+                .open(<LoginModal />)
+                .withTitle('Join the Movement')
+                .withoutBackdropClose();
             }}
           >
             Sign In
