@@ -538,9 +538,9 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     image,
     status,
     saveDraft,
-    post,
     resetState,
     refetchDrafts,
+    router,
   ]);
 
   const contextValue = {

@@ -184,7 +184,7 @@ function InvitedUser({
     } else {
       setIsLoading(false);
     }
-  }, [saved_user, email]);
+  }, [saved_user, email, onSuccess]);
 
   if (isLoading) {
     return (
