@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 
-interface SpaceForm {
+interface SpaceFormProps {
   type: SpaceType;
   Icon: React.JSX.Element;
   label: string;
@@ -19,7 +19,7 @@ interface SpaceForm {
   disabled?: boolean;
 }
 
-const SpaceForms: SpaceForm[] = [
+const SpaceForms: SpaceFormProps[] = [
   {
     type: SpaceType.Legislation,
     Icon: <Palace />,
@@ -80,7 +80,6 @@ export default function SelectSpaceForm({
       );
       if (res.data) {
         logger.debug('Space created successfully:', res.data.id);
-        popup.close();
         if (res.data.space_type === SpaceType.Deliberation) {
           router.push(route.deliberationSpaceById(res.data.id));
         }
@@ -88,7 +87,7 @@ export default function SelectSpaceForm({
     } catch (error) {
       logger.error('Error creating space:', error);
     } finally {
-      setLoading(false);
+      popup.close();
     }
   };
   const [selectedType, setSelectedType] = useState<SpaceType | null>(null);
@@ -119,14 +118,18 @@ function SpaceForm({
   selected,
   onClick,
 }: {
-  form: SpaceForm;
+  form: SpaceFormProps;
   selected: boolean;
   onClick: () => void;
 }) {
   return (
     <div
-      className={`flex flex-row gap-2.5 justify-center items-center w-full p-5 border rounded-[10px] ${selected ? 'border-primary' : 'border-neutral-800'}`}
-      onClick={onClick}
+      className={`flex flex-row gap-2.5 justify-center items-center w-full p-5 border rounded-[10px] ${selected ? 'border-primary' : 'border-neutral-800'} ${form.disabled ? 'opacity-50 cursor-not-allowed' : ''}} `}
+      onClick={() => {
+        if (!form.disabled) {
+          onClick();
+        }
+      }}
     >
       <div className="size-8 [&>svg]:size-8">{form.Icon}</div>
       <div className="flex flex-col flex-1 gap-1">
