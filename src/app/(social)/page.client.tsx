@@ -18,7 +18,7 @@ import { ratelApi } from '@/lib/api/ratel_api';
 import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
 import CreatePostButton from './_components/create-post-button';
-import { checkString } from '@/lib/string-filter-utils';
+import { checkString, stripHtml } from '@/lib/string-filter-utils';
 import { useNetwork } from './_hooks/use-network';
 import { followRequest } from '@/lib/api/models/networks/follow';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
@@ -75,13 +75,14 @@ export interface Post {
 }
 
 export default function Home() {
-  const network = useNetwork();
   const { post } = useApiCall();
-  const networkData = network.data;
+
   const { data: promotion } = usePromotion();
   const { data: feed } = useFeedByID(promotion.feed_id);
   const data = useSuspenseUserInfo();
   const userInfo = data.data;
+  const network = useNetwork();
+  const networkData = network.data;
   const posts = usePost(1, 20);
   const user_id = userInfo ? userInfo.id || 0 : 0;
 
@@ -215,35 +216,38 @@ export default function Home() {
                       {user.user_type == UserType.Team ? (
                         user.profile_url ? (
                           <Image
-                            width={32}
-                            height={32}
+                            width={50}
+                            height={50}
                             src={user.profile_url || '/default-profile.png'}
                             alt="Profile"
-                            className="w-8 h-8 rounded-lg object-cover"
+                            className="w-[50px] h-[50px] rounded-lg object-cover"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-lg bg-neutral-500" />
+                          <div className="w-[50px] h-[50px] rounded-lg bg-neutral-500" />
                         )
                       ) : user.profile_url ? (
                         <Image
-                          width={32}
-                          height={32}
+                          width={50}
+                          height={50}
                           src={user.profile_url || '/default-profile.png'}
                           alt="Profile"
-                          className="w-8 h-8 rounded-full object-cover"
+                          className="w-[50px] h-[50px] rounded-full object-cover"
                         />
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-neutral-500" />
+                        <div className="w-[50px] h-[50px] rounded-full bg-neutral-500" />
                       )}
                       <div className="flex-1">
                         <div className="font-medium text-base/[25px] text-white">
-                          {user.username}
+                          @{user.username}
                         </div>
-                        <div className="font-light text-xs text-neutral-300">
-                          {user.email}
+                        <div className="font-light text-xs text-neutral-300 truncate max-w-full overflow-hidden whitespace-nowrap min-h-[20px]">
+                          {user.html_contents
+                            ? stripHtml(user.html_contents)
+                            : ''}
                         </div>
+
                         <button
-                          className="font-bold text-xs text-white rounded-full bg-neutral-700 px-[15px] py-[8px] mt-[10px]"
+                          className="font-bold text-xs text-white rounded-full bg-neutral-700 px-[10px] py-[5px] mt-[10px] hover:bg-neutral-500"
                           onClick={async () => {
                             logger.debug(
                               'follow button clicked user id: ',

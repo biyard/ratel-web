@@ -132,7 +132,10 @@ function Header(props: HeaderProps) {
             <button
               className="group cursor-pointer font-bold text-neutral-500 text-[15px] flex flex-col items-center justify-center group p-2.5"
               onClick={() => {
-                popup.open(<LoginModal />).withTitle('Join the Movement');
+                popup
+                  .open(<LoginModal />)
+                  .withTitle('Join the Movement')
+                  .withoutBackdropClose();
               }}
             >
               <LoginIcon className="size-6 group-hover:[&>path]:stroke-white" />

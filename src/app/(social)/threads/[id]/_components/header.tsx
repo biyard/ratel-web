@@ -14,6 +14,7 @@ import { route } from '@/route';
 import { usePopup } from '@/lib/contexts/popup-service';
 import SpaceCreateModal from './space-create-modal';
 import { SpaceType } from '@/lib/api/models/spaces';
+import { config } from '@/config';
 
 export default function Header({ post_id }: { post_id: number }) {
   const { data: post } = useFeedByID(post_id);
@@ -63,14 +64,16 @@ export default function Header({ post_id }: { post_id: number }) {
             </Button>
           </Link>
         ) : (
-          <Button
-            variant="rounded_primary"
-            className="bg-white text-black px-2 py-1.5"
-            onClick={handleCreateSpace}
-          >
-            <Plus className="size-5" />
-            Create Space
-          </Button>
+          (config.experiment ?? (
+            <Button
+              variant="rounded_primary"
+              className="bg-white text-black px-2 py-1.5"
+              onClick={handleCreateSpace}
+            >
+              <Plus className="size-5" />
+              Create Space
+            </Button>
+          ))
         )}
       </div>
 
