@@ -1,31 +1,34 @@
 'use client';
-
-import { useState, useEffect } from 'react';
-import { useInView } from 'react-intersection-observer';
 import Image from 'next/image';
-import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-
 import FeedCard from '@/components/feed-card';
+import { usePost } from './_hooks/use-posts';
 import { Col } from '@/components/ui/col';
+import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
+// import News from './_components/News';
+// import { CreatePost } from './_components/create-post';
+// import { useApiCall } from '@/lib/api/use-send';
+// import { ratelApi } from '@/lib/api/ratel_api';
+// import {
+//   UrlType,
+//   writePostRequest,
+// } from '@/lib/api/models/feeds/write-post-request';
 import News from './_components/News';
 import BlackBox from './_components/black-box';
-import CreatePostButton from './_components/create-post-button';
-import { ratelApi } from '@/lib/api/ratel_api';
-import { usePost } from './_hooks/use-posts';
-import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { usePromotion } from './_hooks/use_promotion';
 import { useFeedByID } from './_hooks/use-feed';
-import { useNetwork } from './_hooks/use-network';
-
-import { checkString } from '@/lib/string-filter-utils';
+import Link from 'next/link';
 import { route } from '@/route';
-import { UserType } from '@/lib/api/models/user';
-import { showErrorToast, showSuccessToast } from '@/lib/toast';
-import { useApiCall } from '@/lib/api/use-send';
-import { followRequest } from '@/lib/api/models/networks/follow';
-import { logger } from '@/lib/logger';
 import { Metadata } from 'next';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { logger } from '@/lib/logger';
+import { UserType } from '@/lib/api/models/user';
+import CreatePostButton from './_components/create-post-button';
+import { checkString } from '@/lib/string-filter-utils';
+import { useNetwork } from './_hooks/use-network';
+import { followRequest } from '@/lib/api/models/networks/follow';
+import { showErrorToast, showSuccessToast } from '@/lib/toast';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -79,98 +82,59 @@ export interface Post {
 }
 
 export default function Home() {
-  const { post } = useApiCall();
-
   const network = useNetwork();
+  const { post } = useApiCall();
+  const networkData = network.data;
   const { data: promotion } = usePromotion();
   const { data: feed } = useFeedByID(promotion.feed_id);
-  const userInfo = useSuspenseUserInfo().data;
-  const user_id = userInfo?.id || 0;
-  const [page, setPage] = useState(1);
-  
-  const size = 10; // Posts per fetch
-  const { data: postData } = usePost(page, size);
+  const data = useSuspenseUserInfo();
+  const userInfo = data.data;
+  const posts = usePost(1, 20);
+  const user_id = userInfo ? userInfo.id || 0 : 0;
 
-  const [feeds, setFeeds] = useState<Post[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [showEndMessage, setShowEndMessage] = useState(false);
+  const selected_teams = networkData
+    ? networkData.suggested_teams.slice(0, 1)
+    : [];
+  const selected_users = networkData
+    ? networkData.suggested_users.slice(0, 2)
+    : [];
 
-  const { ref, inView } = useInView({ threshold: 1 });
-
-  useEffect(() => {
-    if (!postData?.items) return;
-
-    const newFeeds = postData.items.map((item) => ({
-      id: item.id,
-      industry: item.industry?.[0]?.name || '',
-      title: item.title!,
-      contents: item.html_contents,
-      url: item.url,
-      author_id: item.author?.[0]?.id || 0,
-      author_profile_url: item.author?.[0]?.profile_url || '',
-      author_name: item.author?.[0]?.nickname || '',
-      author_type: item.author?.[0]?.user_type || UserType.Anonymous,
-      space_id: item.spaces?.[0]?.id || 0,
-      space_type: item.spaces?.[0]?.space_type || 0,
-      likes: item.likes,
-      is_liked: item.is_liked,
-      comments: item.comments,
-      rewards: item.rewards,
-      shares: item.shares,
-      created_at: item.created_at,
-      onboard: item.onboard ?? false,
-    }));
-
-    if (newFeeds.length === 0) {
-      setHasMore(false);
-      setShowEndMessage(true);
-
-      setTimeout(() => {
-        setFeeds([]);
-        setPage(1);
-        setHasMore(true);
-        setShowEndMessage(false);
-      }, 10000);
-
-      return;
-    }
-
-    // Deduplicate by feed id
-    setFeeds((prevFeeds) => {
-      const uniqueMap = new Map<number, Post>();
-      [...prevFeeds, ...newFeeds].forEach((feed) =>
-        uniqueMap.set(feed.id, feed),
-      );
-      return Array.from(uniqueMap.values());
-    });
-  }, [postData]);
-
-  useEffect(() => {
-    if (inView && hasMore) {
-      setPage((prev) => prev + 1);
-    }
-  }, [inView, hasMore]);
-
-  const networkData = network.data;
-  const selected_teams = networkData?.suggested_teams.slice(0, 1) || [];
-  const selected_users = networkData?.suggested_users.slice(0, 2) || [];
   const suggestions = [...selected_teams, ...selected_users];
 
   const handleFollow = async (userId: number) => {
-    try {
-      await post(ratelApi.networks.follow(userId), followRequest());
-      showSuccessToast('Success to follow user');
-      network.refetch();
-    } catch (err) {
-      showErrorToast('Failed to follow user');
-      logger.error('Failed to follow user:', err);
-    }
+    await post(ratelApi.networks.follow(userId), followRequest());
   };
+
+  const feeds: Post[] =
+    posts.data != null
+      ? posts.data.items.map((item) => ({
+          id: item.id,
+          industry: item.industry != null ? item.industry[0].name : '',
+          title: item.title!,
+          contents: item.html_contents,
+          url: item.url,
+          author_id: item.author != null ? Number(item.author[0].id) : 0,
+          author_profile_url:
+            item.author != null ? item.author[0].profile_url! : '',
+          author_name: item.author != null ? item.author[0].nickname : '',
+          author_type:
+            item.author != null ? item.author[0].user_type : UserType.Anonymous,
+          space_id: item.spaces?.length ? item.spaces[0].id : 0,
+          space_type: item.spaces?.length ? item.spaces[0].space_type : 0,
+          likes: item.likes,
+          is_liked: item.is_liked,
+          comments: item.comments,
+          rewards: item.rewards,
+          shares: item.shares,
+          created_at: item.created_at,
+          onboard: item.onboard ?? false,
+        }))
+      : [];
 
   return (
     <div className="flex-1 flex relative">
       <Col className="flex-1 flex max-mobile:px-[10px]">
-        {feeds.length > 0 ? (
+        {feeds.length != 0 ? (
           <Col className="flex-1">
             {feeds
               .filter(
@@ -185,57 +149,22 @@ export default function Home() {
                 <FeedCard
                   key={`feed-${props.id}`}
                   user_id={user_id ?? 0}
-                  refetch={() => {}}
+                  refetch={() => posts.refetch()}
                   {...props}
                 />
               ))}
-            {/* Load more sentinel */}
-            {hasMore && <div ref={ref} className="h-10" />}
-            {showEndMessage && (
-              <div className="text-center text-gray-400 my-6">
-                🎉 You’ve reached the end of the feed.
-              </div>
-            )}
           </Col>
         ) : (
           <div className="flex flex-row w-full h-fit justify-start items-center px-[16px] py-[20px] border border-gray-500 rounded-[8px] font-medium text-base text-gray-500">
             Feeds data is empty
           </div>
         )}
-
-        {/* {feeds.length != 0 ? (
-          <Col className="flex-1">
-            {feeds
-              .filter(
-                (d) =>
-                  !checkString(d.title) &&
-                  !checkString(d.contents) &&
-                  !checkString(d.author_name),
-              )
-              .map((props) => (
-                <FeedCard
-                  key={`feed-${props.id}`}
-                  user_id={user_id}
-                  refetch={() => {}}
-                  {...props}
-                />
-              ))}
-            {hasMore && (
-              <div ref={ref} className="py-4 text-center text-gray-400">
-                Loading more...
-              </div>
-            )}
-          </Col>
-        ) : (
-          <div className=" font-medium text-base text-gray-500">
-            Feeds data is empty
-          </div>
-        )} */}
       </Col>
 
       {/* Right Sidebar */}
       <div className="w-70 pl-4 max-tablet:!hidden">
         {/* Hot Promotion */}
+
         <div>
           <CreatePostButton />
           <BlackBox>
@@ -245,14 +174,21 @@ export default function Home() {
               </h3>
               <Link
                 href={
-                  feed?.spaces?.length
-                    ? feed.spaces[0].space_type === 3
+                  feed?.spaces.length > 0
+                    ? feed.spaces[0].space_type == 3
                       ? route.deliberationSpaceById(feed.spaces[0].id)
                       : route.commiteeSpaceById(feed.spaces[0].id)
                     : route.threadByFeedId(feed.id)
                 }
                 className="flex items-center gap-2.5 hover:bg-btn-hover rounded p-2 transition-colors"
               >
+                {/* <img
+                  src={promotion.image_url}
+                  alt={promotion.name}
+                  className="w-[60px] h-[60px] rounded object-cover cursor-pointer"
+                  
+                /> */}
+
                 <Image
                   src={promotion.image_url}
                   alt={promotion.name}
@@ -275,41 +211,65 @@ export default function Home() {
         <div className="mt-[10px]">
           <BlackBox>
             <h3 className="font-medium mb-3">Suggested</h3>
+
             <div className="flex flex-col gap-[35px]">
               {suggestions.map((user) => (
-                <div key={user.id} className="flex flex-col items-start gap-3">
+                <div
+                  key={user.id}
+                  className="flex flex-col items-start justify-start gap-3"
+                >
                   <div className="flex flex-row gap-[10px]">
-                    {user.profile_url ? (
+                    {user.user_type == UserType.Team ? (
+                      user.profile_url ? (
+                        <Image
+                          width={32}
+                          height={32}
+                          src={user.profile_url || '/default-profile.png'}
+                          alt="Profile"
+                          className="w-8 h-8 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-lg bg-neutral-500" />
+                      )
+                    ) : user.profile_url ? (
                       <Image
                         width={32}
                         height={32}
                         src={user.profile_url || '/default-profile.png'}
                         alt="Profile"
-                        className={`w-8 h-8 object-cover ${
-                          user.user_type === UserType.Team
-                            ? 'rounded-lg'
-                            : 'rounded-full'
-                        }`}
+                        className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
-                      <div
-                        className={`w-8 h-8 bg-neutral-500 ${
-                          user.user_type === UserType.Team
-                            ? 'rounded-lg'
-                            : 'rounded-full'
-                        }`}
-                      />
+                      <div className="w-8 h-8 rounded-full bg-neutral-500" />
                     )}
                     <div className="flex-1">
-                      <div className="font-medium text-base text-white">
+                      <div className="font-medium text-base/[25px] text-white">
                         {user.username}
                       </div>
-                      <div className="text-xs text-neutral-300">
+                      <div className="font-light text-xs text-neutral-300">
                         {user.email}
                       </div>
                       <button
-                        className="font-bold text-xs text-white rounded-full bg-neutral-700 px-4 py-2 mt-2"
-                        onClick={() => handleFollow(user.id)}
+                        className="font-bold text-xs text-white rounded-full bg-neutral-700 px-[15px] py-[8px] mt-[10px]"
+                        onClick={async () => {
+                          logger.debug(
+                            'follow button clicked user id: ',
+                            user.id,
+                          );
+                          try {
+                            await handleFollow(user.id);
+                            data.refetch();
+                            network.refetch();
+
+                            showSuccessToast('success to follow user');
+                          } catch (err) {
+                            showErrorToast('failed to follow user');
+                            logger.error(
+                              'failed to follow user with error: ',
+                              err,
+                            );
+                          }
+                        }}
                       >
                         + Follow
                       </button>
@@ -318,6 +278,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
+
             <Link
               href={route.myNetwork()}
               className="mt-5 text-xs text-gray-400 flex items-center"
