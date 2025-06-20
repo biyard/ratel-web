@@ -51,11 +51,11 @@ export default function TimeDropdown({ value, onChange }: TimeDropdownProps) {
   return (
     <div className="relative w-fit">
       <button
-        className="flex justify-between items-center w-full border border-neutral-500 rounded-md px-6 py-[10px] font-medium text-neutral-300 text-sm text-left shadow-sm focus:outline-none gap-[20px]"
+        className="flex justify-between items-center w-full border border-input rounded-md px-6 py-[10px] font-medium text-neutral-300 text-sm text-left shadow-sm focus:outline-none gap-[20px]"
         onClick={() => setOpen(!open)}
       >
         {selectedTime}
-        <Clock className="w-6 h-6 stroke-neutral-500" />
+        <Clock className="w-6 h-6 stroke-input" />
       </button>
 
       {open && (

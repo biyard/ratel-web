@@ -74,11 +74,12 @@ export default function SpaceByIdPage() {
     title: string,
     html_contents: string,
     files: FileInfo[],
+    discussions: DiscussionCreateRequest[],
     elearnings: ElearningCreateRequest[],
   ) => {
     await post(
       ratelApi.spaces.getSpaceBySpaceId(spaceId),
-      spaceUpdateRequest(html_contents, files, [], elearnings, title),
+      spaceUpdateRequest(html_contents, files, discussions, elearnings, title),
     );
   };
 
@@ -143,6 +144,7 @@ export default function SpaceByIdPage() {
               title,
               thread.html_contents,
               thread.files,
+              deliberation.discussions,
               deliberation.elearnings,
             );
             data.refetch();

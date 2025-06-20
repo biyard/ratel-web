@@ -25,13 +25,13 @@ export default function CustomCalendar({
   return (
     <div className="relative w-fit">
       <button
-        className="flex flex-row items-center border border-neutral-500 px-6 py-[10px] rounded-md font-semibold text-sm text-neutral-300 bg-transparent gap-[20px]"
+        className="flex flex-row items-center border border-input px-6 py-[10px] rounded-md font-semibold text-sm text-neutral-300 bg-transparent gap-[20px]"
         onClick={() => {
           onClicked(!clicked);
         }}
       >
         {selected ? format(selected, 'yyyy/MM/dd') : 'Selected Date'}
-        <Calendar className="w-6 h-6 stroke-neutral-500" />
+        <Calendar className="w-6 h-6 stroke-input" />
       </button>
 
       {clicked && (

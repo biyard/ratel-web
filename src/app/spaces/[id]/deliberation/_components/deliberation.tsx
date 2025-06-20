@@ -8,6 +8,7 @@ import { Deliberation } from '../page.client';
 import SpaceDiscussion from './space_discussion';
 import SpaceElearning from './space_elearning';
 import { FileInfo } from '@/lib/api/models/feeds';
+import { DiscussionCreateRequest } from '@/lib/api/models/spaces';
 
 export default function DeliberationPage({
   title,
@@ -45,7 +46,33 @@ export default function DeliberationPage({
         }}
       />
       <div className="flex flex-col mt-[25px] gap-2.5">
-        <SpaceDiscussion isEdit={isEdit} discussions={[]} />
+        <SpaceDiscussion
+          isEdit={isEdit}
+          discussions={deliberation.discussions}
+          onadd={(discussion: DiscussionCreateRequest) => {
+            setDeliberation({
+              ...deliberation,
+              discussions: [...deliberation.discussions, discussion],
+            });
+          }}
+          onupdate={(index: number, discussion: DiscussionCreateRequest) => {
+            const updated = [...deliberation.discussions];
+            updated[index] = discussion;
+            setDeliberation({
+              ...deliberation,
+              discussions: updated,
+            });
+          }}
+          onremove={(index: number) => {
+            const updated = deliberation.discussions.filter(
+              (_, i) => i !== index,
+            );
+            setDeliberation({
+              ...deliberation,
+              discussions: updated,
+            });
+          }}
+        />
         <SpaceElearning
           isEdit={isEdit}
           elearnings={deliberation.elearnings}
