@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { DiscussionCreateRequest } from '@/lib/api/models/spaces';
 import { Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
+import { format } from 'date-fns';
 
 export interface SpaceDiscussionProps {
   isEdit?: boolean;
@@ -50,14 +51,92 @@ export default function SpaceDiscussion({
           }}
         />
       ) : (
-        <ViewDiscussion />
+        <ViewDiscussion discussions={discussions} />
       )}
     </div>
   );
 }
 
-function ViewDiscussion() {
-  return <div>view</div>;
+function ViewDiscussion({
+  discussions,
+}: {
+  discussions: DiscussionCreateRequest[];
+}) {
+  return (
+    <div className="flex flex-col w-full gap-2.5">
+      <DiscussionSchedules discussions={discussions} />
+    </div>
+  );
+}
+
+function DiscussionSchedules({
+  discussions,
+}: {
+  discussions: DiscussionCreateRequest[];
+}) {
+  return (
+    <BlackBox>
+      <div className="flex flex-col gap-3">
+        <div className="font-bold text-white text-[15px]/[20px]">Schedule</div>
+        <div className="flex flex-col gap-5">
+          <div className="font-normal text-neutral-300 text-[15px]/[24px]">
+            In order to improve feasibility of Digital asset basic act, we have
+            scheduled a discussion and a lecture on it.
+          </div>
+
+          {discussions.map((discussion, index) => (
+            <DiscussionTable
+              key={index}
+              startDate={format(discussion.started_at * 1000, 'M. dd. yyyy')}
+              startTime={format(
+                new Date(discussion.started_at * 1000),
+                'HH:mm',
+              )}
+              endTime={format(new Date(discussion.ended_at * 1000), 'HH:mm')}
+              title={discussion.name}
+              description={discussion.description}
+            />
+          ))}
+        </div>
+      </div>
+    </BlackBox>
+  );
+}
+
+function DiscussionTable({
+  startDate,
+  startTime,
+  endTime,
+  title,
+  description,
+}: {
+  startDate: string;
+  startTime: string;
+  endTime: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="border border-neutral-500 rounded-md text-white text-sm w-full">
+      <div className="w-full text-center border-b border-neutral-500 py-2 font-medium">
+        {startDate}
+      </div>
+
+      <div className="grid grid-cols-3 text-center border-b border-neutral-500 py-2 text-neutral-400 font-medium">
+        <div>Time</div>
+        <div>Type</div>
+        <div>Contents</div>
+      </div>
+
+      <div className="grid grid-cols-3 text-center py-3">
+        <div>
+          {startTime} - {endTime}
+        </div>
+        <div>{title}</div>
+        <div>{description}</div>
+      </div>
+    </div>
+  );
 }
 
 function EditableDiscussion({
@@ -201,6 +280,7 @@ function EditableDiscussionInfo({
             <TimeDropdown
               value={endTime * 1000}
               onChange={(timestamp) => {
+                console.log('timestamp: ', timestamp);
                 setEndTime(Math.floor(timestamp / 1000));
                 triggerUpdate();
               }}

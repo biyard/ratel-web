@@ -43,8 +43,18 @@ export default function TimeDropdown({ value, onChange }: TimeDropdownProps) {
       if (hour !== 12) hour += 12;
     }
 
-    const newDate = new Date(value);
-    newDate.setHours(hour, 0, 0, 0);
+    const old = new Date(value);
+
+    const newDate = new Date(
+      old.getFullYear(),
+      old.getMonth(),
+      old.getDate(),
+      hour,
+      0,
+      0,
+      0,
+    );
+
     onChange(newDate.getTime());
   };
 
