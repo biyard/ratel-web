@@ -1,4 +1,4 @@
-import { RelationType } from './app/(social)/my-follower/page';
+import { RelationType } from './types/relation-type';
 
 export const route = {
   home: () => '/',
