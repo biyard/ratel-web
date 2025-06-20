@@ -520,6 +520,10 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await saveDraft(title, content, image);
 
+      await post(ratelApi.feeds.publishDraft(draftId), {
+        publish: {},
+      });
+
       router.push(route.threadByFeedId(draftId));
 
       resetState();
@@ -538,6 +542,7 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     image,
     status,
     saveDraft,
+    post,
     resetState,
     refetchDrafts,
     router,
