@@ -184,6 +184,7 @@ export const LexicalHtmlEditor = forwardRef<
     onChange?: (content: string) => void;
     initialContent?: string;
     placeholder?: string;
+    className?: string;
   }
 >(function LexicalHtmlEditor(
   {
@@ -191,6 +192,7 @@ export const LexicalHtmlEditor = forwardRef<
     onChange,
     initialContent,
     placeholder = 'Type here, Use Markdown, BB code, or HTML to format.',
+    className = '',
   },
   ref,
 ) {
@@ -260,7 +262,7 @@ export const LexicalHtmlEditor = forwardRef<
   }, [initialContent]);
 
   return (
-    <div className="flex flex-col min-h-[200px] p-4">
+    <div className={cn('flex flex-col min-h-50 p-4', className)}>
       <LexicalComposer initialConfig={editorConfig}>
         {/* Lexical Content Area */}
         <div className="relative flex flex-1 text-neutral-300 ">
