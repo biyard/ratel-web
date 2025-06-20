@@ -56,10 +56,10 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
           <div className="flex flex-row bg-[#282828] px-5 py-2.5 gap-2.5">
             <div className="flex flex-row space-between">
               <div className="flex flex-row gap-2 items-center">
-                {comment.quote_comment?.author[0].profile_url ? (
+                {comment.quote_comment?.author?.[0]?.profile_url ? (
                   <Image
-                    alt={comment.quote_comment?.author[0].nickname ?? ''}
-                    src={comment.quote_comment?.author[0].profile_url ?? ''}
+                    alt={comment.quote_comment?.author?.[0]?.nickname ?? ''}
+                    src={comment.quote_comment?.author?.[0]?.profile_url ?? ''}
                     width={40}
                     height={40}
                     className="rounded-full object-cover object-top"
@@ -69,7 +69,7 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
                 )}
 
                 <div className="font-semibold text-neutral-300 text-[15px]/[15px]">
-                  {comment.quote_comment?.author[0].nickname ?? ''}
+                  {comment.quote_comment?.author?.[0]?.nickname ?? ''}
                 </div>
               </div>
             </div>
@@ -107,7 +107,7 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
             {/* Reply Button */}
             <div
               onClick={() => setExpand((prev) => !prev)}
-              className="flex gap-2 cursor-pointer justify-center items-center-safe"
+              className="flex gap-2 cursor-pointer justify-center items-center"
             >
               <BendArrowRight width={24} height={24} />
               Reply
@@ -142,10 +142,10 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
             {comment.replies.map((reply) => (
               <div key={reply.id} className="flex flex-col gap-2 px-5 py-2.5">
                 <div className="flex flex-row gap-2 items-center">
-                  {reply.author[0].profile_url ? (
+                  {reply.author?.[0]?.profile_url ? (
                     <Image
-                      alt={reply.author[0].nickname ?? ''}
-                      src={reply.author[0].profile_url ?? ''}
+                      alt={reply.author?.[0]?.nickname ?? ''}
+                      src={reply.author?.[0]?.profile_url ?? ''}
                       width={40}
                       height={40}
                       className="rounded-full object-cover object-top"
@@ -156,7 +156,7 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
 
                   <div className="flex flex-col gap-[2px]">
                     <div className="font-semibold text-neutral-300 text-[15px]/[15px]">
-                      {reply.author[0].nickname ?? ''}
+                      {reply.author?.[0]?.nickname ?? ''}
                     </div>
                   </div>
                 </div>
@@ -207,14 +207,13 @@ export function NewComment({
       setLoading(true);
       try {
         await onSubmit(content);
+        editorRef.current?.clear();
+        setDisabled(false);
         onClose();
       } catch (error) {
         logger.debug('Error submitting comment:', error);
       } finally {
         setLoading(false);
-        editorRef.current?.clear();
-        setDisabled(false);
-        onClose();
       }
     }
   };

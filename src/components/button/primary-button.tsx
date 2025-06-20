@@ -36,11 +36,16 @@ export const LoadablePrimaryButton = ({
   className,
   ...props
 }: LoadablePrimaryButtonProps) => {
-  if (disabled) {
-    className = cn(className, 'opacity-50 cursor-not-allowed');
-  }
+  const finalClassName = disabled
+    ? cn(className, 'opacity-50 cursor-not-allowed')
+    : className;
   return (
-    <Button variant="rounded_primary" className={className} {...props}>
+    <Button
+      variant="rounded_primary"
+      className={finalClassName}
+      disabled={disabled || isLoading}
+      {...props}
+    >
       {isLoading ? <Loading className="w-10 h-5" /> : children}
     </Button>
   );

@@ -208,14 +208,6 @@ export const LexicalHtmlEditor = forwardRef<
   useImperativeHandle(
     ref,
     () => ({
-      setContent: (html: string) => {
-        const editor = editorRef.current;
-        if (editor) {
-          editor.update(() => {
-            createEditorStateFromHTML(editor, html);
-          });
-        }
-      },
       getContent: () => {
         const editor = editorRef.current;
         if (editor) {
@@ -237,7 +229,6 @@ export const LexicalHtmlEditor = forwardRef<
           });
         }
       },
-      getEditor: () => editorRef.current,
     }),
     [],
   );

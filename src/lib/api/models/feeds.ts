@@ -1,4 +1,3 @@
-import Comment from '@/components/comment';
 import { UrlType } from './feeds/update-draft-request';
 import { Industry } from './industry';
 import { Space } from './spaces';

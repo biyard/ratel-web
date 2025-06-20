@@ -96,7 +96,11 @@ export default function InviteCommittee({
             saved_user={emailUserMap.get(email) || null}
             removeUser={(email) => {
               setEmails((prev) => prev.filter((e) => e !== email));
-              setInput((prev) => prev.replace(email, '').trim());
+              setInput((prev) => {
+                const emailsInInput = prev.split(',').map((e) => e.trim());
+                const updatedEmails = emailsInInput.filter((e) => e !== email);
+                return updatedEmails.join(', ');
+              });
             }}
             onSuccess={(user: User) => {
               addUserToMap(email, user);
@@ -180,7 +184,7 @@ function InvitedUser({
     } else {
       setIsLoading(false);
     }
-  }, [saved_user, email, onSuccess]);
+  }, [saved_user, email]);
 
   if (isLoading) {
     return (
