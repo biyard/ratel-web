@@ -14,16 +14,16 @@ export default function Thread({ post_id }: { post_id: number }) {
       <BlackBox>
         <div className="flex flex-col gap-5">
           <LexicalHtmlViewer htmlString={post?.html_contents || ''} />
-          <div className="relative w-full h-72 rounded-[10px] overflow-hidden">
-            {post?.url && (
+          {post?.url && (
+            <div className="relative w-full h-72 rounded-[10px] overflow-hidden">
               <Image
                 fill
                 className="object-cover"
                 src={post.url}
                 alt={post.title || 'Post Image'}
               />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </BlackBox>
       {post?.files && post.files.length > 0 && (
