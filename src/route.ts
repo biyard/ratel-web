@@ -1,3 +1,5 @@
+import { FollowType } from './app/(social)/my-follower/page';
+
 export const route = {
   home: () => '/',
   myProfile: () => '/my-profile',
@@ -9,7 +11,7 @@ export const route = {
   groups: () => '/groups',
 
   myNetwork: () => '/my-network',
-  myFollower: () => '/my-follower',
+  myFollower: (type: FollowType) => `/my-follower?type=${type}`,
   messages: () => '/messages',
   notifications: () => '/notifications',
   teamByUsername: (username: string) => `/teams/${username}/home`,
