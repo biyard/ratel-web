@@ -81,8 +81,8 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         />
 
         {/* Tags */}
-        {tags.length > 0 && isFocused && (
-          <div className="absolute top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+        {tags.length > 0 && (
+          <div className="absolute left-12 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
             {tags.map((tag) => (
               <Badge
                 key={tag.id}

@@ -1,19 +1,13 @@
 'use client';
 import { usePopup } from '@/lib/contexts/popup-service';
-import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import React from 'react';
 import RemoveIcon from '@/assets/icons/remove.svg';
 
 export const PopupZone = () => {
-  const [isMounted, setIsMounted] = useState(false);
   const popup = usePopup();
   const popupData = popup.popup;
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!popupData || !isMounted) return null;
+  if (!popupData) return null;
 
   const {
     id = 'popup-zone',
@@ -23,7 +17,7 @@ export const PopupZone = () => {
     backdropClosable = true,
   } = popupData;
 
-  return createPortal(
+  return (
     <div
       className="fixed top-0 left-0 w-screen h-screen bg-popup-background backdrop-blur-[10px] flex justify-center items-center z-[101]"
       onClick={() => {
@@ -58,7 +52,6 @@ export const PopupZone = () => {
           {content}
         </div>
       </div>
-    </div>,
-    document.body,
+    </div>
   );
 };
