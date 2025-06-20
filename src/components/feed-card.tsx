@@ -30,6 +30,7 @@ export interface FeedCardProps {
   rewards: number;
   shares: number;
 
+  space_type?: number;
   space_id?: number;
   author_id: number;
   user_id: number;
@@ -59,11 +60,16 @@ export default function FeedCard(props: FeedCardProps) {
       className="cursor-pointer bg-component-bg rounded-[10px]"
       onClick={() => {
         const spaceId = props.space_id;
+        const spaceType = props.space_type;
         if (!spaceId || spaceId == 0) {
           return;
         }
 
-        router.push(`/spaces/${spaceId}`);
+        if (spaceType == 5) {
+          router.push(`/spaces/${spaceId}/commitee`);
+        } else {
+          router.push(`/spaces/${spaceId}/deliberation`);
+        }
       }}
     >
       <FeedBody {...props} />

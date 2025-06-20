@@ -4,10 +4,20 @@ import { logger } from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
+  logger.debug('[GET /api/login] incoming');
+  const password = request.nextUrl.searchParams.get('password');
+  const email = request.nextUrl.searchParams.get('email');
+
   const apiBaseUrl: string = config.api_url;
 
-  const targetUrl = `${apiBaseUrl}${ratelApi.users.login()}`;
+  let targetUrl = `${apiBaseUrl}${ratelApi.users.login()}`;
+  if (email && password && password !== '') {
+    const path = ratelApi.users.loginWithPassword(email, password);
+    targetUrl = `${apiBaseUrl}${path}`;
+  }
+
   logger.debug('request headers', request.headers);
+  logger.debug('targetUrl', targetUrl);
   const res = await fetch(targetUrl, {
     method: 'GET',
     headers: {
@@ -16,30 +26,36 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  const proctocol = request.headers.get('x-forwarded-proto') || 'http';
+  const protocol = request.headers.get('x-forwarded-proto') || 'http';
   const host = request.headers.get('host') || 'localhost';
   const port = request.headers.get('x-forwarded-port') || '8080';
-  let origin = `${proctocol}://${host}`;
+  let origin = `${protocol}://${host}`;
 
   if (port && port !== '80' && port !== '443') {
     origin += `:${port}`;
   }
 
   logger.debug('response header', res.headers);
-  const setCookie = res.headers.get('set-cookie') ?? '';
-  const idCookie = setCookie
-    .split(';')
-    .find((cookie) => cookie.trim().startsWith('id='))
-    ?.trim();
+  const setCookies: string[] = res.headers.getSetCookie();
+  logger.debug('raw set-cookie headers:', setCookies);
 
-  let cookie = `${idCookie}; Path=/; HttpOnly; Max-Age=2586226;`;
+  const idCookie = setCookies.find((c) => c.startsWith('id='));
+  const authCookie = setCookies.find((c) => c.startsWith('auth_token='));
 
-  if (proctocol === 'https') {
-    cookie += ` SameSite=None; Secure; Domain=.${host};`;
-  } else {
-    cookie += ` SameSite=Lax;`;
+  const commonSuffix =
+    protocol === 'https'
+      ? `Path=/; HttpOnly; Secure; SameSite=None; Domain=.${host}; Max-Age=2586226`
+      : 'Path=/; SameSite=Lax; Max-Age=2586226';
+
+  const cookies: string[] = [];
+
+  if (idCookie) {
+    cookies.push(idCookie.split(';')[0] + '; ' + commonSuffix);
   }
-  logger.debug('cookie', cookie);
+
+  if (authCookie) {
+    cookies.push(authCookie.split(';')[0] + '; ' + commonSuffix);
+  }
 
   return new NextResponse(res.body, {
     status: res.status,
@@ -47,8 +63,8 @@ export async function GET(request: NextRequest) {
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Set-Cookie': cookie,
       'Access-Control-Allow-Credentials': 'true',
+      'Set-Cookie': cookies.join(', '),
     },
   });
 }

@@ -5,14 +5,7 @@ import FeedCard from '@/components/feed-card';
 import { usePost } from './_hooks/use-posts';
 import { Col } from '@/components/ui/col';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
-// import News from './_components/News';
-// import { CreatePost } from './_components/create-post';
-// import { useApiCall } from '@/lib/api/use-send';
-// import { ratelApi } from '@/lib/api/ratel_api';
-// import {
-//   UrlType,
-//   writePostRequest,
-// } from '@/lib/api/models/feeds/write-post-request';
+
 import News from './_components/News';
 import BlackBox from './_components/black-box';
 import { usePromotion } from './_hooks/use_promotion';
@@ -21,9 +14,7 @@ import Link from 'next/link';
 import { route } from '@/route';
 import { Metadata } from 'next';
 import { useApiCall } from '@/lib/api/use-send';
-import { useQuery } from '@tanstack/react-query';
 import { ratelApi } from '@/lib/api/ratel_api';
-import { useAuth } from '@/lib/contexts/auth-context';
 import { logger } from '@/lib/logger';
 import { UserType } from '@/lib/api/models/user';
 import CreatePostButton from './_components/create-post-button';
@@ -73,6 +64,7 @@ export interface Post {
   author_name: string;
   author_type: UserType;
   space_id?: number;
+  space_type?: number;
   likes: number;
   is_liked: boolean;
   comments: number;
@@ -90,9 +82,7 @@ export default function Home() {
   const { data: feed } = useFeedByID(promotion.feed_id);
   const data = useSuspenseUserInfo();
   const userInfo = data.data;
-  const auth = useAuth();
   const posts = usePost(1, 20);
-  logger.debug('user info: ', userInfo);
   const user_id = userInfo ? userInfo.id || 0 : 0;
 
   const selected_teams = networkData
@@ -107,16 +97,6 @@ export default function Home() {
   const handleFollow = async (userId: number) => {
     await post(ratelApi.networks.follow(userId), followRequest());
   };
-
-  useQuery({
-    queryKey: ['updateEvmAddress', auth.evmWallet?.address ?? ''],
-    queryFn: () =>
-      post(ratelApi.users.updateEvmAddress(), {
-        update_evm_address: {
-          evm_address: auth.evmWallet!.address,
-        },
-      }),
-  });
 
   const feeds: Post[] =
     posts.data != null
@@ -133,6 +113,7 @@ export default function Home() {
           author_type:
             item.author != null ? item.author[0].user_type : UserType.Anonymous,
           space_id: item.spaces?.length ? item.spaces[0].id : 0,
+          space_type: item.spaces?.length ? item.spaces[0].space_type : 0,
           likes: item.likes,
           is_liked: item.is_liked,
           comments: item.comments,
@@ -187,7 +168,9 @@ export default function Home() {
               <Link
                 href={
                   feed?.spaces.length > 0
-                    ? route.spaceById(feed.spaces[0].id)
+                    ? feed.spaces[0].space_type == 3
+                      ? route.deliberationSpaceById(feed.spaces[0].id)
+                      : route.commiteeSpaceById(feed.spaces[0].id)
                     : route.threadByFeedId(feed.id)
                 }
                 className="flex items-center gap-2.5 hover:bg-btn-hover rounded p-2 transition-colors"
