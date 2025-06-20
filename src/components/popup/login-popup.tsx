@@ -17,6 +17,7 @@ import { Row } from '../ui/row';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { sha3 } from '@/lib/utils';
+import { useNetwork } from '@/app/(social)/_hooks/use-network';
 
 interface LoginModalProps {
   id?: string;
@@ -30,6 +31,7 @@ interface LoginBoxProps {
 
 export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
   const popup = usePopup();
+  const network = useNetwork();
   const anonKeyPair = useEd25519KeyPair();
   const queryClient = useQueryClient();
 
@@ -65,6 +67,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
 
     if (info) {
       refetchUserInfo(queryClient);
+      network.refetch();
     }
 
     popup.close();
@@ -128,6 +131,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
         );
       } else if (user?.event == EventType.Login) {
         refetchUserInfo(queryClient);
+        network.refetch();
         loader.close();
       }
     } catch (err) {
