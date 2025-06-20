@@ -1,5 +1,7 @@
 import { Badge } from './badge';
 import { SpaceComment } from './comments';
+import { Discussion } from './discussion';
+import { Elearning } from './elearning';
 import { FileInfo } from './feeds';
 import { UserType } from './user';
 
@@ -19,6 +21,8 @@ export interface Space {
 
   badges: Badge[];
   feed_comments: SpaceComment[];
+  discussions: Discussion[];
+  elearnings: Elearning[];
 }
 
 export interface SpaceUpdateRequest {
@@ -26,12 +30,27 @@ export interface SpaceUpdateRequest {
     title?: string;
     html_contents: string;
     files: FileInfo[];
+    discussions: DiscussionCreateRequest[];
+    elearnings: ElearningCreateRequest[];
   };
+}
+
+export interface ElearningCreateRequest {
+  files: FileInfo[];
+}
+
+export interface DiscussionCreateRequest {
+  started_at: number;
+  ended_at: number;
+  name: string;
+  description: string;
 }
 
 export function spaceUpdateRequest(
   html_contents: string,
   files: FileInfo[],
+  discussions: DiscussionCreateRequest[],
+  elearnings: ElearningCreateRequest[],
   title?: string,
 ): SpaceUpdateRequest {
   return {
@@ -39,6 +58,8 @@ export function spaceUpdateRequest(
       title,
       html_contents,
       files,
+      discussions,
+      elearnings,
     },
   };
 }

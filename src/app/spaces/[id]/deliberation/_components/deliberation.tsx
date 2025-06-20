@@ -4,10 +4,16 @@
 // import TimeDropdown from '@/components/time-dropdown/time-dropdown';
 import React from 'react';
 import SpaceHeader from '../../_components/space_header';
+import { Deliberation } from '../page.client';
+import SpaceDiscussion from './space_discussion';
+import SpaceElearning from './space_elearning';
+import { FileInfo } from '@/lib/api/models/feeds';
 
 export default function DeliberationPage({
   title,
+  deliberation,
   setTitle,
+  setDeliberation,
 
   userType,
   proposerImage,
@@ -16,7 +22,9 @@ export default function DeliberationPage({
   isEdit,
 }: {
   title: string;
+  deliberation: Deliberation;
   setTitle: (title: string) => void;
+  setDeliberation: (deliberation: Deliberation) => void;
   userType: number;
   proposerImage: string;
   proposerName: string;
@@ -36,6 +44,28 @@ export default function DeliberationPage({
           setTitle(title);
         }}
       />
+      <div className="flex flex-col mt-[25px] gap-2.5">
+        <SpaceDiscussion isEdit={isEdit} discussions={[]} />
+        <SpaceElearning
+          isEdit={isEdit}
+          elearnings={deliberation.elearnings}
+          onremove={(index: number) => {
+            const updated = deliberation.elearnings.filter(
+              (_, i) => i !== index,
+            );
+            setDeliberation({
+              ...deliberation,
+              elearnings: updated,
+            });
+          }}
+          onadd={(file: FileInfo) => {
+            setDeliberation({
+              ...deliberation,
+              elearnings: [...deliberation.elearnings, { files: [file] }],
+            });
+          }}
+        />
+      </div>
       {/* <CalendarPicker
         value={1750321970 * 1000}
         onChange={(newTimestamp) => {

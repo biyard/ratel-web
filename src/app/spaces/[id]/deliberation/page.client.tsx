@@ -11,7 +11,11 @@ import FinalConsensusPage from './_components/final_consensus';
 import { FileInfo } from '@/lib/api/models/feeds';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
-import { spaceUpdateRequest } from '@/lib/api/models/spaces';
+import {
+  DiscussionCreateRequest,
+  ElearningCreateRequest,
+  spaceUpdateRequest,
+} from '@/lib/api/models/spaces';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { logger } from '@/lib/logger';
 import { checkString } from '@/lib/string-filter-utils';
@@ -31,6 +35,11 @@ export interface Thread {
   files: FileInfo[];
 }
 
+export interface Deliberation {
+  discussions: DiscussionCreateRequest[];
+  elearnings: ElearningCreateRequest[];
+}
+
 export default function SpaceByIdPage() {
   const { post } = useApiCall();
   const params = useParams();
@@ -41,20 +50,35 @@ export default function SpaceByIdPage() {
     DeliberationTab.THREAD,
   );
   const [isEdit, setIsEdit] = useState(false);
+  const [title, setTitle] = useState(space.title ?? '');
   const [thread, setThread] = useState<Thread>({
     html_contents: space.html_contents ?? '',
     files: space.files ?? [],
   });
-  const [title, setTitle] = useState(space.title ?? '');
+  const [deliberation, setDeliberation] = useState<Deliberation>({
+    discussions: space.discussions.map((disc) => ({
+      started_at: disc.started_at,
+      ended_at: disc.ended_at,
+      name: disc.name,
+      description: disc.description,
+    })),
+
+    elearnings: space.elearnings.map((elearning) => ({
+      files: elearning.files,
+    })),
+  });
+
+  logger.debug('deliberation: ', deliberation);
 
   const handleUpdate = async (
     title: string,
     html_contents: string,
     files: FileInfo[],
+    elearnings: ElearningCreateRequest[],
   ) => {
     await post(
       ratelApi.spaces.getSpaceBySpaceId(spaceId),
-      spaceUpdateRequest(html_contents, files, title),
+      spaceUpdateRequest(html_contents, files, [], elearnings, title),
     );
   };
 
@@ -79,8 +103,12 @@ export default function SpaceByIdPage() {
       ) : selectedType == DeliberationTab.DELIBERATION ? (
         <DeliberationPage
           title={title}
+          deliberation={deliberation}
           setTitle={(t: string) => {
             setTitle(t);
+          }}
+          setDeliberation={(d: Deliberation) => {
+            setDeliberation(d);
           }}
           isEdit={isEdit}
           userType={space.author[0].user_type ?? 0}
@@ -111,7 +139,12 @@ export default function SpaceByIdPage() {
           }
 
           try {
-            await handleUpdate(title, thread.html_contents, thread.files);
+            await handleUpdate(
+              title,
+              thread.html_contents,
+              thread.files,
+              deliberation.elearnings,
+            );
             data.refetch();
 
             showSuccessToast('success to update space');
