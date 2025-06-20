@@ -107,7 +107,7 @@ export function FeedBody({
             variant="rounded_primary"
             className="text-[10px] font-semibold align-middle uppercase py-1 px-3"
             onClick={(e) => {
-              e.preventDefault();
+              e.stopPropagation();
               if (space_type === SpaceType.Commitee) {
                 router.push(route.commiteeSpaceById(space_id));
               } else {
