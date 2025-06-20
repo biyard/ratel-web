@@ -106,7 +106,10 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
             </button>
             {/* Reply Button */}
             <div
-              onClick={() => setExpand((prev) => !prev)}
+              onClick={() => {
+                setExpand((prev) => !prev);
+                setShowReplies(true);
+              }}
               className="flex gap-2 cursor-pointer justify-center items-center"
             >
               <BendArrowRight width={24} height={24} />
@@ -138,9 +141,12 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
           </button>
         </div>
         {showReplies && (
-          <div className="flex flex-col [&>div]:border-b-neutral-600 [&>div]:border-b [&>div:last-child]:border-b-0 rounded-xl bg-neutral-800">
+          <div className="flex flex-col gap-2.5">
             {comment.replies.map((reply) => (
-              <div key={reply.id} className="flex flex-col gap-2 px-5 py-2.5">
+              <div
+                key={reply.id}
+                className="flex flex-col gap-2 p-5 rounded-lg bg-neutral-800"
+              >
                 <div className="flex flex-row gap-2 items-center">
                   {reply.author?.[0]?.profile_url ? (
                     <Image
@@ -167,6 +173,7 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
         )}
         {expand && (
           <NewComment
+            className="min-h-30"
             onClose={() => setExpand(false)}
             onSubmit={async (content) => {
               console.log('Submitting reply:', content);
@@ -182,9 +189,11 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
 }
 
 export function NewComment({
+  className = '',
   onClose,
   onSubmit,
 }: {
+  className?: string;
   onClose: () => void;
   onSubmit?: (content: string) => Promise<void>;
 }) {
@@ -220,10 +229,11 @@ export function NewComment({
   return (
     <div
       ref={ref}
-      className="flex w-full bg-neutral-900 border-[6px_1px_1px_1px] border-primary max-w-desktop"
+      className="flex w-full bg-neutral-900 border rounded-lg border-primary max-w-desktop"
     >
       <div className="flex-1">
         <LexicalHtmlEditor
+          className={className}
           ref={editorRef}
           onChange={(content) => {
             setDisabled(content.trim() === '' || !validateString(content));
