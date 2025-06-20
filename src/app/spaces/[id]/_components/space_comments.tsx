@@ -18,7 +18,7 @@ export default function SpaceComments({
   const numberOfComments = space.data.feed_comments.length;
   const comments = space.data.feed_comments;
   return (
-    <div className="flex flex-col mt-[20px] gap-[20px]">
+    <div className="flex flex-col mt-[20px] gap-[20px] ">
       <div className="flex flex-row gap-2 items-center justify-start">
         <Comment width={24} height={24} className="[&>path]:stroke-white" />
         <div className="font-medium text-white text-base/[24px]">
@@ -53,7 +53,7 @@ function CreateComment({ setClose }: { setClose: () => void }) {
 
 function CommentInfo({ comment }: { comment: SpaceComment }) {
   return (
-    <div className="flex flex-col gap-[14px] pb-5 border-b border-b-neutral-800">
+    <div className="flex flex-col gap-[14px]  border-b border-b-neutral-800">
       <div className="flex flex-row gap-2 items-center">
         {comment.author[0].profile_url ? (
           <Image
