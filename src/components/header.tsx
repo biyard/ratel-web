@@ -18,6 +18,8 @@ import { config } from '@/config';
 import { useUserInfo } from '@/lib/api/hooks/users';
 import { UserType } from '@/lib/api/models/user';
 import LoginIcon from '@/assets/icons/login.svg';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 export interface HeaderProps {
   mobileExtends: boolean;
   setMobileExtends: (extend: boolean) => void;
@@ -88,7 +90,7 @@ function Header(props: HeaderProps) {
           height="24"
         />
       ),
-      visible: config.experiment,
+      visible: true, //data?.user_type === UserType.Individual || data?.user_type === UserType.Team,
       href: route.notifications(),
     },
   ];
@@ -105,8 +107,14 @@ function Header(props: HeaderProps) {
           >
             <Logo width="54" height="54" />
           </Link>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#737373] w-4 h-4" />
+            <Input
+              placeholder="Search"
+              className="pl-10 bg-[#262626] border-[#404040] text-white placeholder-[#737373] w-80"
+            />
+          </div>
         </div>
-
         <div className="flex items-center gap-2.5 max-tablet:hidden">
           {navItems.map((item, index) => (
             <Link
