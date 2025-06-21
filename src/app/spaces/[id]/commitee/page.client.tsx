@@ -16,7 +16,7 @@ export default function SpaceByIdPage() {
   const redeem = useRedeemCode(spaceId);
 
   return (
-    <div className="flex flex-col w-full justify-start items-start">
+    <div className="flex flex-col w-full justify-start items-start mb-4">
       <SpaceHeader
         title={space?.title ?? ''}
         userType={space?.author[0].user_type ?? 0}
