@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback, memo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 import Link from 'next/link';
