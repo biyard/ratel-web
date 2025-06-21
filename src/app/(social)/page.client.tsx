@@ -1,9 +1,4 @@
-// 
-
-
-
 'use client';
-
 import { useState, useEffect, useCallback, memo } from 'react';
 import { useInView } from 'react-intersection-observer';
 import Image from 'next/image';
@@ -30,11 +25,6 @@ import { useApiCall } from '@/lib/api/use-send';
 import { followRequest } from '@/lib/api/models/networks/follow';
 import { logger } from '@/lib/logger';
 
-// import { FeedEmptyState } from './_components/feed-empty-state';
-// import { FeedEndMessage } from './_components/feed-end-message';
-// import { SuggestionItem } from './_components/suggestion-item';
-// import { PromotionCard } from './_components/promotion-card';
-
 import FeedEmptyState from './_components/feed-empty-state';
 import FeedEndMessage from './_components/feed-end-message';
 import SuggestionItem from './_components/suggestions-items';
@@ -42,8 +32,6 @@ import PromotionCard from './_components/promotion-card';
 
 const FEED_RESET_TIMEOUT_MS = 10000;
 const SIZE = 10;
-
-
 
 export interface Post {
   id: number;
@@ -83,7 +71,7 @@ export default function Home() {
 
   const { data: postData, error: postError, isLoading } = usePost(page, SIZE);
 
-  // Process and deduplicate feed data
+  // Processing and deduplication of feed data
   const processFeedData = useCallback((items: any[]): Post[] => {
     if (!items) return [];
 
@@ -136,7 +124,9 @@ export default function Home() {
 
     setFeeds((prevFeeds) => {
       const uniqueMap = new Map<number, Post>();
-      [...prevFeeds, ...newFeeds].forEach((feed) => uniqueMap.set(feed.id, feed));
+      [...prevFeeds, ...newFeeds].forEach((feed) =>
+        uniqueMap.set(feed.id, feed),
+      );
       return Array.from(uniqueMap.values());
     });
   }, [postData, postError, processFeedData]);
@@ -153,23 +143,27 @@ export default function Home() {
     ...(networkData?.suggested_users.slice(0, 2) || []),
   ];
 
-  const handleFollow = useCallback(async (userId: number) => {
-    try {
-      await post(ratelApi.networks.follow(userId), followRequest());
-      showSuccessToast('Successfully followed user');
-      network.refetch();
-    } catch (err) {
-      showErrorToast('Failed to follow user');
-      logger.error('Failed to follow user:', err);
-    }
-  }, [post, network]);
+  const handleFollow = useCallback(
+    async (userId: number) => {
+      try {
+        await post(ratelApi.networks.follow(userId), followRequest());
+        showSuccessToast('Successfully followed user');
+        network.refetch();
+      } catch (err) {
+        showErrorToast('Failed to follow user');
+        logger.error('Failed to follow user:', err);
+      }
+    },
+    [post, network],
+  );
 
   const filteredFeeds = feeds.filter(
-    (d) => !(
-      checkString(d.title) ||
-      checkString(d.contents) ||
-      checkString(d.author_name)
-    ),
+    (d) =>
+      !(
+        checkString(d.title) ||
+        checkString(d.contents) ||
+        checkString(d.author_name)
+      ),
   );
 
   return (
@@ -185,7 +179,7 @@ export default function Home() {
                 {...props}
               />
             ))}
-            
+
             {/* Loading state */}
             {isLoading && (
               <div className="flex justify-center my-4">
@@ -195,7 +189,7 @@ export default function Home() {
 
             {/* Load more sentinel */}
             {hasMore && !isLoading && <div ref={ref} className="h-10" />}
-            
+
             {showEndMessage && <FeedEndMessage />}
           </Col>
         ) : (
@@ -206,12 +200,9 @@ export default function Home() {
       {/* Right Sidebar */}
       <aside className="w-70 pl-4 max-tablet:!hidden" aria-label="Sidebar">
         <CreatePostButton />
-        
+
         <BlackBox>
-          <PromotionCard 
-            promotion={promotion} 
-            feed={feed} 
-          />
+          <PromotionCard promotion={promotion} feed={feed} />
         </BlackBox>
 
         <News />
