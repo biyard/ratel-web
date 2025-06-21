@@ -12,6 +12,8 @@ import { ratelApi } from '@/lib/api/ratel_api';
 import { followRequest } from '@/lib/api/models/networks/follow';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
+import { checkString } from '@/lib/string-filter-utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function MyNetwork() {
   const { post } = useApiCall();
@@ -41,7 +43,13 @@ export default function MyNetwork() {
       />
       <FollowingContents
         label="Suggested teams"
-        users={networkData ? networkData.suggested_teams : []}
+        users={
+          networkData
+            ? networkData.suggested_teams.filter(
+                (team) => !checkString(team.username),
+              )
+            : []
+        }
         follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
           try {
@@ -58,7 +66,13 @@ export default function MyNetwork() {
       />
       <FollowingContents
         label="Suggested users"
-        users={networkData ? networkData.suggested_users : []}
+        users={
+          networkData
+            ? networkData.suggested_users.filter(
+                (user) => !checkString(user.username),
+              )
+            : []
+        }
         follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
           try {
@@ -167,27 +181,50 @@ function FollowingContents({
 }
 
 function SelectedIndustry({ industries }: { industries: Industry[] }) {
-  const [selectedIndustry, setSelectedIndustry] = useState('All');
-  return (
-    <div className="flex flex-row w-full justify-start items-center gap-2.5">
-      <IndustryLabel
-        name="All"
-        selected={selectedIndustry == 'All'}
-        setSelectedIndustry={(name: string) => {
-          setSelectedIndustry(name);
-        }}
-      />
+  const PAGE_SIZE = 5;
+  const [selectedIndustry, setSelectedIndustry] = useState('ALL');
+  const [page, setPage] = useState(0);
 
-      {industries.map((industry) => (
+  const totalPages = Math.ceil(industries.length / PAGE_SIZE);
+  const visibleItems = industries.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE,
+  );
+
+  return (
+    <div className="flex items-center gap-2">
+      {page > 0 && (
+        <ChevronLeft
+          className="cursor-pointer stroke-neutral-500"
+          onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+        ></ChevronLeft>
+      )}
+
+      <div className="flex gap-2 flex-1 flex-wrap">
         <IndustryLabel
-          key={industry.name}
-          name={industry.name.toUpperCase()}
-          selected={selectedIndustry == industry.name.toUpperCase()}
-          setSelectedIndustry={(name: string) => {
-            setSelectedIndustry(name);
-          }}
+          name="ALL"
+          selected={selectedIndustry === 'ALL'}
+          setSelectedIndustry={() => setSelectedIndustry('ALL')}
         />
-      ))}
+        {visibleItems.map((industry) => {
+          const name = industry.name.toUpperCase();
+          return (
+            <IndustryLabel
+              key={name}
+              name={name}
+              selected={selectedIndustry === name}
+              setSelectedIndustry={() => setSelectedIndustry(name)}
+            />
+          );
+        })}
+      </div>
+
+      {page < totalPages - 1 && (
+        <ChevronRight
+          className="cursor-pointer stroke-neutral-500"
+          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
+        ></ChevronRight>
+      )}
     </div>
   );
 }
@@ -203,7 +240,8 @@ function IndustryLabel({
 }) {
   return (
     <div
-      className={`cursor-pointer flex flex-row w-fit h-fit px-2.5 py-2 rounded-lg font-semibold text-white text-sm/[20px] ${selected ? 'border-none bg-neutral-700' : 'border border-neutral-700 bg-transparent hover:bg-neutral-700'}`}
+      className="cursor-pointer flex flex-row w-fit h-fit px-2.5 py-2 rounded-lg font-semibold text-white text-sm/[20px] whitespace-nowrap border border-neutral-700 bg-transparent hover:bg-neutral-700 aria-selected:border-none aria-selected:bg-neutral-700"
+      aria-selected={selected}
       onClick={() => {
         setSelectedIndustry(name);
       }}

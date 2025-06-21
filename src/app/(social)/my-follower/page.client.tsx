@@ -237,13 +237,13 @@ function UnFollowButton({ onClick }: { onClick: () => void }) {
 
   return (
     <div
-      className="cursor-pointer flex flex-row w-fit h-fit px-[10px] py-[5px] bg-white hover:border hover:border-[#ff4d4f] rounded-[50px]"
+      className="cursor-pointer flex flex-row w-fit h-fit px-[10px] py-[5px] bg-transparent border border-neutral-700 hover:border-[#ff4d4f] hover:bg-[#ffe3e3] rounded-[50px]"
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`font-bold  ${isHovered ? 'text-[#ff4d4f]' : 'text-[#000203]'} text-xs`}
+        className={`font-bold  ${isHovered ? 'text-[#ff4d4f]' : 'text-neutral-700'} text-xs`}
       >
         {isHovered ? 'Unfollow' : 'Following'}
       </div>
