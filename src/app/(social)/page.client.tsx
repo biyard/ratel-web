@@ -1,6 +1,10 @@
+// 
+
+
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { useInView } from 'react-intersection-observer';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -25,37 +29,21 @@ import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { useApiCall } from '@/lib/api/use-send';
 import { followRequest } from '@/lib/api/models/networks/follow';
 import { logger } from '@/lib/logger';
-import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Ratel',
-  description:
-    'The first platform connecting South Korea’s citizens with lawmakers to drive institutional reform for the crypto industry.Are you with us ?',
-  icons: {
-    icon: 'https://ratel.foundation/favicon.ico',
-    apple: 'https://ratel.foundation/favicon.ico',
-  },
-  openGraph: {
-    title: 'Ratel',
-    description:
-      'The first platform connecting South Korea’s citizens with lawmakers to drive institutional reform for the crypto industry.Are you with us ?',
-    url: 'https://ratel.foundation',
-    siteName: 'Ratel',
-    images: [
-      {
-        url: 'https://metadata.ratel.foundation/logos/logo-symbol.png',
-      },
-    ],
-    locale: 'en_US',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Ratel',
-    description:
-      'The first platform connecting South Korea’s citizens with lawmakers to drive institutional reform for the crypto industry.Are you with us ?',
-    images: ['https://metadata.ratel.foundation/logos/logo-symbol.png'],
-  },
-};
+// import { FeedEmptyState } from './_components/feed-empty-state';
+// import { FeedEndMessage } from './_components/feed-end-message';
+// import { SuggestionItem } from './_components/suggestion-item';
+// import { PromotionCard } from './_components/promotion-card';
+
+import FeedEmptyState from './_components/feed-empty-state';
+import FeedEndMessage from './_components/feed-end-message';
+import SuggestionItem from './_components/suggestions-items';
+import PromotionCard from './_components/promotion-card';
+
+const FEED_RESET_TIMEOUT_MS = 10000;
+const SIZE = 10;
+
+
 
 export interface Post {
   id: number;
@@ -80,27 +68,26 @@ export interface Post {
 
 export default function Home() {
   const { post } = useApiCall();
-
   const network = useNetwork();
   const { data: promotion } = usePromotion();
   const { data: feed } = useFeedByID(promotion.feed_id);
-  const userInfo = useSuspenseUserInfo().data;
-  const user_id = userInfo?.id || 0;
-  const [page, setPage] = useState(1);
-  
-  const size = 10; // Posts per fetch
-  const { data: postData } = usePost(page, size);
+  const { data: userInfo } = useSuspenseUserInfo();
+  const userId = userInfo?.id || 0;
 
+  const [page, setPage] = useState(1);
   const [feeds, setFeeds] = useState<Post[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [showEndMessage, setShowEndMessage] = useState(false);
 
-  const { ref, inView } = useInView({ threshold: 1 });
+  const { ref, inView } = useInView({ threshold: 0.5 });
 
-  useEffect(() => {
-    if (!postData?.items) return;
+  const { data: postData, error: postError, isLoading } = usePost(page, SIZE);
 
-    const newFeeds = postData.items.map((item) => ({
+  // Process and deduplicate feed data
+  const processFeedData = useCallback((items: any[]): Post[] => {
+    if (!items) return [];
+
+    return items.map((item) => ({
       id: item.id,
       industry: item.industry?.[0]?.name || '',
       title: item.title!,
@@ -120,155 +107,112 @@ export default function Home() {
       created_at: item.created_at,
       onboard: item.onboard ?? false,
     }));
+  }, []);
+
+  useEffect(() => {
+    if (postError) {
+      showErrorToast('Failed to load posts');
+      logger.error('Failed to load posts:', postError);
+      return;
+    }
+
+    if (!postData?.items) return;
+
+    const newFeeds = processFeedData(postData.items);
 
     if (newFeeds.length === 0) {
       setHasMore(false);
       setShowEndMessage(true);
 
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         setFeeds([]);
         setPage(1);
         setHasMore(true);
         setShowEndMessage(false);
-      }, 10000);
+      }, FEED_RESET_TIMEOUT_MS);
 
-      return;
+      return () => clearTimeout(timeout);
     }
 
-    // Deduplicate by feed id
     setFeeds((prevFeeds) => {
       const uniqueMap = new Map<number, Post>();
-      [...prevFeeds, ...newFeeds].forEach((feed) =>
-        uniqueMap.set(feed.id, feed),
-      );
+      [...prevFeeds, ...newFeeds].forEach((feed) => uniqueMap.set(feed.id, feed));
       return Array.from(uniqueMap.values());
     });
-  }, [postData]);
+  }, [postData, postError, processFeedData]);
 
   useEffect(() => {
-    if (inView && hasMore) {
+    if (inView && hasMore && !isLoading) {
       setPage((prev) => prev + 1);
     }
-  }, [inView, hasMore]);
+  }, [inView, hasMore, isLoading]);
 
   const networkData = network.data;
-  const selected_teams = networkData?.suggested_teams.slice(0, 1) || [];
-  const selected_users = networkData?.suggested_users.slice(0, 2) || [];
-  const suggestions = [...selected_teams, ...selected_users];
+  const suggestions = [
+    ...(networkData?.suggested_teams.slice(0, 1) || []),
+    ...(networkData?.suggested_users.slice(0, 2) || []),
+  ];
 
-  const handleFollow = async (userId: number) => {
+  const handleFollow = useCallback(async (userId: number) => {
     try {
       await post(ratelApi.networks.follow(userId), followRequest());
-      showSuccessToast('Success to follow user');
+      showSuccessToast('Successfully followed user');
       network.refetch();
     } catch (err) {
       showErrorToast('Failed to follow user');
       logger.error('Failed to follow user:', err);
     }
-  };
+  }, [post, network]);
+
+  const filteredFeeds = feeds.filter(
+    (d) => !(
+      checkString(d.title) ||
+      checkString(d.contents) ||
+      checkString(d.author_name)
+    ),
+  );
 
   return (
     <div className="flex-1 flex relative">
       <Col className="flex-1 flex max-mobile:px-[10px]">
-        {feeds.length > 0 ? (
+        {filteredFeeds.length > 0 ? (
           <Col className="flex-1">
-            {feeds
-              .filter(
-                (d) =>
-                  !(
-                    checkString(d.title) ||
-                    checkString(d.contents) ||
-                    checkString(d.author_name)
-                  ),
-              )
-              .map((props) => (
-                <FeedCard
-                  key={`feed-${props.id}`}
-                  user_id={user_id ?? 0}
-                  refetch={() => {}}
-                  {...props}
-                />
-              ))}
-            {/* Load more sentinel */}
-            {hasMore && <div ref={ref} className="h-10" />}
-            {showEndMessage && (
-              <div className="text-center text-gray-400 my-6">
-                🎉 You’ve reached the end of the feed.
+            {filteredFeeds.map((props) => (
+              <FeedCard
+                key={`feed-${props.id}`}
+                user_id={userId}
+                refetch={() => {}}
+                {...props}
+              />
+            ))}
+            
+            {/* Loading state */}
+            {isLoading && (
+              <div className="flex justify-center my-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary" />
               </div>
             )}
-          </Col>
-        ) : (
-          <div className="flex flex-row w-full h-fit justify-start items-center px-[16px] py-[20px] border border-gray-500 rounded-[8px] font-medium text-base text-gray-500">
-            Feeds data is empty
-          </div>
-        )}
 
-        {/* {feeds.length != 0 ? (
-          <Col className="flex-1">
-            {feeds
-              .filter(
-                (d) =>
-                  !checkString(d.title) &&
-                  !checkString(d.contents) &&
-                  !checkString(d.author_name),
-              )
-              .map((props) => (
-                <FeedCard
-                  key={`feed-${props.id}`}
-                  user_id={user_id}
-                  refetch={() => {}}
-                  {...props}
-                />
-              ))}
-            {hasMore && (
-              <div ref={ref} className="py-4 text-center text-gray-400">
-                Loading more...
-              </div>
-            )}
+            {/* Load more sentinel */}
+            {hasMore && !isLoading && <div ref={ref} className="h-10" />}
+            
+            {showEndMessage && <FeedEndMessage />}
           </Col>
         ) : (
-          <div className=" font-medium text-base text-gray-500">
-            Feeds data is empty
-          </div>
-        )} */}
+          <FeedEmptyState />
+        )}
       </Col>
 
       {/* Right Sidebar */}
-      <div className="w-70 pl-4 max-tablet:!hidden">
-        {/* Hot Promotion */}
-        <div>
-          <CreatePostButton />
-          <BlackBox>
-            <div className="flex flex-col gap-2.5">
-              <h3 className="font-bold text-white text-[15px]/[20px]">
-                Hot Promotion
-              </h3>
-              <Link
-                href={
-                  feed?.spaces?.length
-                    ? feed.spaces[0].space_type === 3
-                      ? route.deliberationSpaceById(feed.spaces[0].id)
-                      : route.commiteeSpaceById(feed.spaces[0].id)
-                    : route.threadByFeedId(feed.id)
-                }
-                className="flex items-center gap-2.5 hover:bg-btn-hover rounded p-2 transition-colors"
-              >
-                <Image
-                  src={promotion.image_url}
-                  alt={promotion.name}
-                  width={60}
-                  height={60}
-                  className="rounded object-cover cursor-pointer"
-                />
-                <div>
-                  <div className="font-medium text-white text-base/[25px]">
-                    {promotion.name}
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </BlackBox>
-        </div>
+      <aside className="w-70 pl-4 max-tablet:!hidden" aria-label="Sidebar">
+        <CreatePostButton />
+        
+        <BlackBox>
+          <PromotionCard 
+            promotion={promotion} 
+            feed={feed} 
+          />
+        </BlackBox>
 
         <News />
 
@@ -277,57 +221,24 @@ export default function Home() {
             <h3 className="font-medium mb-3">Suggested</h3>
             <div className="flex flex-col gap-[35px]">
               {suggestions.map((user) => (
-                <div key={user.id} className="flex flex-col items-start gap-3">
-                  <div className="flex flex-row gap-[10px]">
-                    {user.profile_url ? (
-                      <Image
-                        width={32}
-                        height={32}
-                        src={user.profile_url || '/default-profile.png'}
-                        alt="Profile"
-                        className={`w-8 h-8 object-cover ${
-                          user.user_type === UserType.Team
-                            ? 'rounded-lg'
-                            : 'rounded-full'
-                        }`}
-                      />
-                    ) : (
-                      <div
-                        className={`w-8 h-8 bg-neutral-500 ${
-                          user.user_type === UserType.Team
-                            ? 'rounded-lg'
-                            : 'rounded-full'
-                        }`}
-                      />
-                    )}
-                    <div className="flex-1">
-                      <div className="font-medium text-base text-white">
-                        {user.username}
-                      </div>
-                      <div className="text-xs text-neutral-300">
-                        {user.email}
-                      </div>
-                      <button
-                        className="font-bold text-xs text-white rounded-full bg-neutral-700 px-4 py-2 mt-2"
-                        onClick={() => handleFollow(user.id)}
-                      >
-                        + Follow
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <SuggestionItem
+                  key={user.id}
+                  user={user}
+                  onFollow={handleFollow}
+                />
               ))}
             </div>
             <Link
               href={route.myNetwork()}
-              className="mt-5 text-xs text-gray-400 flex items-center"
+              className="mt-5 text-xs text-gray-400 flex items-center hover:text-gray-300 transition-colors"
+              aria-label="View all suggestions"
             >
               <span>View all</span>
               <ChevronRight size={14} />
             </Link>
           </BlackBox>
         </div>
-      </div>
+      </aside>
     </div>
   );
 }
