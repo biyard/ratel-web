@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, memo } from 'react';
 import { useInView } from 'react-intersection-observer';
-import Image from 'next/image';
+
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 
