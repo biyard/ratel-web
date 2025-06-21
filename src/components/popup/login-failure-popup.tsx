@@ -57,14 +57,16 @@ export const LoginFailurePopup = ({
               logger.debug('user info: ', user);
 
               if (user.eventType == EventType.SignUp) {
-                popup.open(
-                  <UserSetupPopup
-                    email={user.email ?? ''}
-                    nickname={user.displayName ?? ''}
-                    profileUrl={user.photoURL ?? ''}
-                    principal={user.principal ?? ''}
-                  />,
-                );
+                popup
+                  .open(
+                    <UserSetupPopup
+                      email={user.email ?? ''}
+                      nickname={user.displayName ?? ''}
+                      profileUrl={user.photoURL ?? ''}
+                      principal={user.principal ?? ''}
+                    />,
+                  )
+                  .withoutBackdropClose();
               } else if (user.eventType == EventType.Login) {
                 popup.close();
               }

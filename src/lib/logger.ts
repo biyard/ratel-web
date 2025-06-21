@@ -18,5 +18,5 @@ export const logger = {
     shouldLog('warn') && console.warn('%c[WARN]', 'color: orange', ...args),
   error: (...args: any[]) =>
     shouldLog('error') &&
-    console.error('%c[ERROR]', 'color: red; font-weight: bold', ...args),
+    console?.error('%c[ERROR]', 'color: red; font-weight: bold', ...args),
 };

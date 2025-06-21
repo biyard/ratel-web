@@ -58,7 +58,7 @@ export default function TeamHome() {
   return (
     <div className="flex-1 flex max-mobile:px-[10px]">
       {feeds.length != 0 ? (
-        <Col className="flex-1 border-r border-gray-800">
+        <Col className="flex-1">
           {feeds.map((props) => (
             <FeedCard
               key={`feed-${props.id}`}

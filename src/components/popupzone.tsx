@@ -9,12 +9,22 @@ export const PopupZone = () => {
 
   if (!popupData) return null;
 
-  const { id = 'popup-zone', title, content, closable = true } = popupData;
+  const {
+    id = 'popup-zone',
+    title,
+    content,
+    closable = true,
+    backdropClosable = true,
+  } = popupData;
 
   return (
     <div
       className="fixed top-0 left-0 w-screen h-screen bg-popup-background backdrop-blur-[10px] flex justify-center items-center z-[101]"
-      onClick={() => popup.close()}
+      onClick={() => {
+        if (backdropClosable) {
+          popup.close();
+        }
+      }}
     >
       <div
         className="relative rounded-[20px] p-[25px] min-w-[300px] max-mobile:!w-full max-mobile:!mx-[20px] bg-bg overflow-hidden"

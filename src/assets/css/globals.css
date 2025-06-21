@@ -12,6 +12,16 @@ html {
   display: none;
 }
 
+.hide-scrollbar {
+  overflow-x: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 button {
   @apply cursor-pointer;
 }
@@ -63,11 +73,10 @@ a {
   --container-mobile: 500px;
   --container-sm-mobile: 380px;
 
-
   /* Shadcn variables */
   --color-input: var(--color-c-wg-80);
   --color-ring: var(--color-primary);
-  --color-error: var(--color-c-p-50)
+  --color-error: var(--color-c-p-50);
 }
 
 .sidemenu-link {
@@ -82,3 +91,18 @@ a {
   @apply text-base font-bold text-white mb-2 mt-4;
 }
 
+.rule-with-text {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--color-c-wg-30);
+  font-size: 14px;
+}
+
+.rule-with-text::before,
+.rule-with-text::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--color-c-wg-80);
+  margin: 0 1rem;
+}

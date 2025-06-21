@@ -90,10 +90,12 @@ export default function Profile({ profileUrl, name }: ProfileProps) {
                   handleTeamSelect(index);
                 }}
               >
-                <img
+                <Image
                   src={team.profile_url || '/default-profile.png'}
                   alt={team.nickname}
-                  className="w-6 h-6 rounded-full object-cover object-top"
+                  width={24}
+                  height={24}
+                  className="rounded-full object-cover object-top"
                 />
                 <span className="text-sm text-white truncate">
                   {team.nickname}

@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-
 import React from 'react';
 import Comment from '@/assets/icons/comment.svg';
 import { SpaceComment } from '@/lib/api/models/comments';
 import { getTimeAgo } from '@/lib/time-utils';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
+import { checkString } from '@/lib/string-filter-utils';
+import Image from 'next/image';
 
 export default function SpaceComments({
   spaceId,
@@ -26,9 +26,11 @@ export default function SpaceComments({
         </div>
       </div>
       <CreateComment setClose={setClose} />
-      {comments?.map((comment, index) => (
-        <CommentInfo comment={comment} key={'comment ' + index} />
-      ))}
+      {comments
+        ?.filter((v) => !checkString(v.html_contents))
+        .map((comment, index) => (
+          <CommentInfo comment={comment} key={'comment ' + index} />
+        ))}
     </div>
   );
 }
@@ -53,10 +55,10 @@ function CommentInfo({ comment }: { comment: SpaceComment }) {
   return (
     <div className="flex flex-col gap-[14px] pb-5 border-b border-b-neutral-800">
       <div className="flex flex-row gap-2 items-center">
-        {comment.author[0].profile_url ? (
-          <img
-            alt={comment.author[0].nickname ?? ''}
-            src={comment.author[0].profile_url ?? ''}
+        {comment.author?.[0]?.profile_url ? (
+          <Image
+            alt={comment.author?.[0]?.nickname ?? ''}
+            src={comment.author?.[0]?.profile_url ?? ''}
             width={40}
             height={40}
             className="rounded-full object-cover object-top"
@@ -67,7 +69,7 @@ function CommentInfo({ comment }: { comment: SpaceComment }) {
 
         <div className="flex flex-col gap-[2px]">
           <div className="font-semibold text-neutral-300 text-[15px]/[15px]">
-            {comment.author[0].nickname ?? ''}
+            {comment.author?.[0]?.nickname ?? ''}
           </div>
           <div className="font-semibold text-xs/[20px] text-[#6d6d6d]">
             {getTimeAgo(comment.created_at)}

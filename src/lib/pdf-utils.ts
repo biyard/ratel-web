@@ -49,6 +49,52 @@ export interface UrlReplacement {
  * </button>
  * ```
  */
+
+export async function downloadPdfFromUrl({
+  url,
+  fileName = 'document.pdf',
+}: {
+  url: string;
+  fileName?: string;
+}) {
+  if (typeof window === 'undefined') {
+    throw new Error('This function can only be called in the browser');
+  }
+
+  try {
+    console.debug('Fetching PDF from:', url);
+    const proxyUrl = `/api/proxy-pdf?url=${encodeURIComponent(url)}`;
+
+    const pdfResponse = await fetch(proxyUrl);
+    if (!pdfResponse.ok) {
+      throw new Error(`Failed to fetch PDF: ${pdfResponse.statusText}`);
+    }
+
+    const pdfBlob = await pdfResponse.blob();
+
+    const downloadLink = document.createElement('a');
+    downloadLink.href = URL.createObjectURL(pdfBlob);
+    downloadLink.download = fileName;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(downloadLink.href);
+
+    console.debug('PDF download completed');
+
+    return {
+      success: true,
+      message: 'PDF successfully downloaded.',
+    };
+  } catch (error) {
+    console.error('Error downloading PDF:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
 export async function replacePdfLinks({
   url,
   fileName = 'document.pdf',

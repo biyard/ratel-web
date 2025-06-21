@@ -21,6 +21,28 @@ export interface Space {
   feed_comments: SpaceComment[];
 }
 
+export interface SpaceUpdateRequest {
+  update_space: {
+    title?: string;
+    html_contents: string;
+    files: FileInfo[];
+  };
+}
+
+export function spaceUpdateRequest(
+  html_contents: string,
+  files: FileInfo[],
+  title?: string,
+): SpaceUpdateRequest {
+  return {
+    update_space: {
+      title,
+      html_contents,
+      files,
+    },
+  };
+}
+
 export interface Author {
   id: number;
   nickname: string;

@@ -9,15 +9,7 @@ import {
   useRef,
   Fragment,
 } from 'react';
-import {
-  ImagePlus,
-  Bold,
-  Italic,
-  Underline,
-  Strikethrough,
-  X,
-  Loader2,
-} from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 
 import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';
 import UserCircleIcon from '@/assets/icons/user-circle.svg';
@@ -33,19 +25,12 @@ import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import {
-  $getSelection,
-  $isRangeSelection,
-  FORMAT_TEXT_COMMAND,
   LexicalEditor,
   EditorState,
   $getRoot,
-  TextFormatType,
-  COMMAND_PRIORITY_LOW,
-  SELECTION_CHANGE_COMMAND,
   $createParagraphNode,
 } from 'lexical';
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
-import FileUploader from '@/components/file-uploader';
 import { logger } from '@/lib/logger';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
@@ -58,8 +43,13 @@ import Image from 'next/image';
 import { createDraftRequest } from '@/lib/api/models/feeds/create-draft';
 import { useQueryClient } from '@tanstack/react-query';
 import { postByUserIdQk } from '../_hooks/use-posts';
+import { checkString } from '@/lib/string-filter-utils';
+import { showErrorToast } from '@/lib/toast';
+import ToolbarPlugin from '@/components/toolbar/toolbar';
+import { useRouter } from 'next/navigation';
+import { route } from '@/route';
 
-const editorTheme = {
+export const editorTheme = {
   ltr: 'text-left',
   rtl: 'text-right',
   paragraph: 'relative mb-1',
@@ -73,89 +63,6 @@ const editorTheme = {
   placeholder:
     'absolute top-0 left-0 text-neutral-500 pointer-events-none select-none inline-block',
 };
-
-function ToolbarPlugin({
-  onImageUpload,
-}: {
-  onImageUpload: (url: string) => void;
-}) {
-  const [editor] = useLexicalComposerContext();
-  const [activeEditor, setActiveEditor] = useState(editor);
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [isUnderline, setIsUnderline] = useState(false);
-  const [isStrikethrough, setIsStrikethrough] = useState(false);
-
-  const updateToolbar = useCallback(() => {
-    const selection = $getSelection();
-    if ($isRangeSelection(selection)) {
-      setIsBold(selection.hasFormat('bold'));
-      setIsItalic(selection.hasFormat('italic'));
-      setIsUnderline(selection.hasFormat('underline'));
-      setIsStrikethrough(selection.hasFormat('strikethrough'));
-    }
-  }, []);
-
-  useEffect(() => {
-    return editor.registerCommand(
-      SELECTION_CHANGE_COMMAND,
-      (_payload, newEditor) => {
-        updateToolbar();
-        setActiveEditor(newEditor);
-        return false;
-      },
-      COMMAND_PRIORITY_LOW,
-    );
-  }, [editor, updateToolbar]);
-
-  useEffect(() => {
-    return activeEditor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        updateToolbar();
-      });
-    });
-  }, [activeEditor, updateToolbar]);
-
-  const formatText = (format: TextFormatType) => {
-    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
-  };
-
-  return (
-    <div className="flex items-center gap-4 [&>button]:size-6 [&>button]:rounded [&>button]:hover:bg-neutral-700">
-      <button
-        onClick={() => formatText('bold')}
-        className={cn(isBold && 'bg-neutral-600 text-white')}
-        aria-label="Format text as bold"
-      >
-        <Bold />
-      </button>
-      <button
-        onClick={() => formatText('italic')}
-        className={cn(isItalic && 'bg-neutral-600 text-white')}
-        aria-label="Format text as italics"
-      >
-        <Italic />
-      </button>
-      <button
-        onClick={() => formatText('underline')}
-        className={cn(isUnderline && 'bg-neutral-600 text-white')}
-        aria-label="Format text to underlined"
-      >
-        <Underline />
-      </button>
-      <button
-        onClick={() => formatText('strikethrough')}
-        className={cn(isStrikethrough && 'bg-neutral-600 text-white')}
-        aria-label="Format text with a strikethrough"
-      >
-        <Strikethrough />
-      </button>
-      <FileUploader onUploadSuccess={onImageUpload}>
-        <ImagePlus />
-      </FileUploader>
-    </div>
-  );
-}
 
 function EditorRefPlugin({
   setEditorRef,
@@ -204,7 +111,11 @@ export function CreatePost() {
     setImage(null);
   };
 
-  const isSubmitDisabled = !title.trim() || status !== 'idle';
+  const isSubmitDisabled =
+    !title.trim() ||
+    checkString(title) ||
+    checkString(content ?? '') ||
+    status !== 'idle';
 
   const createEditorStateFromHTML = useCallback(
     (editor: LexicalEditor, htmlString: string) => {
@@ -423,6 +334,7 @@ export const PostDraftContext = createContext<PostDraftContextType | undefined>(
 export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const router = useRouter();
   const [expand, setExpand] = useState(false);
   const [draftId, setDraftId] = useState<number | null>(null);
   const [title, setTitle] = useState('');
@@ -520,6 +432,11 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
 
       try {
         let currentDraftId = draftId;
+        if (checkString(currentTitle) || checkString(currentContent)) {
+          showErrorToast('Please remove the test keyword');
+          return;
+        }
+
         if (isCreating) {
           const data: Feed = await post(
             ratelApi.feeds.createDraft(),
@@ -591,6 +508,11 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [title, content, image, status, saveDraft]);
 
   const publishPost = useCallback(async () => {
+    if (checkString(title) || checkString(content ?? '')) {
+      showErrorToast('Please remove the test keyword');
+      return;
+    }
+
     if (!draftId || !title.trim() || status !== 'idle' || content == null)
       return;
 
@@ -598,7 +520,11 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await saveDraft(title, content, image);
 
-      await post(ratelApi.feeds.publishDraft(draftId), { publish: {} });
+      await post(ratelApi.feeds.publishDraft(draftId), {
+        publish: {},
+      });
+
+      router.push(route.threadByFeedId(draftId));
 
       resetState();
       setExpand(false);
@@ -619,6 +545,7 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     post,
     resetState,
     refetchDrafts,
+    router,
   ]);
 
   const contextValue = {
