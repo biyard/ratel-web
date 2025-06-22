@@ -53,6 +53,7 @@ export default function FeedCard(props: FeedCardProps) {
       },
     });
     if (res) {
+      props.onLikeClick?.(value);
       props.refetch?.();
     }
   };
