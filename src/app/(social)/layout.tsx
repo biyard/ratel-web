@@ -9,7 +9,7 @@ export default function SocialLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-screen gap-5 justify-between max-w-6xl mx-auto text-white py-3 px-2.5 overflow-x-hidden">
+    <div className="flex min-h-screen gap-5 justify-between max-w-desktop mx-auto text-white py-3 max-tablet:px-2.5 overflow-x-hidden">
       <UserSidemenu />
       <div className="flex grow">
         <Suspense
