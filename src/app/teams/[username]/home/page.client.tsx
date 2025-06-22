@@ -3,36 +3,26 @@ import { usePostByUserId } from '@/app/(social)/_hooks/use-posts';
 import { Post } from '@/app/(social)/page.client';
 import FeedCard from '@/components/feed-card';
 import { Col } from '@/components/ui/col';
-import { Team } from '@/lib/api/models/team';
-import { ratelApi } from '@/lib/api/ratel_api';
-import { client } from '@/lib/apollo';
-import { logger } from '@/lib/logger';
-import { useParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { QueryResponse } from '@/lib/api/models/common';
+import { Feed, FeedStatus } from '@/lib/api/models/feeds';
+import React from 'react';
 
-export default function TeamHome() {
-  const params = useParams();
-  const username = params.username as string;
+interface TeamHomeProps {
+  userId: number;
+  posts: QueryResponse<Feed>;
+}
 
-  const [, setTeam] = useState<Team | null>(null);
-  const [userId, setUserId] = useState<number | null>(null);
-
-  useEffect(() => {
-    async function fetchTeam() {
-      const {
-        data: { users },
-      } = await client.query(ratelApi.graphql.getTeamByTeamname(username));
-      logger.debug('users', users);
-
-      const [t]: Team[] = users;
-      setTeam(t);
-      setUserId(t.id);
-    }
-
-    fetchTeam();
-  }, [username]);
-
-  const posts = usePostByUserId(userId ?? 0, 1, 20);
+export default function TeamHome({
+  userId,
+  posts: initialData,
+}: TeamHomeProps) {
+  const posts = usePostByUserId(
+    userId ?? 0,
+    1,
+    20,
+    FeedStatus.Published,
+    initialData,
+  );
   const data = posts.data;
 
   const feeds: Post[] = data.items.map((item) => ({

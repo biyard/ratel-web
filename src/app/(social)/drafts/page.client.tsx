@@ -24,7 +24,7 @@ export default function MyPostsPage() {
   const posts = usePostByUserId(user_id, 1, 20, FeedStatus.Draft);
   const data = posts.data;
   logger.debug('query response of posts', data);
-  const { setExpand, loadDraft } = usePostDraft();
+  const { loadDraft } = usePostDraft();
 
   const drafts = data?.items.map((item) => ({
     id: item.id,
@@ -64,7 +64,6 @@ export default function MyPostsPage() {
                   className="cursor-pointer pt-5 pb-2.5 bg-component-bg rounded-lg"
                   onClick={(evt) => {
                     loadDraft(props.id);
-                    setExpand(true);
                     evt.preventDefault();
                     evt.stopPropagation();
                   }}

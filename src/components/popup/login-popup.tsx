@@ -17,6 +17,9 @@ import { Row } from '../ui/row';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { sha3 } from '@/lib/utils';
+import { useApolloClient } from '@apollo/client';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { useNetwork } from '@/app/(social)/_hooks/use-network';
 
 interface LoginModalProps {
   id?: string;
@@ -30,8 +33,10 @@ interface LoginBoxProps {
 
 export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
   const popup = usePopup();
+  const network = useNetwork();
   const anonKeyPair = useEd25519KeyPair();
   const queryClient = useQueryClient();
+  const cli = useApolloClient();
 
   const { login, ed25519KeyPair } = useAuth();
   const [email, setEmail] = useState('');
@@ -47,6 +52,8 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
   };
 
   const handleChangePassword = async (pw: string) => {
+    setPassword(pw);
+
     if (!validatePassword(pw)) {
       setPasswordWarning(
         'Password must contain letters, numbers, and special characters (min 8 chars).',
@@ -55,7 +62,6 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
     } else {
       setPasswordWarning('');
     }
-    setPassword(pw);
   };
 
   const handleSignIn = async () => {
@@ -65,10 +71,13 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
 
     if (info) {
       refetchUserInfo(queryClient);
+      network.refetch();
     }
+
+    popup.close();
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (showPassword) {
       handleSignIn();
       return;
@@ -78,10 +87,19 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
     if (!email || !email.includes('@')) {
       setWarning('Please enter a valid email address.');
       return;
-    } else {
-      setWarning('');
-      setShowPassword(true);
     }
+
+    const {
+      data: { users },
+    } = await cli.query(ratelApi.graphql.getUserByEmail(email));
+
+    if (users.length === 0) {
+      setWarning('This email is not registered.');
+      return;
+    }
+
+    setWarning('');
+    setShowPassword(true);
   };
 
   const handleGoogleSignIn = async () => {
@@ -116,16 +134,19 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
       }
 
       if (user?.event == EventType.SignUp) {
-        popup.open(
-          <UserSetupPopup
-            email={user.email ?? ''}
-            nickname={user.displayName ?? ''}
-            profileUrl={user.photoURL ?? ''}
-            principal={user.principal ?? ''}
-          />,
-        );
+        popup
+          .open(
+            <UserSetupPopup
+              email={user.email ?? ''}
+              nickname={user.displayName ?? ''}
+              profileUrl={user.photoURL ?? ''}
+              principal={user.principal ?? ''}
+            />,
+          )
+          .withoutBackdropClose();
       } else if (user?.event == EventType.Login) {
         refetchUserInfo(queryClient);
+        network.refetch();
         loader.close();
       }
     } catch (err) {
@@ -145,7 +166,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
 
   const handleSignUp = () => {
     logger.debug('Sign up button clicked');
-    popup.open(<UserSetupPopup email="" />);
+    popup.open(<UserSetupPopup email="" />).withoutBackdropClose();
   };
 
   return (
@@ -173,6 +194,12 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
             className="w-full bg-[#000203] rounded-[10px] px-5 py-5.5 text-white font-light"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleContinue();
+              }
+            }}
           />
           {warning !== '' && (
             <div className="text-red-500 text-xs mt-1">{warning}</div>
@@ -183,7 +210,7 @@ export const LoginModal = ({ id = 'login_popup' }: LoginModalProps) => {
           <label className="text-sm">Password</label>
           <Input
             type="password"
-            placeholder="Enter your email address"
+            placeholder="Enter your password"
             className="w-full bg-[#000203] rounded-[10px] px-5 py-5.5 text-white font-light"
             value={password}
             onChange={(e) => handleChangePassword(e.target.value)}
