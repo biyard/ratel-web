@@ -390,6 +390,7 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
         setDraftId(draft.id);
         setTitle(draftTitle);
         setImage(draftImage);
+        logger.debug('Draft content:', draftContent);
         setContent(draftContent);
         lastSavedRef.current = {
           title: draftTitle,
