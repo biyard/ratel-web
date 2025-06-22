@@ -29,6 +29,8 @@ import FeedEmptyState from './_components/feed-empty-state';
 import FeedEndMessage from './_components/feed-end-message';
 import SuggestionItem from './_components/suggestions-items';
 import PromotionCard from './_components/promotion-card';
+import Loading from '@/app/loading';
+
 
 const FEED_RESET_TIMEOUT_MS = 10000;
 const SIZE = 10;
@@ -183,7 +185,7 @@ export default function Home() {
             {/* Loading state */}
             {isLoading && (
               <div className="flex justify-center my-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary" />
+                <Loading />
               </div>
             )}
 
