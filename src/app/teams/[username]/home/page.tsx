@@ -66,7 +66,5 @@ export default async function Page({ params }: Props) {
     ratelApi.feeds.getPostsByUserId(userId, 1, 20, FeedStatus.Published),
   );
 
-  /* get(ratelApi.feeds.getPostsByUserId(userId, 1, 10, FeedStatus.Published)), */
-
-  return <TeamHome userId={userId} />;
+  return <TeamHome userId={userId} posts={posts} />;
 }
