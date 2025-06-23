@@ -1,4 +1,4 @@
-import { logger } from './lib/logger';
+import { RelationType } from './types/relation-type';
 
 export const route = {
   home: () => '/',
@@ -11,16 +11,17 @@ export const route = {
   groups: () => '/groups',
 
   myNetwork: () => '/my-network',
+  myFollower: (type: RelationType) => `/my-follower?type=${type}`,
   messages: () => '/messages',
   notifications: () => '/notifications',
   teamByUsername: (username: string) => `/teams/${username}/home`,
   teamGroups: (username: string) => `/teams/${username}/groups`,
   teamMembers: (username: string) => `/teams/${username}/members`,
   teamSettings: (username: string) => `/teams/${username}/settings`,
-  spaceById: (spaceId: number) => `/spaces/${spaceId}`,
-  // FIXME: correct to `threads/${feedId}`
+  teamDrafts: (username: string) => `/teams/${username}/drafts`,
+  commiteeSpaceById: (spaceId: number) => `/spaces/${spaceId}/commitee`,
+  deliberationSpaceById: (spaceId: number) => `/spaces/${spaceId}/deliberation`,
   threadByFeedId: (feedId: number) => {
-    logger.debug('route.threadByFeedId: ', feedId);
-    return '/';
+    return `/threads/${feedId}`;
   },
 };

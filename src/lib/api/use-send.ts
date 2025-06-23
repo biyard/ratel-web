@@ -22,7 +22,7 @@ export function useApiCall(): ApiCallFns {
     get: async (path: string): Promise<any> => {
       const apiBaseUrl: string = config.api_url;
       let token = cookie?.token;
-      let token_type = '';
+      let token_type = 'Bearer';
 
       if (!token && auth.ed25519KeyPair) {
         const keyPair = auth.ed25519KeyPair;
@@ -53,6 +53,7 @@ export function useApiCall(): ApiCallFns {
       const response = await fetch(`${apiBaseUrl}${path}`, {
         method: 'GET',
         headers,
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -64,7 +65,7 @@ export function useApiCall(): ApiCallFns {
     post: async (path: string, body?: any): Promise<any> => {
       const apiBaseUrl: string = config.api_url;
       let token = cookie?.token;
-      let token_type = '';
+      let token_type = 'Bearer';
 
       if (!token && auth.ed25519KeyPair) {
         const keyPair = auth.ed25519KeyPair;
@@ -95,6 +96,7 @@ export function useApiCall(): ApiCallFns {
       const response = await fetch(`${apiBaseUrl}${path}`, {
         method: 'POST',
         headers,
+        credentials: 'include',
         body: body ? JSON.stringify(body) : undefined,
       });
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import React from 'react';
 import { Col } from './ui/col';
@@ -12,6 +11,9 @@ import { useRouter } from 'next/navigation';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { UserType } from '@/lib/api/models/user';
+import Image from 'next/image';
+import { route } from '@/route';
+import { SpaceType } from '@/lib/api/models/spaces';
 
 export interface FeedCardProps {
   id: number;
@@ -31,6 +33,7 @@ export interface FeedCardProps {
   shares: number;
 
   space_id?: number;
+  space_type?: SpaceType;
   author_id: number;
   user_id: number;
   onboard: boolean;
@@ -58,12 +61,7 @@ export default function FeedCard(props: FeedCardProps) {
     <Col
       className="cursor-pointer bg-component-bg rounded-[10px]"
       onClick={() => {
-        const spaceId = props.space_id;
-        if (!spaceId || spaceId == 0) {
-          return;
-        }
-
-        router.push(`/spaces/${spaceId}`);
+        router.push(route.threadByFeedId(props.id));
       }}
     >
       <FeedBody {...props} />
@@ -81,11 +79,13 @@ export function FeedBody({
   url,
   created_at,
   author_type,
-  user_id,
-  author_id,
+  // user_id,
+  // author_id,
+  space_type,
   space_id,
   onboard,
 }: FeedCardProps) {
+  const router = useRouter();
   return (
     <Col className="pt-5 pb-2.5">
       <Row className="justify-between px-5">
@@ -102,10 +102,18 @@ export function FeedBody({
           </Button>
         )} */}
 
-        {space_id ? (
+        {space_id && space_type ? (
           <Button
             variant="rounded_primary"
             className="text-[10px] font-semibold align-middle uppercase py-1 px-3"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (space_type === SpaceType.Commitee) {
+                router.push(route.commiteeSpaceById(space_id));
+              } else {
+                router.push(route.deliberationSpaceById(space_id));
+              }
+            }}
           >
             Join
           </Button>
@@ -146,12 +154,18 @@ export function FeedContents({
         className="feed-content font-normal text-[15px]/[24px] align-middle tracking-[0.5px] text-c-wg-30 px-5"
         dangerouslySetInnerHTML={{ __html: c }}
       ></p>
+
       {url && (
         <div className="px-5">
-          <img
-            className="w-full max-h-80 object-cover rounded-[8px]"
-            src={url}
-          />
+          <div className="relative w-full max-h-80 aspect-video">
+            <Image
+              src={url}
+              alt="Uploaded image"
+              fill
+              className="object-cover rounded-[8px]"
+              sizes="100vw"
+            />
+          </div>
         </div>
       )}
     </Col>
@@ -160,7 +174,6 @@ export function FeedContents({
 
 export function IconText({
   children,
-  className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }) {
   return (
@@ -184,7 +197,7 @@ export function UserBadge({
 }) {
   return (
     <Row className="w-fit items-center med-16 text-white">
-      <img
+      <Image
         src={profile_url}
         alt="User Profile"
         width={24}

@@ -6,6 +6,7 @@ export type CookieContextType = {
   isLoggedIn: boolean;
   userId?: string;
   token?: string;
+  id?: string;
 };
 
 export const CookieContext = createContext<CookieContextType | undefined>(

@@ -14,6 +14,9 @@ import React, { useContext, useMemo, useState } from 'react';
 import { TeamContext } from '@/lib/contexts/team-context';
 import { useRouter } from 'next/navigation';
 import { route } from '@/route';
+import { checkString } from '@/lib/string-filter-utils';
+import { showErrorToast } from '@/lib/toast';
+import Image from 'next/image';
 
 export default function SettingsPage({ username }: { username: string }) {
   const { teams, updateSelectedTeam } = useContext(TeamContext);
@@ -44,6 +47,11 @@ export default function SettingsPage({ username }: { username: string }) {
   };
 
   const handleSave = async () => {
+    if (checkString(nickname ?? '') || checkString(htmlContents ?? '')) {
+      showErrorToast('Please remove the test keyword');
+      return;
+    }
+
     await post(
       ratelApi.users.editProfile(team!.id),
       userEditProfileRequest(nickname!, htmlContents!, profileUrl),
@@ -59,13 +67,18 @@ export default function SettingsPage({ username }: { username: string }) {
     router.push(route.teamByUsername(username));
   };
 
+  const invalidInput =
+    checkString(nickname ?? '') || checkString(htmlContents ?? '');
+
   return (
     <div className="w-full max-tablet:w-full flex flex-col gap-10 items-center">
       <FileUploader onUploadSuccess={handleProfileUrl}>
         {profileUrl ? (
-          <img
+          <Image
             src={profileUrl}
             alt="Team Logo"
+            width={80}
+            height={80}
             className="w-40 h-40 rounded-full object-cover cursor-pointer"
           />
         ) : (
@@ -98,7 +111,12 @@ export default function SettingsPage({ username }: { username: string }) {
           />
         </Col>
         <Row className="justify-end py-5">
-          <Button variant={'rounded_primary'} onClick={handleSave}>
+          <Button
+            disabled={invalidInput}
+            className={invalidInput ? 'bg-neutral-600' : 'bg-primary'}
+            variant={'rounded_primary'}
+            onClick={handleSave}
+          >
             Save
           </Button>
         </Row>

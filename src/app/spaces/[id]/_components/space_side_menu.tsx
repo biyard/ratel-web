@@ -6,6 +6,7 @@ import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 import { getTimeWithFormat } from '@/lib/time-utils';
 import React from 'react';
 import Clock from '@/assets/icons/clock.svg';
+import Image from 'next/image';
 
 export default function SpaceSideMenu({ spaceId }: { spaceId: number }) {
   const { data: space } = useSpaceBySpaceId(spaceId);
@@ -14,7 +15,7 @@ export default function SpaceSideMenu({ spaceId }: { spaceId: number }) {
 
   return (
     <div className="flex flex-col max-w-[250px] max-tablet:!hidden w-full gap-[10px]">
-      <img
+      <Image
         src={feed.url ?? '/default-profile.png'}
         alt={feed.title ?? ''}
         width={250}
