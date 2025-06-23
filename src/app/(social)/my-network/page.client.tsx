@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNetwork } from '../_hooks/use-network';
 import { logger } from '@/lib/logger';
 import { Industry } from '@/lib/api/models/industry';
@@ -12,12 +12,24 @@ import { ratelApi } from '@/lib/api/ratel_api';
 import { followRequest } from '@/lib/api/models/networks/follow';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
+import { checkString } from '@/lib/string-filter-utils';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function MyNetwork() {
-  const network = useNetwork();
   const { post } = useApiCall();
-  const networkData = network.data;
+
   const data = useSuspenseUserInfo();
+
+  const network = useNetwork();
+  const networkData = network.data;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      network.refetch();
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleFollow = async (userId: number) => {
     await post(ratelApi.networks.follow(userId), followRequest());
@@ -31,7 +43,13 @@ export default function MyNetwork() {
       />
       <FollowingContents
         label="Suggested teams"
-        users={networkData ? networkData.suggested_teams : []}
+        users={
+          networkData
+            ? networkData.suggested_teams.filter(
+                (team) => !checkString(team.username),
+              )
+            : []
+        }
         follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
           try {
@@ -48,7 +66,13 @@ export default function MyNetwork() {
       />
       <FollowingContents
         label="Suggested users"
-        users={networkData ? networkData.suggested_users : []}
+        users={
+          networkData
+            ? networkData.suggested_users.filter(
+                (user) => !checkString(user.username),
+              )
+            : []
+        }
         follow={async (userId: number) => {
           logger.debug('follow button clicked user id: ', userId);
           try {
@@ -70,7 +94,7 @@ export default function MyNetwork() {
 function FollowButton({ onClick }: { onClick: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row w-fit h-fit px-[12px] py-[8px] bg-white hover:bg-gray-100 rounded-[50px]"
+      className="cursor-pointer flex flex-row w-fit h-fit px-[10px] py-[5px] bg-white hover:bg-gray-300 rounded-[50px]"
       onClick={() => {
         onClick();
       }}
@@ -127,10 +151,10 @@ function FollowingContents({
 
                 <div className="flex flex-col">
                   <div className="font-semibold text-white text-sm/[20px]">
-                    {user.username}
+                    {user.nickname}
                   </div>
                   <div className="font-medium text-neutral-500 text-[12px]">
-                    {user.email}
+                    @{user.username}
                   </div>
                 </div>
               </div>
@@ -144,8 +168,10 @@ function FollowingContents({
 
             <div
               id="user-profile-description"
-              className="font-medium text-[12px] text-neutral-300"
-              dangerouslySetInnerHTML={{ __html: user.html_contents }}
+              className="font-medium text-[12px] text-neutral-300 line-clamp-3 overflow-hidden"
+              dangerouslySetInnerHTML={{
+                __html: user.html_contents,
+              }}
             />
           </div>
         ))}
@@ -155,27 +181,50 @@ function FollowingContents({
 }
 
 function SelectedIndustry({ industries }: { industries: Industry[] }) {
-  const [selectedIndustry, setSelectedIndustry] = useState('All');
-  return (
-    <div className="flex flex-row w-full justify-start items-center gap-2.5">
-      <IndustryLabel
-        name="All"
-        selected={selectedIndustry == 'All'}
-        setSelectedIndustry={(name: string) => {
-          setSelectedIndustry(name);
-        }}
-      />
+  const PAGE_SIZE = 5;
+  const [selectedIndustry, setSelectedIndustry] = useState('ALL');
+  const [page, setPage] = useState(0);
 
-      {industries.map((industry) => (
+  const totalPages = Math.ceil(industries.length / PAGE_SIZE);
+  const visibleItems = industries.slice(
+    page * PAGE_SIZE,
+    (page + 1) * PAGE_SIZE,
+  );
+
+  return (
+    <div className="flex items-center gap-2">
+      {page > 0 && (
+        <ChevronLeft
+          className="cursor-pointer stroke-neutral-500"
+          onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+        ></ChevronLeft>
+      )}
+
+      <div className="flex gap-2 flex-1 flex-wrap">
         <IndustryLabel
-          key={industry.name}
-          name={industry.name.toUpperCase()}
-          selected={selectedIndustry == industry.name.toUpperCase()}
-          setSelectedIndustry={(name: string) => {
-            setSelectedIndustry(name);
-          }}
+          name="ALL"
+          selected={selectedIndustry === 'ALL'}
+          setSelectedIndustry={() => setSelectedIndustry('ALL')}
         />
-      ))}
+        {visibleItems.map((industry) => {
+          const name = industry.name.toUpperCase();
+          return (
+            <IndustryLabel
+              key={name}
+              name={name}
+              selected={selectedIndustry === name}
+              setSelectedIndustry={() => setSelectedIndustry(name)}
+            />
+          );
+        })}
+      </div>
+
+      {page < totalPages - 1 && (
+        <ChevronRight
+          className="cursor-pointer stroke-neutral-500"
+          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
+        ></ChevronRight>
+      )}
     </div>
   );
 }
@@ -191,7 +240,8 @@ function IndustryLabel({
 }) {
   return (
     <div
-      className={`cursor-pointer flex flex-row w-fit h-fit px-2.5 py-2 rounded-lg font-semibold text-white text-sm/[20px] ${selected ? 'border-none bg-neutral-700' : 'border border-neutral-700 bg-transparent hover:bg-neutral-700'}`}
+      className="cursor-pointer flex flex-row w-fit h-fit px-2.5 py-2 rounded-lg font-semibold text-white text-sm/[20px] whitespace-nowrap border border-neutral-700 bg-transparent hover:bg-neutral-700 aria-selected:border-none aria-selected:bg-neutral-700"
+      aria-selected={selected}
       onClick={() => {
         setSelectedIndustry(name);
       }}

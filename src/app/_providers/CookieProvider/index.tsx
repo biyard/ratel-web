@@ -16,7 +16,7 @@ export default async function CookieProvider({
   const isLoggedIn = !!token && !!userId;
 
   return (
-    <CookieProviderClient value={{ isLoggedIn, userId, id }}>
+    <CookieProviderClient value={{ isLoggedIn, userId, id, token }}>
       {children}
     </CookieProviderClient>
   );
