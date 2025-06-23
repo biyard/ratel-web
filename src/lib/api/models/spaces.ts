@@ -12,6 +12,8 @@ export interface Space {
   created_at: number;
   updated_at: number;
   title?: string;
+  started_at?: number;
+  ended_at?: number;
   html_contents: string;
   space_type: SpaceType;
   owner_id: number;
@@ -32,6 +34,8 @@ export interface Space {
 export interface SpaceUpdateRequest {
   update_space: {
     title?: string;
+    started_at?: number;
+    ended_at?: number;
     html_contents: string;
     files: FileInfo[];
     discussions: DiscussionCreateRequest[];
@@ -49,10 +53,14 @@ export function spaceUpdateRequest(
   surveys: SurveyCreateRequest[],
   drafts: SpaceDraftCreateRequest[],
   title?: string,
+  started_at?: number,
+  ended_at?: number,
 ): SpaceUpdateRequest {
   return {
     update_space: {
       title,
+      started_at,
+      ended_at,
       html_contents,
       files,
       discussions,

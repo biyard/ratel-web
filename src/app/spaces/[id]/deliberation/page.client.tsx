@@ -61,6 +61,10 @@ export default function SpaceByIdPage() {
   );
   const [isEdit, setIsEdit] = useState(false);
   const [title, setTitle] = useState(space.title ?? '');
+  const [startedAt, setStartedAt] = useState(
+    space.started_at ?? Date.now() / 1000,
+  );
+  const [endedAt, setEndedAt] = useState(space.ended_at ?? Date.now() / 1000);
   const [thread, setThread] = useState<Thread>({
     html_contents: space.html_contents ?? '',
     files: space.files ?? [],
@@ -93,10 +97,13 @@ export default function SpaceByIdPage() {
     })),
   });
 
+  logger.debug('startedAt: ', startedAt, 'endedAt: ', endedAt);
   logger.debug('deliberation: ', deliberation);
 
   const handleUpdate = async (
     title: string,
+    started_at: number,
+    ended_at: number,
     html_contents: string,
     files: FileInfo[],
     discussions: DiscussionCreateRequest[],
@@ -114,6 +121,8 @@ export default function SpaceByIdPage() {
         surveys,
         drafts,
         title,
+        started_at,
+        ended_at,
       ),
     );
   };
@@ -224,6 +233,12 @@ export default function SpaceByIdPage() {
           setSelectedType(tab);
         }}
         isEdit={isEdit}
+        setStartDate={(startedAt: number) => {
+          setStartedAt(Math.floor(startedAt));
+        }}
+        setEndDate={(endedAt: number) => {
+          setEndedAt(Math.floor(endedAt));
+        }}
         onedit={() => {
           setIsEdit(true);
         }}
@@ -237,6 +252,8 @@ export default function SpaceByIdPage() {
           try {
             await handleUpdate(
               title,
+              startedAt,
+              endedAt,
               thread.html_contents,
               thread.files,
               deliberation.discussions,
