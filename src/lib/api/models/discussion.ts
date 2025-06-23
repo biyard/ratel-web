@@ -18,6 +18,13 @@ export interface Discussion {
   participants: DiscussionParticipant[];
 }
 
+export interface DiscussionCreateRequest {
+  started_at: number;
+  ended_at: number;
+  name: string;
+  description: string;
+}
+
 export interface DiscussionParticipant {
   id: number;
   created_at: number;

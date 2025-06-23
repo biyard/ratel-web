@@ -8,3 +8,7 @@ export interface Elearning {
   space_id: number;
   files: FileInfo[];
 }
+
+export interface ElearningCreateRequest {
+  files: FileInfo[];
+}

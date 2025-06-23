@@ -6,12 +6,12 @@ import CustomCalendar from '@/components/calendar-picker/calendar-picker';
 import TimeDropdown from '@/components/time-dropdown/time-dropdown';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { DiscussionCreateRequest } from '@/lib/api/models/spaces';
 import { Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 
 import discussionImg from '@/assets/images/discussion.png';
+import { DiscussionCreateRequest } from '@/lib/api/models/discussion';
 
 export interface SpaceDiscussionProps {
   isEdit?: boolean;

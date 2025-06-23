@@ -11,14 +11,13 @@ import FinalConsensusPage from './_components/final_consensus';
 import { FileInfo } from '@/lib/api/models/feeds';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
-import {
-  DiscussionCreateRequest,
-  ElearningCreateRequest,
-  spaceUpdateRequest,
-} from '@/lib/api/models/spaces';
+import { spaceUpdateRequest } from '@/lib/api/models/spaces';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { logger } from '@/lib/logger';
 import { checkString } from '@/lib/string-filter-utils';
+import { DiscussionCreateRequest } from '@/lib/api/models/discussion';
+import { ElearningCreateRequest } from '@/lib/api/models/elearning';
+import { SurveyCreateRequest } from '@/lib/api/models/survey';
 
 export const DeliberationTab = {
   THREAD: 'Thread',
@@ -38,6 +37,7 @@ export interface Thread {
 export interface Deliberation {
   discussions: DiscussionCreateRequest[];
   elearnings: ElearningCreateRequest[];
+  surveys: SurveyCreateRequest[];
 }
 
 export default function SpaceByIdPage() {
@@ -66,6 +66,11 @@ export default function SpaceByIdPage() {
     elearnings: space.elearnings.map((elearning) => ({
       files: elearning.files,
     })),
+    surveys: space.surveys.map((survey) => ({
+      started_at: survey.started_at,
+      ended_at: survey.ended_at,
+      questions: survey.questions,
+    })),
   });
 
   logger.debug('deliberation: ', deliberation);
@@ -76,10 +81,18 @@ export default function SpaceByIdPage() {
     files: FileInfo[],
     discussions: DiscussionCreateRequest[],
     elearnings: ElearningCreateRequest[],
+    surveys: SurveyCreateRequest[],
   ) => {
     await post(
       ratelApi.spaces.getSpaceBySpaceId(spaceId),
-      spaceUpdateRequest(html_contents, files, discussions, elearnings, title),
+      spaceUpdateRequest(
+        html_contents,
+        files,
+        discussions,
+        elearnings,
+        surveys,
+        title,
+      ),
     );
   };
 
@@ -146,6 +159,7 @@ export default function SpaceByIdPage() {
               thread.files,
               deliberation.discussions,
               deliberation.elearnings,
+              deliberation.surveys,
             );
             data.refetch();
 

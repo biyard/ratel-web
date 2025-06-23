@@ -3,7 +3,6 @@
 import BlackBox from '@/app/(social)/_components/black-box';
 import FileUploaderMetadata from '@/components/file-uploader-metadata';
 import { FileInfo } from '@/lib/api/models/feeds';
-import { ElearningCreateRequest } from '@/lib/api/models/spaces';
 import { checkString } from '@/lib/string-filter-utils';
 
 import Jpg from '@/assets/icons/files/jpg.svg';
@@ -17,6 +16,7 @@ import Clear from '@/assets/icons/clear.svg';
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { downloadPdfFromUrl } from '@/lib/pdf-utils';
+import { ElearningCreateRequest } from '@/lib/api/models/elearning';
 
 export interface SpaceElearningProps {
   isEdit?: boolean;

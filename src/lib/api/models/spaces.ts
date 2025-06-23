@@ -1,8 +1,9 @@
 import { Badge } from './badge';
 import { SpaceComment } from './comments';
-import { Discussion } from './discussion';
-import { Elearning } from './elearning';
+import { Discussion, DiscussionCreateRequest } from './discussion';
+import { Elearning, ElearningCreateRequest } from './elearning';
 import { FileInfo } from './feeds';
+import { Survey, SurveyCreateRequest } from './survey';
 import { UserType } from './user';
 
 export interface Space {
@@ -23,6 +24,7 @@ export interface Space {
   feed_comments: SpaceComment[];
   discussions: Discussion[];
   elearnings: Elearning[];
+  surveys: Survey[];
 }
 
 export interface SpaceUpdateRequest {
@@ -32,18 +34,8 @@ export interface SpaceUpdateRequest {
     files: FileInfo[];
     discussions: DiscussionCreateRequest[];
     elearnings: ElearningCreateRequest[];
+    surveys: SurveyCreateRequest[];
   };
-}
-
-export interface ElearningCreateRequest {
-  files: FileInfo[];
-}
-
-export interface DiscussionCreateRequest {
-  started_at: number;
-  ended_at: number;
-  name: string;
-  description: string;
 }
 
 export function spaceUpdateRequest(
@@ -51,6 +43,7 @@ export function spaceUpdateRequest(
   files: FileInfo[],
   discussions: DiscussionCreateRequest[],
   elearnings: ElearningCreateRequest[],
+  surveys: SurveyCreateRequest[],
   title?: string,
 ): SpaceUpdateRequest {
   return {
@@ -60,6 +53,7 @@ export function spaceUpdateRequest(
       files,
       discussions,
       elearnings,
+      surveys,
     },
   };
 }

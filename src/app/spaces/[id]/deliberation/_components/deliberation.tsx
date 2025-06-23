@@ -8,7 +8,7 @@ import { Deliberation } from '../page.client';
 import SpaceDiscussion from './space_discussion';
 import SpaceElearning from './space_elearning';
 import { FileInfo } from '@/lib/api/models/feeds';
-import { DiscussionCreateRequest } from '@/lib/api/models/spaces';
+import { DiscussionCreateRequest } from '@/lib/api/models/discussion';
 
 export default function DeliberationPage({
   title,
