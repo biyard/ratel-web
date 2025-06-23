@@ -34,10 +34,13 @@ export interface Thread {
   files: FileInfo[];
 }
 
+export interface Poll {
+  surveys: SurveyCreateRequest[];
+}
+
 export interface Deliberation {
   discussions: DiscussionCreateRequest[];
   elearnings: ElearningCreateRequest[];
-  surveys: SurveyCreateRequest[];
 }
 
 export default function SpaceByIdPage() {
@@ -66,6 +69,8 @@ export default function SpaceByIdPage() {
     elearnings: space.elearnings.map((elearning) => ({
       files: elearning.files,
     })),
+  });
+  const [survey] = useState<Poll>({
     surveys: space.surveys.map((survey) => ({
       started_at: survey.started_at,
       ended_at: survey.ended_at,
@@ -131,7 +136,21 @@ export default function SpaceByIdPage() {
           createdAt={space?.created_at}
         />
       ) : selectedType == DeliberationTab.POLL ? (
-        <PollPage />
+        <PollPage
+          title={title}
+          //   survey={survey}
+          setTitle={(t: string) => {
+            setTitle(t);
+          }}
+          //   setSurvey={(d: Poll) => {
+          //     setSurvey(d);
+          //   }}
+          isEdit={isEdit}
+          userType={space.author[0].user_type ?? 0}
+          proposerImage={space.author[0].profile_url ?? ''}
+          proposerName={space.author[0].nickname ?? ''}
+          createdAt={space?.created_at}
+        />
       ) : (
         <FinalConsensusPage />
       )}
@@ -159,7 +178,7 @@ export default function SpaceByIdPage() {
               thread.files,
               deliberation.discussions,
               deliberation.elearnings,
-              deliberation.surveys,
+              survey.surveys,
             );
             data.refetch();
 
