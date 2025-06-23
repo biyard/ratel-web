@@ -49,3 +49,5 @@ export { default as File } from '@/assets/icons/file.svg';
 export { default as Vote } from '@/assets/icons/vote.svg';
 export { default as BottomTriangle } from '@/assets/icons/bottom-triangle.svg';
 export { default as Calendar } from '@/assets/icons/calendar.svg';
+
+export { default as EditOption } from '@/assets/icons/edit-option.svg';

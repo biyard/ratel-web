@@ -70,7 +70,7 @@ export default function SpaceByIdPage() {
       files: elearning.files,
     })),
   });
-  const [survey] = useState<Poll>({
+  const [survey, setSurvey] = useState<Poll>({
     surveys: space.surveys.map((survey) => ({
       started_at: survey.started_at,
       ended_at: survey.ended_at,
@@ -138,13 +138,13 @@ export default function SpaceByIdPage() {
       ) : selectedType == DeliberationTab.POLL ? (
         <PollPage
           title={title}
-          //   survey={survey}
+          survey={survey}
           setTitle={(t: string) => {
             setTitle(t);
           }}
-          //   setSurvey={(d: Poll) => {
-          //     setSurvey(d);
-          //   }}
+          setSurvey={(d: Poll) => {
+            setSurvey(d);
+          }}
           isEdit={isEdit}
           userType={space.author[0].user_type ?? 0}
           proposerImage={space.author[0].profile_url ?? ''}
