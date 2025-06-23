@@ -3,6 +3,7 @@ import { SpaceComment } from './comments';
 import { Discussion, DiscussionCreateRequest } from './discussion';
 import { Elearning, ElearningCreateRequest } from './elearning';
 import { FileInfo } from './feeds';
+import { SpaceDraft, SpaceDraftCreateRequest } from './space_draft';
 import { Survey, SurveyCreateRequest } from './survey';
 import { UserType } from './user';
 
@@ -25,6 +26,7 @@ export interface Space {
   discussions: Discussion[];
   elearnings: Elearning[];
   surveys: Survey[];
+  drafts: SpaceDraft[];
 }
 
 export interface SpaceUpdateRequest {
@@ -35,6 +37,7 @@ export interface SpaceUpdateRequest {
     discussions: DiscussionCreateRequest[];
     elearnings: ElearningCreateRequest[];
     surveys: SurveyCreateRequest[];
+    drafts: SpaceDraftCreateRequest[];
   };
 }
 
@@ -44,6 +47,7 @@ export function spaceUpdateRequest(
   discussions: DiscussionCreateRequest[],
   elearnings: ElearningCreateRequest[],
   surveys: SurveyCreateRequest[],
+  drafts: SpaceDraftCreateRequest[],
   title?: string,
 ): SpaceUpdateRequest {
   return {
@@ -54,6 +58,7 @@ export function spaceUpdateRequest(
       discussions,
       elearnings,
       surveys,
+      drafts,
     },
   };
 }

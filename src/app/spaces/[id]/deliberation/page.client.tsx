@@ -18,6 +18,7 @@ import { checkString } from '@/lib/string-filter-utils';
 import { DiscussionCreateRequest } from '@/lib/api/models/discussion';
 import { ElearningCreateRequest } from '@/lib/api/models/elearning';
 import { SurveyCreateRequest } from '@/lib/api/models/survey';
+import { SpaceDraftCreateRequest } from '@/lib/api/models/space_draft';
 
 export const DeliberationTab = {
   THREAD: 'Thread',
@@ -36,6 +37,10 @@ export interface Thread {
 
 export interface Poll {
   surveys: SurveyCreateRequest[];
+}
+
+export interface FinalConsensus {
+  drafts: SpaceDraftCreateRequest[];
 }
 
 export interface Deliberation {
@@ -78,6 +83,14 @@ export default function SpaceByIdPage() {
     })),
   });
 
+  const [draft, setDraft] = useState<FinalConsensus>({
+    drafts: space.drafts.map((draft) => ({
+      title: draft.title,
+      html_contents: draft.html_contents,
+      files: draft.files,
+    })),
+  });
+
   logger.debug('deliberation: ', deliberation);
 
   const handleUpdate = async (
@@ -87,6 +100,7 @@ export default function SpaceByIdPage() {
     discussions: DiscussionCreateRequest[],
     elearnings: ElearningCreateRequest[],
     surveys: SurveyCreateRequest[],
+    drafts: SpaceDraftCreateRequest[],
   ) => {
     await post(
       ratelApi.spaces.getSpaceBySpaceId(spaceId),
@@ -96,6 +110,7 @@ export default function SpaceByIdPage() {
         discussions,
         elearnings,
         surveys,
+        drafts,
         title,
       ),
     );
@@ -152,7 +167,21 @@ export default function SpaceByIdPage() {
           createdAt={space?.created_at}
         />
       ) : (
-        <FinalConsensusPage />
+        <FinalConsensusPage
+          title={title}
+          draft={draft}
+          setTitle={(t: string) => {
+            setTitle(t);
+          }}
+          setDraft={(d: FinalConsensus) => {
+            setDraft(d);
+          }}
+          isEdit={isEdit}
+          userType={space.author[0].user_type ?? 0}
+          proposerImage={space.author[0].profile_url ?? ''}
+          proposerName={space.author[0].nickname ?? ''}
+          createdAt={space?.created_at}
+        />
       )}
       <SpaceSideMenu
         spaceId={spaceId}
@@ -179,6 +208,7 @@ export default function SpaceByIdPage() {
               deliberation.discussions,
               deliberation.elearnings,
               survey.surveys,
+              draft.drafts,
             );
             data.refetch();
 
