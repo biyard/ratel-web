@@ -18,7 +18,7 @@ export default function News({ news_id }: { news_id: number }) {
               <Image
                 fill
                 className="object-cover"
-                src={""}
+                src={''}
                 alt={news.title || 'Post Image'}
               />
             </div>

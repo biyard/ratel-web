@@ -4,14 +4,12 @@ import { ArrowLeft } from '@/components/icons';
 import { UserType } from '@/lib/api/models/user';
 import { getTimeAgo } from '@/lib/time-utils';
 import Image from 'next/image';
-import { BadgeIcon } from '@/components/icons';;
-import { usePopup } from '@/lib/contexts/popup-service';
+import { BadgeIcon } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 import { useNewsByID } from '@/app/(social)/_hooks/news';
 
 export default function NewsHeader({ news_id }: { news_id: number }) {
   const { data: news } = useNewsByID(news_id);
-  const popup = usePopup();
   const router = useRouter();
   return (
     <div className="flex flex-col w-full gap-2.5">

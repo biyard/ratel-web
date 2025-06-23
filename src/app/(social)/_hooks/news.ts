@@ -2,7 +2,6 @@ import { QK_GET_NEWS_BY_NEWS_ID } from '@/constants';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { apiFetch, FetchResponse } from '@/lib/api/apiFetch';
 import { QueryClient } from '@tanstack/react-query';
-import { Feed } from '@/lib/api/models/feeds';
 import { config } from '@/config';
 import {
   useSuspenseQuery,
@@ -14,7 +13,9 @@ export function getKey(id: number): [string, number] {
   return [QK_GET_NEWS_BY_NEWS_ID, id];
 }
 
-export function useNewsByID(id: number): UseSuspenseQueryResult<NewsDetail | null> {
+export function useNewsByID(
+  id: number,
+): UseSuspenseQueryResult<NewsDetail | null> {
   const query = useSuspenseQuery({
     queryKey: getKey(id),
     queryFn: async () => {
