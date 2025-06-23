@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import BlackBox from '@/app/(social)/_components/black-box';
 import CustomCalendar from '@/components/calendar-picker/calendar-picker';
 import TimeDropdown from '@/components/time-dropdown/time-dropdown';
@@ -9,6 +10,8 @@ import { DiscussionCreateRequest } from '@/lib/api/models/spaces';
 import { Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { format } from 'date-fns';
+
+import discussionImg from '@/assets/images/discussion.png';
 
 export interface SpaceDiscussionProps {
   isEdit?: boolean;
@@ -75,31 +78,121 @@ function DiscussionSchedules({
   discussions: DiscussionCreateRequest[];
 }) {
   return (
-    <BlackBox>
-      <div className="flex flex-col gap-3">
-        <div className="font-bold text-white text-[15px]/[20px]">Schedule</div>
-        <div className="flex flex-col gap-5">
-          <div className="font-normal text-neutral-300 text-[15px]/[24px]">
-            In order to improve feasibility of Digital asset basic act, we have
-            scheduled a discussion and a lecture on it.
+    <div className="flex flex-col gap-2.5">
+      <BlackBox>
+        <div className="flex flex-col gap-3">
+          <div className="font-bold text-white text-[15px]/[20px]">
+            Schedule
           </div>
+          <div className="flex flex-col gap-5">
+            <div className="font-normal text-neutral-300 text-[15px]/[24px]">
+              In order to improve feasibility of Digital asset basic act, we
+              have scheduled a discussion and a lecture on it.
+            </div>
 
-          {discussions.map((discussion, index) => (
-            <DiscussionTable
-              key={index}
-              startDate={format(discussion.started_at * 1000, 'M. dd. yyyy')}
-              startTime={format(
-                new Date(discussion.started_at * 1000),
-                'HH:mm',
-              )}
-              endTime={format(new Date(discussion.ended_at * 1000), 'HH:mm')}
-              title={discussion.name}
-              description={discussion.description}
-            />
-          ))}
+            {discussions.map((discussion, index) => (
+              <DiscussionTable
+                key={index}
+                startDate={format(discussion.started_at * 1000, 'M. dd. yyyy')}
+                startTime={format(
+                  new Date(discussion.started_at * 1000),
+                  'HH:mm',
+                )}
+                endTime={format(new Date(discussion.ended_at * 1000), 'HH:mm')}
+                title={discussion.name}
+                description={discussion.description}
+              />
+            ))}
+          </div>
         </div>
+      </BlackBox>
+
+      <BlackBox>
+        <div className="flex flex-col w-full gap-5">
+          <div className="font-bold text-white text-[15px]/[20px]">
+            Discussions
+          </div>
+          <div className="flex flex-col w-full gap-2.5">
+            {discussions.map((discussion, index) => (
+              <React.Fragment key={index}>
+                <DiscussionRoom
+                  startDate={discussion.started_at}
+                  endDate={discussion.ended_at}
+                  title={discussion.name}
+                />
+                {index !== discussions.length - 1 ? (
+                  <div className=" w-full h-0.25 gap-1 bg-neutral-800" />
+                ) : (
+                  <></>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </BlackBox>
+    </div>
+  );
+}
+
+export function DiscussionRoom({
+  startDate,
+  endDate,
+  title,
+}: {
+  startDate: number;
+  endDate: number;
+  title: string;
+}) {
+  const now = Math.floor(Date.now() / 1000);
+
+  const isLive = now >= startDate && now <= endDate;
+  const isUpcoming = now < startDate;
+  const isFinished = now > endDate;
+
+  const formattedDate = format(new Date(startDate * 1000), 'dd MMM, yyyy');
+
+  const statusLabel = isUpcoming
+    ? 'Upcoming discussion'
+    : isFinished
+      ? 'Finished discussion'
+      : 'On-going';
+
+  return (
+    <div className="flex flex-row w-full items-start justify-between gap-5">
+      <div className="relative w-[240px] h-[150px] rounded-lg overflow-hidden">
+        <Image
+          src={discussionImg}
+          alt="Discussion Thumbnail"
+          fill
+          className="object-cover"
+        />
+        {isLive && (
+          <div className="absolute top-[12px] left-[12px] bg-[rgba(255,0,0,0.5)] rounded-sm font-semibold text-sm text-white p-1">
+            LIVE
+          </div>
+        )}
       </div>
-    </BlackBox>
+
+      <div className="flex flex-col flex-1 h-full justify-between items-start">
+        <div className="flex flex-col flex-1 gap-1">
+          <div className="text-sm text-neutral-400 font-normal">
+            {statusLabel}
+          </div>
+          <div className="text-lg text-white font-bold">{title}</div>
+          <div className="text-sm text-[#6d6d6d] font-normal">
+            {formattedDate}
+          </div>
+        </div>
+
+        {/* {isLive && (
+          <div className="flex flex-row w-full justify-end items-end">
+            <button className="flex items-center gap-[10px] px-5 py-2.5 bg-white text-[#000203] rounded-lg font-semibold hover:bg-neutral-300 transition">
+              Join <ArrowRight className="w-[15px] h-[15px]" />
+            </button>
+          </div>
+        )} */}
+      </div>
+    </div>
   );
 }
 
@@ -117,18 +210,18 @@ function DiscussionTable({
   description: string;
 }) {
   return (
-    <div className="border border-neutral-500 rounded-md text-white text-sm w-full">
-      <div className="w-full text-center border-b border-neutral-500 py-2 font-medium">
+    <div className="border border-neutral-400 rounded-sm text-neutral-400 text-sm w-full font-medium">
+      <div className="w-full text-center border-b border-neutral-400 py-[19px] font-semibold">
         {startDate}
       </div>
 
-      <div className="grid grid-cols-3 text-center border-b border-neutral-500 py-2 text-neutral-400 font-medium">
+      <div className="grid grid-cols-3 text-center border-b border-neutral-400 py-[19px] font-semibold">
         <div>Time</div>
         <div>Type</div>
         <div>Contents</div>
       </div>
 
-      <div className="grid grid-cols-3 text-center py-3">
+      <div className="grid grid-cols-3 text-center py-[23px]">
         <div>
           {startTime} - {endTime}
         </div>
@@ -233,12 +326,17 @@ function EditableDiscussionInfo({
   const [title, setTitle] = useState<string>(name);
   const [desc, setDesc] = useState<string>(description);
 
-  const triggerUpdate = () => {
+  const update = (
+    newStart: number,
+    newEnd: number,
+    newTitle: string,
+    newDesc: string,
+  ) => {
     onupdate(index, {
-      started_at: startTime,
-      ended_at: endTime,
-      name: title,
-      description: desc,
+      started_at: newStart,
+      ended_at: newEnd,
+      name: newTitle,
+      description: newDesc,
     });
   };
 
@@ -248,41 +346,41 @@ function EditableDiscussionInfo({
         <div className="font-medium text-neutral-300 text-[15px] w-[80px]">
           Set Date
         </div>
-
         <div className="flex flex-row gap-[10px] items-center flex-wrap">
           <div className="flex flex-row gap-[10px]">
             <CustomCalendar
               value={startTime * 1000}
               onChange={(date) => {
-                setStartTime(Math.floor(date / 1000));
-                triggerUpdate();
+                const newStart = Math.floor(date / 1000);
+                setStartTime(newStart);
+                update(newStart, endTime, title, desc);
               }}
             />
             <TimeDropdown
               value={startTime * 1000}
               onChange={(timestamp) => {
-                setStartTime(Math.floor(timestamp / 1000));
-                triggerUpdate();
+                const newStart = Math.floor(timestamp / 1000);
+                setStartTime(newStart);
+                update(newStart, endTime, title, desc);
               }}
             />
           </div>
-
           <div className="w-[20px] h-[1px] bg-neutral-500" />
-
           <div className="flex flex-row gap-[10px]">
             <CustomCalendar
               value={endTime * 1000}
               onChange={(date) => {
-                setEndTime(Math.floor(date / 1000));
-                triggerUpdate();
+                const newEnd = Math.floor(date / 1000);
+                setEndTime(newEnd);
+                update(startTime, newEnd, title, desc);
               }}
             />
             <TimeDropdown
               value={endTime * 1000}
               onChange={(timestamp) => {
-                console.log('timestamp: ', timestamp);
-                setEndTime(Math.floor(timestamp / 1000));
-                triggerUpdate();
+                const newEnd = Math.floor(timestamp / 1000);
+                setEndTime(newEnd);
+                update(startTime, newEnd, title, desc);
               }}
             />
           </div>
@@ -296,7 +394,7 @@ function EditableDiscussionInfo({
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          onBlur={triggerUpdate}
+          onBlur={() => update(startTime, endTime, title, desc)}
         />
       </div>
 
@@ -307,7 +405,7 @@ function EditableDiscussionInfo({
         <Textarea
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
-          onBlur={triggerUpdate}
+          onBlur={() => update(startTime, endTime, title, desc)}
         />
       </div>
 
