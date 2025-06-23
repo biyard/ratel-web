@@ -12,6 +12,8 @@ export const QK_GET_FEED_BY_FEED_ID = 'get-feeds-by-feed-id';
 
 export const QK_GET_NETWORK = 'get-networks';
 
+export const QK_GET_NEWS_BY_NEWS_ID = 'get-news-by-news-id';
+
 export const QK_GET_SPACE_BY_SPACE_ID = 'get-space-by-space-id';
 
 export const QK_GET_TEAM_BY_ID = 'get-team-by-id';
