@@ -2,6 +2,7 @@
 import { Col } from '@/components/ui/col';
 import { ratelApi } from '@/lib/api/ratel_api';
 import { useSuspenseQuery } from '@apollo/client';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 export interface NewsItem {
@@ -12,6 +13,7 @@ export interface NewsItem {
 }
 
 export default function News() {
+  const router = useRouter()
   const q = ratelApi.graphql.listNews(3);
   const {
     data: { news },
@@ -19,6 +21,10 @@ export default function News() {
     variables: q.variables,
   });
 
+
+  const handleNewsNavigation = (id: number) => {
+    router.push(`/news/${id}`)
+  }
   return (
     <Col className="w-full rounded-[10px] bg-component-bg px-4 py-5 mt-[10px]">
       <h3 className="text-[15px]/[20px] tracking-[0.5px] font-bold text-white">
@@ -26,7 +32,7 @@ export default function News() {
       </h3>
       <Col className="gap-3.75">
         {news.map((item) => (
-          <Col key={`news-${item.id}`} className="py-2.5">
+          <Col onClick={() => handleNewsNavigation(item.id)} key={`news-${item.id}`} className="py-2.5 cursor-pointer">
             <h4 className="text-base/[25px] tracking-[0.5px] align-middle font-medium">
               {item.title}
             </h4>
