@@ -3,12 +3,13 @@
 import BlackBox from '@/app/(social)/_components/black-box';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 import { getTimeWithFormat } from '@/lib/time-utils';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Clock from '@/assets/icons/clock.svg';
 import { BottomTriangle, Discuss, Edit1 } from '@/components/icons';
 import { File, Vote, CheckCircle } from 'lucide-react';
 import { DeliberationTab, DeliberationTabType } from '../page.client';
 import CalendarDayPicker from '@/components/calendar-picker/calendar';
+import { SpaceStatus } from '@/lib/api/models/spaces';
 
 export default function SpaceSideMenu({
   spaceId,
@@ -17,6 +18,7 @@ export default function SpaceSideMenu({
   setStartDate,
   setEndDate,
   isEdit,
+  postingSpace,
   onedit,
   onsave,
 }: {
@@ -26,6 +28,7 @@ export default function SpaceSideMenu({
   setStartDate: (startedAt: number) => void;
   setEndDate: (endedAt: number) => void;
   isEdit: boolean;
+  postingSpace: () => void;
   onedit: () => void;
   onsave: () => void;
 }) {
@@ -42,7 +45,14 @@ export default function SpaceSideMenu({
 
   return (
     <div className="flex flex-col max-w-[250px] max-tablet:!hidden w-full gap-[10px]">
-      <EditSplitButton isEdit={isEdit} onedit={onedit} onsave={onsave} />
+      {space.status != SpaceStatus.InProgress && (
+        <EditSplitButton
+          isEdit={isEdit}
+          postingSpace={postingSpace}
+          onedit={onedit}
+          onsave={onsave}
+        />
+      )}
       <BlackBox>
         <div className="flex flex-col gap-2.5 w-full">
           <div
@@ -175,18 +185,39 @@ export default function SpaceSideMenu({
 
 function EditSplitButton({
   isEdit,
+  postingSpace,
   onedit,
   onsave,
 }: {
   isEdit: boolean;
+  postingSpace: () => void;
   onedit: () => void;
   onsave: () => void;
 }) {
+  const [showPopup, setShowPopup] = useState(false);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setShowPopup(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="flex items-center rounded-full overflow-hidden w-full h-[46px] gap-2">
+    <div className="relative flex items-center w-full h-[46px] gap-2">
       {/* Left "Edit" Button */}
       <button
-        className="flex items-center justify-start flex-row w-full bg-white text-black px-4 py-3 gap-1 rounded-l-[100px] rounded-r-[4px]"
+        className="flex items-center justify-start flex-row w-full bg-white hover:bg-neutral-300 text-black px-4 py-3 gap-1 rounded-l-[100px] rounded-r-[4px]"
         onClick={() => {
           if (isEdit) {
             onsave();
@@ -196,21 +227,34 @@ function EditSplitButton({
         }}
       >
         <Edit1 className="w-[18px] h-[18px]" />
-        {isEdit ? (
-          <span className="font-bold text-neutral-900 text-base/[22px]">
-            Save
-          </span>
-        ) : (
-          <span className="font-bold text-neutral-900 text-base/[22px]">
-            Edit
-          </span>
-        )}
+        <span className="font-bold text-neutral-900 text-base/[22px]">
+          {isEdit ? 'Save' : 'Edit'}
+        </span>
       </button>
 
-      {/* Right Dropdown Button */}
-      <button className="w-[48px] h-full flex items-center justify-center bg-neutral-500 rounded-r-[100px] rounded-l-[4px]">
-        <BottomTriangle />
-      </button>
+      {/* Right Dropdown Toggle */}
+      <div className="relative h-full" ref={popupRef}>
+        <button
+          className="w-[48px] h-full flex items-center justify-center bg-neutral-500 rounded-r-[100px] rounded-l-[4px]"
+          onClick={() => setShowPopup((prev) => !prev)}
+        >
+          <BottomTriangle />
+        </button>
+
+        {/* Pop-up Menu */}
+        {showPopup && (
+          <div
+            className="absolute top-full right-0 mt-2 px-4 py-2 min-w-[150px] bg-white hover:bg-neutral-300 text-black rounded shadow-lg text-sm cursor-pointer whitespace-nowrap z-50"
+            onClick={() => {
+              console.log('Posting API called');
+              postingSpace();
+              setShowPopup(false);
+            }}
+          >
+            Posting
+          </div>
+        )}
+      </div>
     </div>
   );
 }

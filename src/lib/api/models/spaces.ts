@@ -31,6 +31,16 @@ export interface Space {
   drafts: SpaceDraft[];
 }
 
+export interface PostingSpaceRequest {
+  posting_space: object;
+}
+
+export function postingSpaceRequest(): PostingSpaceRequest {
+  return {
+    posting_space: {},
+  };
+}
+
 export interface SpaceUpdateRequest {
   update_space: {
     title?: string;

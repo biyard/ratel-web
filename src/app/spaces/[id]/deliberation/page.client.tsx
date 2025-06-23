@@ -11,7 +11,10 @@ import FinalConsensusPage from './_components/final_consensus';
 import { FileInfo } from '@/lib/api/models/feeds';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
-import { spaceUpdateRequest } from '@/lib/api/models/spaces';
+import {
+  postingSpaceRequest,
+  spaceUpdateRequest,
+} from '@/lib/api/models/spaces';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { logger } from '@/lib/logger';
 import { checkString } from '@/lib/string-filter-utils';
@@ -99,6 +102,13 @@ export default function SpaceByIdPage() {
 
   logger.debug('startedAt: ', startedAt, 'endedAt: ', endedAt);
   logger.debug('deliberation: ', deliberation);
+
+  const handlePostingSpace = async () => {
+    await post(
+      ratelApi.spaces.getSpaceBySpaceId(spaceId),
+      postingSpaceRequest(),
+    );
+  };
 
   const handleUpdate = async (
     title: string,
@@ -238,6 +248,17 @@ export default function SpaceByIdPage() {
         }}
         setEndDate={(endedAt: number) => {
           setEndedAt(Math.floor(endedAt));
+        }}
+        postingSpace={async () => {
+          try {
+            await handlePostingSpace();
+            data.refetch();
+
+            showSuccessToast('success to posting space');
+          } catch (err) {
+            showErrorToast('failed to posting space');
+            logger.error('failed to posting space with error: ', err);
+          }
         }}
         onedit={() => {
           setIsEdit(true);
