@@ -93,12 +93,8 @@ function DiscussionSchedules({
             {discussions.map((discussion, index) => (
               <DiscussionTable
                 key={index}
-                startDate={format(discussion.started_at * 1000, 'M. dd. yyyy')}
-                startTime={format(
-                  new Date(discussion.started_at * 1000),
-                  'HH:mm',
-                )}
-                endTime={format(new Date(discussion.ended_at * 1000), 'HH:mm')}
+                startDate={discussion.started_at}
+                endDate={discussion.ended_at}
                 title={discussion.name}
                 description={discussion.description}
               />
@@ -198,21 +194,32 @@ export function DiscussionRoom({
 
 function DiscussionTable({
   startDate,
-  startTime,
-  endTime,
+  endDate,
   title,
   description,
 }: {
-  startDate: string;
-  startTime: string;
-  endTime: string;
+  startDate: number;
+  endDate: number;
   title: string;
   description: string;
 }) {
+  const start = new Date(startDate * 1000);
+  const end = new Date(endDate * 1000);
+
+  const formattedStartDate = format(start, 'M. dd. yyyy');
+  const formattedEndDate = format(end, 'M. dd. yyyy');
+  const formattedStartTime = format(start, 'HH:mm');
+  const formattedEndTime = format(end, 'HH:mm');
+
+  const displayDate =
+    formattedStartDate === formattedEndDate
+      ? formattedStartDate
+      : `${formattedStartDate} - ${formattedEndDate}`;
+
   return (
     <div className="border border-neutral-400 rounded-sm text-neutral-400 text-sm w-full font-medium">
       <div className="w-full text-center border-b border-neutral-400 py-[19px] font-semibold">
-        {startDate}
+        {displayDate}
       </div>
 
       <div className="grid grid-cols-3 text-center border-b border-neutral-400 py-[19px] font-semibold">
@@ -223,7 +230,7 @@ function DiscussionTable({
 
       <div className="grid grid-cols-3 text-center py-[23px]">
         <div>
-          {startTime} - {endTime}
+          {formattedStartTime} - {formattedEndTime}
         </div>
         <div>{title}</div>
         <div>{description}</div>
@@ -231,7 +238,6 @@ function DiscussionTable({
     </div>
   );
 }
-
 function EditableDiscussion({
   discussions,
   onremove,
