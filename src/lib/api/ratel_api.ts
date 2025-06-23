@@ -5,14 +5,17 @@ import { gql } from '@apollo/client';
 export const ratelApi = {
   users: {
     login: () => '/v1/users?action=login',
+    loginWithPassword: (email: string, password: string) =>
+      `/v1/users?action=login-by-password&email=${encodeURIComponent(email)}&password=${password}`,
     getTotalInfo: (page: number, size: number) =>
       `/v1/totals?param-type=query&bookmark=${page}&size=${size}`,
     getUserInfo: () => '/v1/users?action=user-info',
     getUserByEmail: (email: string) =>
       `/v1/users?param-type=read&action=find-by-email&email=${email}`,
-    updateUserInfo: () => '/v1/users?action=signup',
+    signup: () => '/v1/users?action=signup',
     editProfile: (user_id: number) => `/v1/users/${user_id}`,
     updateEvmAddress: () => '/v1/users',
+    sendVerificationCode: () => '/v1/users/verifications',
   },
   assets: {
     getPresignedUrl: (file_type: FileType) =>
@@ -68,6 +71,7 @@ export const ratelApi = {
     useRedeemCode: (redeem_id: number) => `/v1/redeems/${redeem_id}`,
   },
   spaces: {
+    createSpace: () => '/v1/spaces',
     getSpaceBySpaceId: (id: number) => `/v1/spaces/${id}`,
     getSpaceRedeemCodes: (space_id: number) =>
       `/v1/spaces/${space_id}/redeem-codes`,
@@ -116,6 +120,21 @@ export const ratelApi = {
         `,
         variables: {
           username,
+        },
+      };
+    },
+
+    getUserByEmail: (email: string) => {
+      return {
+        query: gql`
+          query GetUserByEmail($email: String!) {
+            users(where: { email: { _eq: $email } }) {
+              id
+            }
+          }
+        `,
+        variables: {
+          email,
         },
       };
     },

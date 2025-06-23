@@ -50,3 +50,8 @@ export function removeUserInfo(queryClient: QueryClient) {
 export function refetchUserInfo(queryClient: QueryClient) {
   queryClient.refetchQueries({ queryKey: [QK_USERS_GET_INFO] });
 }
+
+export function useLoggedIn(): boolean {
+  const { data: user } = useSuspenseUserInfo();
+  return user !== undefined && user !== null;
+}

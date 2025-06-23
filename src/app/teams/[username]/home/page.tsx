@@ -7,7 +7,12 @@
 //   writePostRequest,
 // } from '@/lib/api/models/feeds/write-post-request';
 import { Metadata } from 'next';
-import Home from './page.client';
+import TeamHome from './page.client';
+import { client } from '@/lib/apollo';
+import { ratelApi } from '@/lib/api/ratel_api';
+import { Feed, FeedStatus } from '@/lib/api/models/feeds';
+import { callByServer } from '@/lib/api/call-by-server';
+import { QueryResponse } from '@/lib/api/models/common';
 
 export const metadata: Metadata = {
   title: 'Ratel',
@@ -39,6 +44,27 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
-  return <Home />;
+type Props = {
+  params: Promise<{ username: string }>;
+};
+
+export default async function Page({ params }: Props) {
+  const { username } = await params;
+  const {
+    data: { users },
+  } = await client.query(ratelApi.graphql.getTeamByTeamname(username));
+
+  if (users.length === 0) {
+    // FIXME: fix this to use not-found.tsx
+    return <div className="text-center">Team not found</div>;
+  }
+
+  const userId = users[0].id;
+  const { get } = callByServer();
+
+  const posts: QueryResponse<Feed> = await get(
+    ratelApi.feeds.getPostsByUserId(userId, 1, 20, FeedStatus.Published),
+  );
+
+  return <TeamHome userId={userId} posts={posts} />;
 }
