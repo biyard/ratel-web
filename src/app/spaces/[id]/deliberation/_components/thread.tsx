@@ -18,6 +18,8 @@ export default function ThreadPage({
   proposerName,
   createdAt,
   isEdit,
+
+  onback,
 }: {
   title: string;
   thread: Thread;
@@ -28,6 +30,8 @@ export default function ThreadPage({
   proposerName: string;
   createdAt: number;
   isEdit: boolean;
+
+  onback: () => void;
 }) {
   return (
     <div className="flex flex-row w-full gap-5">
@@ -39,6 +43,7 @@ export default function ThreadPage({
           proposerImage={proposerImage}
           proposerName={proposerName}
           createdAt={createdAt}
+          onback={onback}
           setTitle={(title: string) => {
             setTitle(title);
           }}

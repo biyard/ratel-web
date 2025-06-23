@@ -21,6 +21,8 @@ export default function DeliberationPage({
   proposerName,
   createdAt,
   isEdit,
+
+  onback,
 }: {
   title: string;
   deliberation: Deliberation;
@@ -31,6 +33,7 @@ export default function DeliberationPage({
   proposerName: string;
   createdAt: number;
   isEdit: boolean;
+  onback: () => void;
 }) {
   return (
     <div className="flex flex-col w-full">
@@ -41,6 +44,7 @@ export default function DeliberationPage({
         proposerImage={proposerImage}
         proposerName={proposerName}
         createdAt={createdAt}
+        onback={onback}
         setTitle={(title: string) => {
           setTitle(title);
         }}

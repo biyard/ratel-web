@@ -19,6 +19,7 @@ import { DiscussionCreateRequest } from '@/lib/api/models/discussion';
 import { ElearningCreateRequest } from '@/lib/api/models/elearning';
 import { SurveyCreateRequest } from '@/lib/api/models/survey';
 import { SpaceDraftCreateRequest } from '@/lib/api/models/space_draft';
+import { useRouter } from 'next/navigation';
 
 export const DeliberationTab = {
   THREAD: 'Thread',
@@ -53,6 +54,7 @@ export default function SpaceByIdPage() {
   const params = useParams();
   const spaceId = Number(params.id);
   const data = useSpaceBySpaceId(spaceId);
+  const router = useRouter();
   const space = data.data;
   const [selectedType, setSelectedType] = useState<DeliberationTabType>(
     DeliberationTab.THREAD,
@@ -133,6 +135,14 @@ export default function SpaceByIdPage() {
           proposerImage={space.author[0].profile_url ?? ''}
           proposerName={space.author[0].nickname ?? ''}
           createdAt={space?.created_at}
+          onback={() => {
+            if (isEdit) {
+              setIsEdit(false);
+              data.refetch();
+            } else {
+              router.back();
+            }
+          }}
         />
       ) : selectedType == DeliberationTab.DELIBERATION ? (
         <DeliberationPage
@@ -149,6 +159,14 @@ export default function SpaceByIdPage() {
           proposerImage={space.author[0].profile_url ?? ''}
           proposerName={space.author[0].nickname ?? ''}
           createdAt={space?.created_at}
+          onback={() => {
+            if (isEdit) {
+              setIsEdit(false);
+              data.refetch();
+            } else {
+              router.back();
+            }
+          }}
         />
       ) : selectedType == DeliberationTab.POLL ? (
         <PollPage
@@ -165,6 +183,14 @@ export default function SpaceByIdPage() {
           proposerImage={space.author[0].profile_url ?? ''}
           proposerName={space.author[0].nickname ?? ''}
           createdAt={space?.created_at}
+          onback={() => {
+            if (isEdit) {
+              setIsEdit(false);
+              data.refetch();
+            } else {
+              router.back();
+            }
+          }}
         />
       ) : (
         <FinalConsensusPage
@@ -181,6 +207,14 @@ export default function SpaceByIdPage() {
           proposerImage={space.author[0].profile_url ?? ''}
           proposerName={space.author[0].nickname ?? ''}
           createdAt={space?.created_at}
+          onback={() => {
+            if (isEdit) {
+              setIsEdit(false);
+              data.refetch();
+            } else {
+              router.back();
+            }
+          }}
         />
       )}
       <SpaceSideMenu

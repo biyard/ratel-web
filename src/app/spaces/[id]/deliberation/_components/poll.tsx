@@ -18,6 +18,8 @@ export default function PollPage({
   proposerName,
   createdAt,
   isEdit,
+
+  onback,
 }: {
   title: string;
   survey: Poll;
@@ -28,6 +30,8 @@ export default function PollPage({
   proposerName: string;
   createdAt: number;
   isEdit: boolean;
+
+  onback: () => void;
 }) {
   const questions =
     survey.surveys.length != 0 ? survey.surveys[0].questions : [];
@@ -40,6 +44,7 @@ export default function PollPage({
         proposerImage={proposerImage}
         proposerName={proposerName}
         createdAt={createdAt}
+        onback={onback}
         setTitle={(title: string) => {
           setTitle(title);
         }}

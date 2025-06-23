@@ -17,6 +17,8 @@ export default function FinalConsensusPage({
   proposerName,
   createdAt,
   isEdit,
+
+  onback,
 }: {
   title: string;
   draft: FinalConsensus;
@@ -27,6 +29,8 @@ export default function FinalConsensusPage({
   proposerName: string;
   createdAt: number;
   isEdit: boolean;
+
+  onback: () => void;
 }) {
   const contents =
     draft.drafts && draft.drafts.length != 0
@@ -47,6 +51,7 @@ export default function FinalConsensusPage({
           proposerImage={proposerImage}
           proposerName={proposerName}
           createdAt={createdAt}
+          onback={onback}
           setTitle={(title: string) => {
             setTitle(title);
           }}
