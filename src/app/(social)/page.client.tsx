@@ -73,10 +73,10 @@ export default function Home() {
   const { data: postData, error: postError, isLoading } = usePost(page, SIZE);
 
   // Processing and deduplication of feed data
-  const processFeedData = useCallback((items: any[]): Post[] => {
+  const processFeedData = useCallback((items: any): Post[] => {
     if (!items) return [];
 
-    return items.map((item) => ({
+    return items.map((item: any) => ({
       id: item.id,
       industry: item.industry?.[0]?.name || '',
       title: item.title!,
