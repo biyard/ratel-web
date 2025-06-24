@@ -250,6 +250,7 @@ export default function SpaceByIdPage() {
       )}
       <SpaceSideMenu
         spaceId={spaceId}
+        status={space.status}
         selectedType={selectedType}
         setSelectedType={(tab: DeliberationTabType) => {
           setSelectedType(tab);

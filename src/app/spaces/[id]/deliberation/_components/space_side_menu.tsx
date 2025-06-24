@@ -9,9 +9,11 @@ import { BottomTriangle, Discuss, Edit1 } from '@/components/icons';
 import { File, Vote, CheckCircle } from 'lucide-react';
 import { DeliberationTab, DeliberationTabType } from '../page.client';
 import { useUserInfo } from '@/lib/api/hooks/users';
+import { SpaceStatus } from '@/lib/api/models/spaces';
 
 export default function SpaceSideMenu({
   spaceId,
+  status,
   selectedType,
   setSelectedType,
   isEdit,
@@ -20,6 +22,7 @@ export default function SpaceSideMenu({
   onsave,
 }: {
   spaceId: number;
+  status: SpaceStatus;
   selectedType: DeliberationTabType;
   setSelectedType: (tab: DeliberationTabType) => void;
   isEdit: boolean;
@@ -36,6 +39,7 @@ export default function SpaceSideMenu({
     <div className="flex flex-col max-w-[250px] max-tablet:!hidden w-full gap-[10px]">
       {space.author.some((a) => a.id === userId) && (
         <EditSplitButton
+          status={status}
           isEdit={isEdit}
           postingSpace={postingSpace}
           onedit={onedit}
@@ -107,11 +111,13 @@ export default function SpaceSideMenu({
 
 function EditSplitButton({
   isEdit,
+  status,
   postingSpace,
   onedit,
   onsave,
 }: {
   isEdit: boolean;
+  status: SpaceStatus;
   postingSpace: () => void;
   onedit: () => void;
   onsave: () => void;
@@ -139,7 +145,7 @@ function EditSplitButton({
     <div className="relative flex items-center w-full h-[46px] gap-2">
       {/* Left "Edit" Button */}
       <button
-        className="flex items-center justify-start flex-row w-full bg-white hover:bg-neutral-300 text-black px-4 py-3 gap-1 rounded-l-[100px] rounded-r-[4px]"
+        className={`flex items-center justify-start flex-row w-full bg-white hover:bg-neutral-300 text-black px-4 py-3 gap-1 ${status != SpaceStatus.InProgress ? 'rounded-l-[100px] rounded-r-[4px]' : 'rounded-[100px]'}`}
         onClick={() => {
           if (isEdit) {
             onsave();
@@ -155,28 +161,32 @@ function EditSplitButton({
       </button>
 
       {/* Right Dropdown Toggle */}
-      <div className="relative h-full" ref={popupRef}>
-        <button
-          className="w-[48px] h-full flex items-center justify-center bg-neutral-500 rounded-r-[100px] rounded-l-[4px]"
-          onClick={() => setShowPopup((prev) => !prev)}
-        >
-          <BottomTriangle />
-        </button>
-
-        {/* Pop-up Menu */}
-        {showPopup && (
-          <div
-            className="absolute top-full right-0 mt-2 px-4 py-2 min-w-[150px] bg-white hover:bg-neutral-300 text-black rounded shadow-lg text-sm cursor-pointer whitespace-nowrap z-50"
-            onClick={() => {
-              console.log('Posting API called');
-              postingSpace();
-              setShowPopup(false);
-            }}
+      {status != SpaceStatus.InProgress ? (
+        <div className="relative h-full" ref={popupRef}>
+          <button
+            className="w-[48px] h-full flex items-center justify-center bg-neutral-500 rounded-r-[100px] rounded-l-[4px]"
+            onClick={() => setShowPopup((prev) => !prev)}
           >
-            Posting
-          </div>
-        )}
-      </div>
+            <BottomTriangle />
+          </button>
+
+          {/* Pop-up Menu */}
+          {showPopup && (
+            <div
+              className="absolute top-full right-0 mt-2 px-4 py-2 min-w-[150px] bg-white hover:bg-neutral-300 text-black rounded shadow-lg text-sm cursor-pointer whitespace-nowrap z-50"
+              onClick={() => {
+                console.log('Posting API called');
+                postingSpace();
+                setShowPopup(false);
+              }}
+            >
+              Posting
+            </div>
+          )}
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }
