@@ -23,5 +23,13 @@ export interface AttendeeInfo {
 export interface MeetingData {
   meeting: MeetingInfo;
   attemdee: AttendeeInfo;
+  participants: Participant[];
   record?: string;
+}
+
+export interface Participant {
+  id: number;
+  nickname?: string;
+  profile_url?: string;
+  username: string;
 }

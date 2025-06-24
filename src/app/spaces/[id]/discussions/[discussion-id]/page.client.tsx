@@ -20,6 +20,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { JSX, useEffect, useRef, useState } from 'react';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
+import Image from 'next/image';
 import {
   participantMeetingRequest,
   startMeetingRequest,
@@ -32,6 +33,7 @@ import {
   LogLevel,
   MeetingSessionConfiguration,
 } from 'amazon-chime-sdk-js';
+import { Participant } from '@/lib/api/models/meeting';
 
 export default function DiscussionByIdPage() {
   const [isVideoOn, setIsVideoOn] = useState(true);
@@ -43,6 +45,7 @@ export default function DiscussionByIdPage() {
   const [activePanel, setActivePanel] = useState<
     'participants' | 'chat' | null
   >();
+  const [participants, setParticipants] = useState<Participant[]>([]);
   const { post, get } = useApiCall();
   const router = useRouter();
   const params = useParams();
@@ -69,6 +72,8 @@ export default function DiscussionByIdPage() {
       const joinInfo = await get(
         ratelApi.meeting.getMeetingById(spaceId, discussionId),
       );
+
+      setParticipants(joinInfo.participants);
 
       const logger = new ConsoleLogger('ChimeLogs', LogLevel.INFO);
       const deviceController = new DefaultDeviceController(logger);
@@ -168,7 +173,10 @@ export default function DiscussionByIdPage() {
       />
 
       {activePanel === 'participants' && (
-        <ParticipantsPanel onClose={() => setActivePanel(null)} />
+        <ParticipantsPanel
+          participants={participants}
+          onClose={() => setActivePanel(null)}
+        />
       )}
       {activePanel === 'chat' && (
         <ChatPanel onClose={() => setActivePanel(null)} />
@@ -431,10 +439,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
           fill="white"
         />
       </div>
-      <div className="flex-1 p-4 text-white text-sm overflow-y-auto">
-        {/* <div className="mb-2">[12:58 PM] 사용자1: 안녕하세요!</div>
-        <div className="mb-2">[12:59 PM] 사용자2: 반가워요!</div> */}
-      </div>
+      <div className="flex-1 p-4 text-white text-sm overflow-y-auto"></div>
       <div className="border-t border-neutral-600 p-2">
         <input
           type="text"
@@ -446,7 +451,13 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-function ParticipantsPanel({ onClose }: { onClose: () => void }) {
+function ParticipantsPanel({
+  participants,
+  onClose,
+}: {
+  participants: Participant[];
+  onClose: () => void;
+}) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -464,23 +475,48 @@ function ParticipantsPanel({ onClose }: { onClose: () => void }) {
         visible ? 'translate-x-0' : 'translate-x-full'
       }`}
     >
-      <div className="flex justify-between items-center px-4 py-3 border-b border-neutral-700 text-white font-semibold">
-        Participants
-        <button
+      <div className="flex justify-between items-center px-4 py-3 border-b border-neutral-600">
+        <div className="flex flex-row w-fit gap-2.5">
+          <Logo width={25} height={25} />
+          <div className="font-semibold text-sm text-white">Participants</div>
+        </div>
+        <Clear
+          className="cursor-pointer w-[24px] h-[24px] [&>path]:stroke-[#bfc8d9]"
           onClick={handleClose}
-          className="text-neutral-400 hover:text-white"
-        >
-          ✕
-        </button>
+          fill="white"
+        />
       </div>
 
-      {/* <div className="flex-1 overflow-y-auto px-4 py-2 text-white text-sm">
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="py-2 border-b border-neutral-800">
-            ID or nickname{i + 1} (Role)
+      <div className="flex flex-1 overflow-y-auto px-[10px] py-[20px] gap-[20px]">
+        {participants.map((participant, index) => (
+          <div
+            key={index}
+            className="flex flex-row w-full justify-between items-center"
+          >
+            <div className="flex flex-row w-fit items-center gap-1">
+              {participant.profile_url ? (
+                <Image
+                  width={30}
+                  height={30}
+                  src={participant.profile_url || '/default-profile.png'}
+                  alt={`${participant.username}'s profile`}
+                  className={`w-[30px] h-[30px] object-cover rounded-full`}
+                />
+              ) : (
+                <div className={`w-8 h-8 bg-neutral-500 rounded-full`} />
+              )}
+              <div className="font-medium text-white text-sm">
+                {participant.username}
+              </div>
+            </div>
+
+            <div className="flex flex-row w-fit gap-2">
+              <ZoomMicOn className="w-[18px] h-[18px] stroke-white" />
+              <ZoomVideoOn className="w-[18px] h-[18px] stroke-white" />
+            </div>
           </div>
         ))}
-      </div> */}
+      </div>
     </div>
   );
 }
