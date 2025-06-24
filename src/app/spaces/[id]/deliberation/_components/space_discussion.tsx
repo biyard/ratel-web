@@ -12,15 +12,21 @@ import { format } from 'date-fns';
 
 import { v4 as uuidv4 } from 'uuid';
 import discussionImg from '@/assets/images/discussion.png';
-import { DiscussionCreateRequest } from '@/lib/api/models/discussion';
+import {
+  Discussion,
+  DiscussionCreateRequest,
+} from '@/lib/api/models/discussion';
 import { Add } from './add';
 import { SpaceStatus } from '@/lib/api/models/spaces';
 import { ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { route } from '@/route';
 
 export interface SpaceDiscussionProps {
   isEdit?: boolean;
   status: SpaceStatus;
   discussions: DiscussionCreateRequest[];
+  discussionRaws: Discussion[];
   onremove?: (index: number) => void;
   onupdate?: (index: number, discussion: DiscussionCreateRequest) => void;
   onadd?: (discussion: DiscussionCreateRequest) => void;
@@ -30,10 +36,17 @@ export default function SpaceDiscussion({
   isEdit = false,
   status,
   discussions,
+  discussionRaws,
   onadd = () => {},
   onremove = () => {},
   onupdate = () => {},
 }: SpaceDiscussionProps) {
+  const router = useRouter();
+
+  const moveDiscussion = (spaceId: number, discussionId: number) => {
+    router.push(route.discussionById(spaceId, discussionId));
+  };
+
   return (
     <div className="flex flex-col w-full">
       {isEdit ? (
@@ -60,7 +73,11 @@ export default function SpaceDiscussion({
           }}
         />
       ) : (
-        <ViewDiscussion discussions={discussions} status={status} />
+        <ViewDiscussion
+          discussions={discussionRaws}
+          status={status}
+          moveDiscussion={moveDiscussion}
+        />
       )}
     </div>
   );
@@ -69,13 +86,19 @@ export default function SpaceDiscussion({
 function ViewDiscussion({
   discussions,
   status,
+  moveDiscussion,
 }: {
-  discussions: DiscussionCreateRequest[];
+  discussions: Discussion[];
   status: SpaceStatus;
+  moveDiscussion: (spaceId: number, discussionId: number) => void;
 }) {
   return (
     <div className="flex flex-col w-full gap-2.5">
-      <DiscussionSchedules discussions={discussions} status={status} />
+      <DiscussionSchedules
+        discussions={discussions}
+        status={status}
+        moveDiscussion={moveDiscussion}
+      />
     </div>
   );
 }
@@ -83,9 +106,11 @@ function ViewDiscussion({
 function DiscussionSchedules({
   discussions,
   status,
+  moveDiscussion,
 }: {
-  discussions: DiscussionCreateRequest[];
+  discussions: Discussion[];
   status: SpaceStatus;
+  moveDiscussion: (spaceId: number, discussionId: number) => void;
 }) {
   return (
     <div className="flex flex-col gap-2.5">
@@ -127,6 +152,9 @@ function DiscussionSchedules({
                   endDate={discussion.ended_at}
                   title={discussion.name}
                   description={discussion.description}
+                  onclick={() => {
+                    moveDiscussion(discussion.space_id, discussion.id);
+                  }}
                 />
                 {index !== discussions.length - 1 ? (
                   <div className=" w-full h-0.25 gap-1 bg-neutral-800" />
@@ -148,12 +176,15 @@ export function DiscussionRoom({
   endDate,
   title,
   description,
+  onclick,
 }: {
   status: SpaceStatus;
   startDate: number;
   endDate: number;
   title: string;
   description: string;
+
+  onclick: () => void;
 }) {
   const now = Math.floor(Date.now() / 1000);
 
@@ -208,7 +239,11 @@ export function DiscussionRoom({
 
         {isLive && status == SpaceStatus.InProgress && (
           <div className="flex flex-row w-full justify-end">
-            <JoinButton onClick={() => {}} />
+            <JoinButton
+              onClick={() => {
+                onclick();
+              }}
+            />
           </div>
         )}
       </div>

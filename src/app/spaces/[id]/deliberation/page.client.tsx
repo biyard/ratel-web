@@ -100,6 +100,8 @@ export default function SpaceByIdPage() {
     })),
   });
 
+  const discussions = space.discussions;
+
   logger.debug('startedAt: ', startedAt, 'endedAt: ', endedAt);
   logger.debug('deliberation: ', deliberation);
 
@@ -169,6 +171,7 @@ export default function SpaceByIdPage() {
           title={title}
           status={space.status}
           deliberation={deliberation}
+          discussions={discussions}
           setTitle={(t: string) => {
             setTitle(t);
           }}
