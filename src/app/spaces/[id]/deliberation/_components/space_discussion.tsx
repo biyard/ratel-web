@@ -14,9 +14,12 @@ import { v4 as uuidv4 } from 'uuid';
 import discussionImg from '@/assets/images/discussion.png';
 import { DiscussionCreateRequest } from '@/lib/api/models/discussion';
 import { Add } from './add';
+import { SpaceStatus } from '@/lib/api/models/spaces';
+import { ArrowRight } from 'lucide-react';
 
 export interface SpaceDiscussionProps {
   isEdit?: boolean;
+  status: SpaceStatus;
   discussions: DiscussionCreateRequest[];
   onremove?: (index: number) => void;
   onupdate?: (index: number, discussion: DiscussionCreateRequest) => void;
@@ -25,6 +28,7 @@ export interface SpaceDiscussionProps {
 
 export default function SpaceDiscussion({
   isEdit = false,
+  status,
   discussions,
   onadd = () => {},
   onremove = () => {},
@@ -56,7 +60,7 @@ export default function SpaceDiscussion({
           }}
         />
       ) : (
-        <ViewDiscussion discussions={discussions} />
+        <ViewDiscussion discussions={discussions} status={status} />
       )}
     </div>
   );
@@ -64,20 +68,24 @@ export default function SpaceDiscussion({
 
 function ViewDiscussion({
   discussions,
+  status,
 }: {
   discussions: DiscussionCreateRequest[];
+  status: SpaceStatus;
 }) {
   return (
     <div className="flex flex-col w-full gap-2.5">
-      <DiscussionSchedules discussions={discussions} />
+      <DiscussionSchedules discussions={discussions} status={status} />
     </div>
   );
 }
 
 function DiscussionSchedules({
   discussions,
+  status,
 }: {
   discussions: DiscussionCreateRequest[];
+  status: SpaceStatus;
 }) {
   return (
     <div className="flex flex-col gap-2.5">
@@ -114,6 +122,7 @@ function DiscussionSchedules({
             {discussions.map((discussion, index) => (
               <React.Fragment key={index}>
                 <DiscussionRoom
+                  status={status}
                   startDate={discussion.started_at}
                   endDate={discussion.ended_at}
                   title={discussion.name}
@@ -134,11 +143,13 @@ function DiscussionSchedules({
 }
 
 export function DiscussionRoom({
+  status,
   startDate,
   endDate,
   title,
   description,
 }: {
+  status: SpaceStatus;
   startDate: number;
   endDate: number;
   title: string;
@@ -195,64 +206,30 @@ export function DiscussionRoom({
           </div>
         </div>
 
-        {/* {isLive && (
-          <div className="flex flex-row w-full justify-end items-end">
-            <button className="flex items-center gap-[10px] px-5 py-2.5 bg-white text-[#000203] rounded-lg font-semibold hover:bg-neutral-300 transition">
-              Join <ArrowRight className="w-[15px] h-[15px]" />
-            </button>
+        {isLive && status == SpaceStatus.InProgress && (
+          <div className="flex flex-row w-full justify-end">
+            <JoinButton onClick={() => {}} />
           </div>
-        )} */}
+        )}
       </div>
     </div>
   );
 }
 
-// function DiscussionTable({
-//   startDate,
-//   endDate,
-//   title,
-//   description,
-// }: {
-//   startDate: number;
-//   endDate: number;
-//   title: string;
-//   description: string;
-// }) {
-//   const start = new Date(startDate * 1000);
-//   const end = new Date(endDate * 1000);
+function JoinButton({ onClick }: { onClick: () => void }) {
+  return (
+    <div
+      className="cursor-pointer flex flex-row items-center w-fit h-fit px-5 py-2.5 gap-2.5 bg-white hover:bg-neutral-300 rounded-lg"
+      onClick={() => {
+        onClick();
+      }}
+    >
+      <div className="font-bold text-[#000203] text-sm">Join</div>
+      <ArrowRight className="stroke-black stroke-3 w-[15px] h-[15px]" />
+    </div>
+  );
+}
 
-//   const formattedStartDate = format(start, 'M. dd. yyyy');
-//   const formattedEndDate = format(end, 'M. dd. yyyy');
-//   const formattedStartTime = format(start, 'HH:mm');
-//   const formattedEndTime = format(end, 'HH:mm');
-
-//   const displayDate =
-//     formattedStartDate === formattedEndDate
-//       ? formattedStartDate
-//       : `${formattedStartDate} - ${formattedEndDate}`;
-
-//   return (
-//     <div className="border border-neutral-400 rounded-sm text-neutral-400 text-sm w-full font-medium">
-//       <div className="w-full text-center border-b border-neutral-400 py-[19px] font-semibold">
-//         {displayDate}
-//       </div>
-
-//       <div className="grid grid-cols-3 text-center border-b border-neutral-400 py-[19px] font-semibold">
-//         <div>Time</div>
-//         <div>Type</div>
-//         <div>Contents</div>
-//       </div>
-
-//       <div className="grid grid-cols-3 text-center py-[23px]">
-//         <div>
-//           {formattedStartTime} - {formattedEndTime}
-//         </div>
-//         <div>{title}</div>
-//         <div>{description}</div>
-//       </div>
-//     </div>
-//   );
-// }
 function EditableDiscussion({
   discussions,
   onremove,

@@ -56,6 +56,7 @@ export default function DeliberationPage({
       <div className="flex flex-col mt-[25px] gap-2.5">
         <SpaceDiscussion
           isEdit={isEdit}
+          status={status}
           discussions={deliberation.discussions}
           onadd={(discussion: DiscussionCreateRequest) => {
             setDeliberation({

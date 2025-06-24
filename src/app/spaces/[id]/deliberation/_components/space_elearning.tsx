@@ -98,7 +98,7 @@ function EBook({ file, onClick }: { file: FileInfo; onClick: () => void }) {
 function ReadButton({ onClick }: { onClick: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row items-center w-fit h-fit px-5 py-2.5 gap-2.5 bg-white rounded-lg"
+      className="cursor-pointer flex flex-row items-center w-fit h-fit px-5 py-2.5 gap-2.5 bg-white hover:bg-neutral-300 rounded-lg"
       onClick={() => {
         onClick();
       }}
