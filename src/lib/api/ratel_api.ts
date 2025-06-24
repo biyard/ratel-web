@@ -67,6 +67,12 @@ export const ratelApi = {
   redeems: {
     useRedeemCode: (redeem_id: number) => `/v1/redeems/${redeem_id}`,
   },
+  discussions: {
+    getDiscussionById: (spaceId: number, discussionId: number) =>
+      `/v1/spaces/${spaceId}/discussions/${discussionId}`,
+    actDiscussionById: (spaceId: number, discussionId: number) =>
+      `/v1/spaces/${spaceId}/discussions/${discussionId}`,
+  },
   spaces: {
     createSpace: () => '/v1/spaces',
     getSpaceBySpaceId: (id: number) => `/v1/spaces/${id}`,
