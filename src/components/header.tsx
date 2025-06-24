@@ -90,7 +90,7 @@ function Header(props: HeaderProps) {
           height="24"
         />
       ),
-      visible: true, //data?.user_type === UserType.Individual || data?.user_type === UserType.Team,
+      visible: config.experiment,
       href: route.notifications(),
     },
   ];
@@ -108,10 +108,10 @@ function Header(props: HeaderProps) {
             <Logo width="54" height="54" />
           </Link>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#737373] w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500 w-4 h-4" />
             <Input
               placeholder="Search"
-              className="pl-10 bg-[#262626] border-[#404040] text-white placeholder-[#737373] w-80"
+              className="pl-10 bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 w-80"
             />
           </div>
         </div>
