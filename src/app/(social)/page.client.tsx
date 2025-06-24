@@ -80,7 +80,6 @@ export interface PostItem {
   onboard?: boolean;
 }
 
-
 export default function Home() {
   const { post } = useApiCall();
   const network = useNetwork();
