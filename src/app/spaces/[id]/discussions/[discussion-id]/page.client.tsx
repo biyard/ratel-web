@@ -15,12 +15,29 @@ import {
 import { logger } from '@/lib/logger';
 import { route } from '@/route';
 import { useParams, useRouter } from 'next/navigation';
-import React, { JSX, useEffect, useState } from 'react';
+import React, { JSX, useEffect, useRef, useState } from 'react';
+import { useApiCall } from '@/lib/api/use-send';
+import { ratelApi } from '@/lib/api/ratel_api';
+import {
+  participantMeetingRequest,
+  startMeetingRequest,
+} from '@/lib/api/models/discussion';
+
+import {
+  DefaultDeviceController,
+  DefaultMeetingSession,
+  ConsoleLogger,
+  LogLevel,
+  MeetingSessionConfiguration,
+} from 'amazon-chime-sdk-js';
 
 export default function DiscussionByIdPage() {
+  const [meetingSession, setMeetingSession] =
+    useState<DefaultMeetingSession | null>(null);
   const [activePanel, setActivePanel] = useState<
     'participants' | 'chat' | null
   >();
+  const { post, get } = useApiCall();
   const router = useRouter();
   const params = useParams();
   const spaceId = Number(params['id']);
@@ -30,6 +47,42 @@ export default function DiscussionByIdPage() {
   const discussion = data.data;
   logger.debug('params: ', spaceId, discussionId);
   logger.debug('discussion: ', discussion);
+
+  useEffect(() => {
+    async function startChime() {
+      await post(
+        ratelApi.discussions.actDiscussionById(spaceId, discussionId),
+        startMeetingRequest(),
+      );
+
+      await post(
+        ratelApi.discussions.actDiscussionById(spaceId, discussionId),
+        participantMeetingRequest(),
+      );
+
+      const joinInfo = await get(
+        ratelApi.meeting.getMeetingById(spaceId, discussionId),
+      );
+
+      const logger = new ConsoleLogger('ChimeLogs', LogLevel.INFO);
+      const deviceController = new DefaultDeviceController(logger);
+
+      const configuration = new MeetingSessionConfiguration(
+        joinInfo.meeting,
+        joinInfo.attendee,
+      );
+
+      const session = new DefaultMeetingSession(
+        configuration,
+        logger,
+        deviceController,
+      );
+
+      setMeetingSession(session);
+    }
+
+    startChime();
+  }, []);
 
   return (
     <div className="w-screen h-screen bg-black flex flex-col">
@@ -41,13 +94,7 @@ export default function DiscussionByIdPage() {
       />
 
       <div className="flex-1 flex items-center justify-center relative">
-        <div className="w-[120px] h-[120px] bg-pink-200 rounded-xl shadow-lg flex items-center justify-center">
-          <img
-            src="/avatar-cake.png"
-            alt="User Avatar"
-            className="w-full h-full object-cover rounded-xl"
-          />
-        </div>
+        {meetingSession && <LocalVideo meetingSession={meetingSession} />}
       </div>
 
       <Bottom
@@ -74,6 +121,95 @@ export default function DiscussionByIdPage() {
   );
 }
 
+function LocalVideo({
+  meetingSession,
+}: {
+  meetingSession: DefaultMeetingSession;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!meetingSession) return;
+
+    const audioVideo = meetingSession.audioVideo;
+    let rafId: number;
+
+    const tryBind = () => {
+      const tile = audioVideo.getLocalVideoTile();
+      const element = videoRef.current;
+
+      if (
+        tile &&
+        element &&
+        element.id &&
+        tile.state().boundVideoElement === null
+      ) {
+        logger.debug('Binding video element with ID:', element.id);
+        audioVideo.bindVideoElement(tile.id(), element);
+      } else if (!tile) {
+        logger.debug('Waiting for local video tile...');
+        rafId = requestAnimationFrame(tryBind);
+      } else {
+        logger.debug(
+          'Tile exists but already bound or element missing. Skipping retry.',
+        );
+      }
+    };
+
+    const start = async () => {
+      const av = meetingSession.audioVideo;
+
+      const videoDevices = await av.listVideoInputDevices();
+      logger.debug('videoDevices:', videoDevices);
+
+      if (videoDevices.length > 0) {
+        await av.startVideoInput(videoDevices[0].deviceId);
+      }
+
+      av.start();
+      av.startLocalVideoTile();
+
+      if (videoRef.current) {
+        videoRef.current.id = 'local-video-element';
+      }
+
+      rafId = requestAnimationFrame(tryBind);
+    };
+
+    start();
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      audioVideo.stopLocalVideoTile();
+      audioVideo.stop();
+    };
+  }, [meetingSession]);
+
+  return (
+    <video
+      ref={videoRef}
+      id="local-video-element"
+      className="w-full h-full rounded-lg bg-black"
+      autoPlay
+      muted
+    />
+  );
+}
+
+function Header({ name, onclose }: { name: string; onclose: () => void }) {
+  return (
+    <div className="flex justify-between items-center bg-neutral-900 text-white px-6 py-3 text-sm font-semibold border-b border-neutral-800">
+      <Logo width={32} height={32} />
+      <span>{name}</span>
+      <Clear
+        className="cursor-pointer w-[24px] h-[24px] [&>path]:stroke-neutral-500"
+        onClick={onclose}
+        fill="white"
+      />
+    </div>
+  );
+}
+
 function Bottom({
   onclose,
   onParticipantsClick,
@@ -84,51 +220,67 @@ function Bottom({
   onChatClick: () => void;
 }) {
   return (
-    <>
-      <div className="flex flex-row w-full min-h-[70px] justify-between items-center bg-neutral-900 px-10 py-2.5 border-b border-neutral-800">
-        <div className="flex flex-row gap-5 w-[80px]">
-          <IconLabel
-            icon={<ZoomMicOff className="w-6 h-6" />}
-            label={'Audio'}
-            onclick={() => {}}
-          />
-          <IconLabel
-            icon={<ZoomVideoOff className="w-6 h-6" />}
-            label={'Video'}
-            onclick={() => {}}
-          />
-        </div>
-
-        <div className="flex flex-row w-fit gap-5">
-          <IconLabel
-            icon={<ZoomParticipants />}
-            label={'Participants'}
-            onclick={onParticipantsClick}
-          />
-          <IconLabel icon={<ZoomChat />} label={'Chat'} onclick={onChatClick} />
-          <IconLabel
-            icon={<ZoomShare className="w-6 h-6" />}
-            label={'Share'}
-            onclick={() => {}}
-          />
-          <IconLabel
-            icon={<ZoomRecord className="w-6 h-6" />}
-            label={'Record'}
-            onclick={() => {}}
-          />
-        </div>
-
-        <div className="flex flex-row w-[80px] gap-5">
-          <IconLabel
-            icon={<ZoomClose className="w-6 h-6" />}
-            label={'End'}
-            onclick={() => {
-              onclose();
-            }}
-          />
-        </div>
+    <div className="flex flex-row w-full min-h-[70px] justify-between items-center bg-neutral-900 px-10 py-2.5 border-b border-neutral-800">
+      <div className="flex flex-row gap-5 w-[80px]">
+        <IconLabel
+          icon={<ZoomMicOff className="w-6 h-6" />}
+          label="Audio"
+          onclick={() => {}}
+        />
+        <IconLabel
+          icon={<ZoomVideoOff className="w-6 h-6" />}
+          label="Video"
+          onclick={() => {}}
+        />
       </div>
-    </>
+
+      <div className="flex flex-row w-fit gap-5">
+        <IconLabel
+          icon={<ZoomParticipants />}
+          label="Participants"
+          onclick={onParticipantsClick}
+        />
+        <IconLabel icon={<ZoomChat />} label="Chat" onclick={onChatClick} />
+        <IconLabel
+          icon={<ZoomShare className="w-6 h-6" />}
+          label="Share"
+          onclick={() => {}}
+        />
+        <IconLabel
+          icon={<ZoomRecord className="w-6 h-6" />}
+          label="Record"
+          onclick={() => {}}
+        />
+      </div>
+
+      <div className="flex flex-row w-[80px] gap-5">
+        <IconLabel
+          icon={<ZoomClose className="w-6 h-6" />}
+          label="End"
+          onclick={onclose}
+        />
+      </div>
+    </div>
+  );
+}
+
+function IconLabel({
+  icon,
+  label,
+  onclick,
+}: {
+  icon: JSX.Element;
+  label: string;
+  onclick: () => void;
+}) {
+  return (
+    <div
+      className="cursor-pointer flex flex-col gap-1 w-fit h-fit justify-center items-center px-[10px] py-[4px]"
+      onClick={onclick}
+    >
+      {icon}
+      <div className="font-semibold text-white text-sm">{label}</div>
+    </div>
   );
 }
 
@@ -209,42 +361,6 @@ function ParticipantsPanel({ onClose }: { onClose: () => void }) {
           </div>
         ))}
       </div>
-    </div>
-  );
-}
-
-function Header({ name, onclose }: { name: string; onclose: () => void }) {
-  return (
-    <div className="flex justify-between items-center  bg-neutral-900 text-white px-6 py-3 text-sm font-semibold border-b border-neutral-800">
-      <Logo width={32} height={32} />
-      <span>{name}</span>
-      <Clear
-        className="cursor-pointer w-[24px] h-[24px] [&>path]:stroke-neutral-500"
-        onClick={() => {
-          onclose();
-        }}
-        fill="white"
-      />
-    </div>
-  );
-}
-
-function IconLabel({
-  icon,
-  label,
-  onclick,
-}: {
-  icon: JSX.Element;
-  label: string;
-  onclick: () => void;
-}) {
-  return (
-    <div
-      className="cursor-pointer flex flex-col gap-1 w-fit h-fit justify-center items-center px-[10px] py-[4px]"
-      onClick={onclick}
-    >
-      {icon}
-      <div className="font-semibold text-white text-sm">{label}</div>
     </div>
   );
 }

@@ -34,3 +34,23 @@ export interface DiscussionParticipant {
   user_id: number;
   participant_id: string;
 }
+
+export interface StartMeetingRequest {
+  start_meeting: object;
+}
+
+export function startMeetingRequest(): StartMeetingRequest {
+  return {
+    start_meeting: {},
+  };
+}
+
+export interface ParticipantMeetingRequest {
+  participant_meeting: object;
+}
+
+export function participantMeetingRequest(): ParticipantMeetingRequest {
+  return {
+    participant_meeting: {},
+  };
+}
