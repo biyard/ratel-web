@@ -34,6 +34,7 @@ import {
 
 export default function DiscussionByIdPage() {
   const [isVideoOn, setIsVideoOn] = useState(true);
+  const [isSharing, setIsSharing] = useState(false);
 
   const [meetingSession, setMeetingSession] =
     useState<DefaultMeetingSession | null>(null);
@@ -97,13 +98,26 @@ export default function DiscussionByIdPage() {
       />
 
       <div className="flex-1 flex items-center justify-center relative">
+        {meetingSession && isSharing && (
+          <ContentShareVideo meetingSession={meetingSession} />
+        )}
+
         {meetingSession && (
-          <LocalVideo meetingSession={meetingSession} isVideoOn={isVideoOn} />
+          <div
+            className={
+              isSharing
+                ? 'absolute bottom-4 right-4 w-[180px] h-[130px] z-10'
+                : 'w-full h-full'
+            }
+          >
+            <LocalVideo meetingSession={meetingSession} isVideoOn={isVideoOn} />
+          </div>
         )}
       </div>
 
       <Bottom
         isVideoOn={isVideoOn}
+        isSharing={isSharing}
         onclose={() => {
           router.replace(route.deliberationSpaceById(discussion.space_id));
         }}
@@ -118,6 +132,23 @@ export default function DiscussionByIdPage() {
         onVideoToggle={() => {
           setIsVideoOn((prev) => !prev);
         }}
+        onShareToggle={async () => {
+          if (!meetingSession) return;
+
+          const av = meetingSession.audioVideo;
+
+          if (!isSharing) {
+            try {
+              await av.startContentShareFromScreenCapture();
+              setIsSharing(true);
+            } catch (err) {
+              logger.error('Failed to share video with error: ', err);
+            }
+          } else {
+            av.stopContentShare();
+            setIsSharing(false);
+          }
+        }}
       />
 
       {activePanel === 'participants' && (
@@ -127,6 +158,42 @@ export default function DiscussionByIdPage() {
         <ChatPanel onClose={() => setActivePanel(null)} />
       )}
     </div>
+  );
+}
+
+function ContentShareVideo({
+  meetingSession,
+}: {
+  meetingSession: DefaultMeetingSession;
+}) {
+  const contentRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const av = meetingSession.audioVideo;
+
+    const observer = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      videoTileDidUpdate: (tileState: any) => {
+        if (tileState.isContent && tileState.tileId && contentRef.current) {
+          av.bindVideoElement(tileState.tileId, contentRef.current);
+        }
+      },
+    };
+
+    av.addObserver(observer);
+
+    return () => {
+      av.removeObserver(observer);
+    };
+  }, [meetingSession]);
+
+  return (
+    <video
+      ref={contentRef}
+      className="absolute top-0 left-0 w-full h-full object-contain bg-black z-0"
+      autoPlay
+      muted
+    />
   );
 }
 
@@ -222,12 +289,15 @@ function Bottom({
   onParticipantsClick,
   onChatClick,
   onVideoToggle,
+  onShareToggle,
 }: {
   isVideoOn: boolean;
+  isSharing: boolean;
   onclose: () => void;
   onParticipantsClick: () => void;
   onChatClick: () => void;
   onVideoToggle: () => void;
+  onShareToggle: () => void;
 }) {
   return (
     <div className="flex flex-row w-full min-h-[70px] justify-between items-center bg-neutral-900 px-10 py-2.5 border-b border-neutral-800">
@@ -262,7 +332,9 @@ function Bottom({
         <IconLabel
           icon={<ZoomShare className="w-6 h-6" />}
           label="Share"
-          onclick={() => {}}
+          onclick={() => {
+            onShareToggle();
+          }}
         />
         <IconLabel
           icon={<ZoomRecord className="w-6 h-6" />}
