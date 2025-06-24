@@ -22,10 +22,11 @@ export default function NotificationClientPage() {
           <div className="flex justify-center">
             <button
               onClick={() => setActiveTab('notification')}
-              className={`text-xl font-semibold transition-colors relative ${activeTab === 'notification'
+              className={`text-xl font-semibold transition-colors relative ${
+                activeTab === 'notification'
                   ? 'text-white'
                   : 'text-neutral-500 hover:text-white'
-                }`}
+              }`}
             >
               Notification
               {activeTab === 'notification' && (
@@ -36,10 +37,11 @@ export default function NotificationClientPage() {
           <div className="flex justify-center">
             <button
               onClick={() => setActiveTab('message')}
-              className={`text-xl font-semibold transition-colors relative ${activeTab === 'message'
+              className={`text-xl font-semibold transition-colors relative ${
+                activeTab === 'message'
                   ? 'text-white'
                   : 'text-neutral-500 hover:text-white'
-                }`}
+              }`}
             >
               Message
               {activeTab === 'message' && (
@@ -93,7 +95,9 @@ export default function NotificationClientPage() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-white">{item.title}</span>
-                  <span className="text-neutral-500 text-sm">{item.message}</span>
+                  <span className="text-neutral-500 text-sm">
+                    {item.message}
+                  </span>
                 </div>
                 <p className="text-neutral-500 text-sm">{item.description}</p>
               </div>

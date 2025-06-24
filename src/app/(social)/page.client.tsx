@@ -31,7 +31,6 @@ import SuggestionItem from './_components/suggestions-items';
 import PromotionCard from './_components/promotion-card';
 import Loading from '@/app/loading';
 
-
 const FEED_RESET_TIMEOUT_MS = 10000;
 const SIZE = 10;
 

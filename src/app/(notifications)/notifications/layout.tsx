@@ -41,8 +41,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="space-y-4">
               {articles.map((article) => (
                 <div key={article.id} className="space-y-2">
-                  <h4 className="font-medium text-sm text-white">{article.title}</h4>
-                  <p className="text-neutral-500 text-xs">{article.description}</p>
+                  <h4 className="font-medium text-sm text-white">
+                    {article.title}
+                  </h4>
+                  <p className="text-neutral-500 text-xs">
+                    {article.description}
+                  </p>
                   <button className="text-neutral-500 text-xs flex items-center gap-1 hover:text-white">
                     View Detail <ArrowRight className="w-3 h-3" />
                   </button>
@@ -63,7 +67,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <AvatarFallback>{person.fallback}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <h4 className="font-medium text-sm text-white">{person.name}</h4>
+                    <h4 className="font-medium text-sm text-white">
+                      {person.name}
+                    </h4>
                     <p className="text-neutral-500 text-xs">{person.role}</p>
                   </div>
                   <Button
