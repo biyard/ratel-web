@@ -29,8 +29,6 @@ export default function TeamProfile({ team }: TeamProfileProps) {
 
   const isFollowing = followings.some((f: { id: number }) => f.id === team.id);
 
-  console.log('user info: ', isFollowing);
-
   const handleFollow = async (userId: number) => {
     await post(ratelApi.networks.follow(userId), followRequest());
   };

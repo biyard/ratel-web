@@ -1,12 +1,9 @@
 'use client';
 
 import BlackBox from '@/app/(social)/_components/black-box';
+import FileUploaderMetadata from '@/components/file-uploader-metadata';
 import { FileInfo } from '@/lib/api/models/feeds';
-import React from 'react';
-
-import { downloadPdfFromUrl } from '@/lib/pdf-utils';
 import { checkString } from '@/lib/string-filter-utils';
-import SpaceFile from '../../_components/space_file';
 
 import Jpg from '@/assets/icons/files/jpg.svg';
 import Png from '@/assets/icons/files/png.svg';
@@ -16,44 +13,48 @@ import Word from '@/assets/icons/files/docx.svg';
 import Pptx from '@/assets/icons/files/pptx.svg';
 import Excel from '@/assets/icons/files/xlsx.svg';
 import Clear from '@/assets/icons/clear.svg';
-import FileUploaderMetadata from '@/components/file-uploader-metadata';
+import React from 'react';
+import { ArrowRight } from 'lucide-react';
+import { downloadPdfFromUrl } from '@/lib/pdf-utils';
+import { ElearningCreateRequest } from '@/lib/api/models/elearning';
 
-export interface SpaceFilesProps {
+export interface SpaceElearningProps {
   isEdit?: boolean;
-  files: FileInfo[];
+  elearnings: ElearningCreateRequest[];
   onremove?: (index: number) => void;
   onadd?: (index: FileInfo) => void;
 }
 
-export default function SpaceFiles({
+export default function SpaceElearning({
   isEdit = false,
-  files,
+  elearnings,
   onremove = () => {},
   onadd = () => {},
-}: SpaceFilesProps) {
+}: SpaceElearningProps) {
   const handlePdfDownload = async (file: FileInfo) => {
     await downloadPdfFromUrl({
       url: file.url ?? '',
       fileName: file.name,
     });
   };
+
   return (
     <BlackBox>
       <div className="flex flex-col w-full gap-5">
         <div className="font-bold text-white text-[15px]/[20px]">
-          Attached Files
+          e-Learnings
         </div>
 
         {isEdit ? (
           <div className="flex flex-col w-full gap-[10px]">
-            <AddImage onadd={onadd} />
+            <AddFile onadd={onadd} />
             <div className="flex flex-col w-full gap-2.5">
-              {files
-                ?.filter((file) => !checkString(file.name))
+              {elearnings
+                ?.filter((file) => !checkString(file.files[0].name))
                 .map((file, index) => (
                   <EditableFile
                     key={index}
-                    file={file}
+                    file={file.files[0]}
                     onclick={() => {
                       onremove(index);
                     }}
@@ -62,14 +63,14 @@ export default function SpaceFiles({
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 max-tablet:grid-cols-1 gap-2.5">
-            {files
-              ?.filter((file) => !checkString(file.name))
+          <div className="flex flex-col w-full gap-[10px]">
+            {elearnings
+              ?.filter((file) => !checkString(file.files[0].name))
               .map((file, index) => (
-                <SpaceFile
-                  file={file}
+                <EBook
+                  file={file.files[0]}
                   key={'file ' + index}
-                  onClick={() => handlePdfDownload(file)}
+                  onClick={() => handlePdfDownload(file.files[0])}
                 />
               ))}
           </div>
@@ -79,13 +80,42 @@ export default function SpaceFiles({
   );
 }
 
-function AddImage({ onadd }: { onadd: (file: FileInfo) => void }) {
+//FIXME: implement pdf reader
+function EBook({ file, onClick }: { file: FileInfo; onClick: () => void }) {
+  return (
+    <div className="flex flex-row justify-between items-center pb-[10px] border-b border-b-neutral-800">
+      <div className="flex flex-col gap-1">
+        <div className="font-normal text-neutral-400 text-sm">eBook</div>
+        <div className="font-bold text-white text-lg">
+          {file.name.replace(/\.[^/.]+$/, '')}
+        </div>
+      </div>
+      <ReadButton onClick={onClick} />
+    </div>
+  );
+}
+
+function ReadButton({ onClick }: { onClick: () => void }) {
+  return (
+    <div
+      className="cursor-pointer flex flex-row items-center w-fit h-fit px-5 py-2.5 gap-2.5 bg-white rounded-lg"
+      onClick={() => {
+        onClick();
+      }}
+    >
+      <div className="font-bold text-[#000203] text-sm">Read</div>
+      <ArrowRight className="stroke-black stroke-3 w-[15px] h-[15px]" />
+    </div>
+  );
+}
+
+function AddFile({ onadd }: { onadd: (file: FileInfo) => void }) {
   return (
     <FileUploaderMetadata
-      isImage={false}
       onUploadSuccess={(file) => {
         onadd(file);
       }}
+      isImage={false}
     >
       <div className="cursor-pointer flex flex-row w-fit h-fit px-[10px] py-[5px] rounded-[8px] bg-neutral-700 hover:bg-neutral-600 font-medium text-white text-sm">
         Add File

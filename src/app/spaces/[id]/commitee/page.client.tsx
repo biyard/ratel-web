@@ -8,12 +8,14 @@ import SpaceHeader from '../_components/space_header';
 import SpaceCouponProgress from '../_components/coupon-progress';
 import SpaceContents from '../_components/space_contents';
 import SpaceFiles from '../_components/space_files';
+import { useRouter } from 'next/navigation';
 
 export default function SpaceByIdPage() {
   const params = useParams();
   const spaceId = Number(params.id);
   const { data: space } = useSpaceBySpaceId(spaceId);
   const redeem = useRedeemCode(spaceId);
+  const router = useRouter();
 
   return (
     <div className="flex flex-col w-full justify-start items-start">
@@ -23,6 +25,9 @@ export default function SpaceByIdPage() {
         proposerImage={space?.author[0].profile_url ?? ''}
         proposerName={space?.author[0].nickname ?? ''}
         createdAt={space?.created_at}
+        onback={() => {
+          router.back();
+        }}
       />
       <div className="flex flex-col w-full mt-7.5 gap-2.5">
         <SpaceCouponProgress progress={redeem.data?.used?.length || 0} />
