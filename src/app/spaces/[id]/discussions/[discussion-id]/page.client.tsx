@@ -17,11 +17,12 @@ import {
 import { logger } from '@/lib/logger';
 import { route } from '@/route';
 import { useParams, useRouter } from 'next/navigation';
-import React, { JSX, useEffect, useRef, useState } from 'react';
+import React, { JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import Image from 'next/image';
 import {
+  DiscussionParticipant,
   participantMeetingRequest,
   startMeetingRequest,
 } from '@/lib/api/models/discussion';
@@ -40,6 +41,8 @@ export default function DiscussionByIdPage() {
   const [isSharing, setIsSharing] = useState(false);
   const [isAudioOn, setIsAudioOn] = useState(true);
 
+  const [micStates] = useState<Record<string, boolean>>({}); //FIXME: implement mic states
+  const [videoStates] = useState<Record<string, boolean>>({}); //FIXME: implement video states
   const [meetingSession, setMeetingSession] =
     useState<DefaultMeetingSession | null>(null);
   const [activePanel, setActivePanel] = useState<
@@ -56,6 +59,8 @@ export default function DiscussionByIdPage() {
   const discussion = data.data;
   logger.debug('params: ', spaceId, discussionId);
   logger.debug('discussion: ', discussion);
+
+  const users = discussion.participants;
 
   useEffect(() => {
     async function startChime() {
@@ -174,6 +179,9 @@ export default function DiscussionByIdPage() {
 
       {activePanel === 'participants' && (
         <ParticipantsPanel
+          micStates={micStates}
+          videoStates={videoStates}
+          users={users}
           participants={participants}
           onClose={() => setActivePanel(null)}
         />
@@ -452,9 +460,15 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
 }
 
 function ParticipantsPanel({
+  micStates,
+  videoStates,
+  users,
   participants,
   onClose,
 }: {
+  micStates: Record<string, boolean>;
+  videoStates: Record<string, boolean>;
+  users: DiscussionParticipant[];
   participants: Participant[];
   onClose: () => void;
 }) {
@@ -463,6 +477,14 @@ function ParticipantsPanel({
   useEffect(() => {
     setTimeout(() => setVisible(true), 10);
   }, []);
+
+  const userIdToAttendeeId = useMemo(() => {
+    const map = new Map<number, string>();
+    users.forEach((u) => {
+      map.set(u.user_id, u.participant_id);
+    });
+    return map;
+  }, [users]);
 
   const handleClose = () => {
     setVisible(false);
@@ -488,34 +510,51 @@ function ParticipantsPanel({
       </div>
 
       <div className="flex flex-1 overflow-y-auto px-[10px] py-[20px] gap-[20px]">
-        {participants.map((participant, index) => (
-          <div
-            key={index}
-            className="flex flex-row w-full justify-between items-center"
-          >
-            <div className="flex flex-row w-fit items-center gap-1">
-              {participant.profile_url ? (
-                <Image
-                  width={30}
-                  height={30}
-                  src={participant.profile_url || '/default-profile.png'}
-                  alt={`${participant.username}'s profile`}
-                  className={`w-[30px] h-[30px] object-cover rounded-full`}
-                />
-              ) : (
-                <div className={`w-8 h-8 bg-neutral-500 rounded-full`} />
-              )}
-              <div className="font-medium text-white text-sm">
-                {participant.username}
+        {participants.map((participant, index) => {
+          const attendeeId = userIdToAttendeeId.get(participant.id);
+
+          const isMicOn = micStates[attendeeId ?? ''] ?? false;
+          const isVideoOn = videoStates[attendeeId ?? ''] ?? false;
+
+          console.log('isMicOn: ', isMicOn, 'isVideoOn: ', isVideoOn);
+
+          return (
+            <div
+              key={index}
+              className="flex flex-row w-full justify-between items-center"
+            >
+              <div className="flex flex-row w-fit items-center gap-1">
+                {participant.profile_url ? (
+                  <Image
+                    width={30}
+                    height={30}
+                    src={participant.profile_url || '/default-profile.png'}
+                    alt={`${participant.username}'s profile`}
+                    className="w-[30px] h-[30px] object-cover rounded-full"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-neutral-500 rounded-full" />
+                )}
+                <div className="font-medium text-white text-sm">
+                  {participant.username}
+                </div>
+              </div>
+
+              <div className="flex flex-row w-fit gap-2">
+                {isMicOn ? (
+                  <ZoomMicOn className="w-[18px] h-[18px] stroke-white" />
+                ) : (
+                  <ZoomMicOff className="w-[18px] h-[18px] stroke-white" />
+                )}
+                {isVideoOn ? (
+                  <ZoomVideoOn className="w-[18px] h-[18px] stroke-white" />
+                ) : (
+                  <ZoomVideoOff className="w-[18px] h-[18px] stroke-white" />
+                )}
               </div>
             </div>
-
-            <div className="flex flex-row w-fit gap-2">
-              <ZoomMicOn className="w-[18px] h-[18px] stroke-white" />
-              <ZoomVideoOn className="w-[18px] h-[18px] stroke-white" />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
