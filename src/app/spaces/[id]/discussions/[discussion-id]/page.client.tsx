@@ -7,6 +7,7 @@ import {
   ZoomChat,
   ZoomClose,
   ZoomMicOff,
+  ZoomMicOn,
   ZoomParticipants,
   ZoomRecord,
   ZoomShare,
@@ -35,6 +36,7 @@ import {
 export default function DiscussionByIdPage() {
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isSharing, setIsSharing] = useState(false);
+  const [isAudioOn, setIsAudioOn] = useState(true);
 
   const [meetingSession, setMeetingSession] =
     useState<DefaultMeetingSession | null>(null);
@@ -117,6 +119,7 @@ export default function DiscussionByIdPage() {
 
       <Bottom
         isVideoOn={isVideoOn}
+        isAudioOn={isAudioOn}
         isSharing={isSharing}
         onclose={() => {
           router.replace(route.deliberationSpaceById(discussion.space_id));
@@ -148,6 +151,19 @@ export default function DiscussionByIdPage() {
             av.stopContentShare();
             setIsSharing(false);
           }
+        }}
+        onAudioToggle={() => {
+          if (!meetingSession) return;
+
+          const av = meetingSession.audioVideo;
+
+          if (isAudioOn) {
+            av.realtimeMuteLocalAudio();
+          } else {
+            av.realtimeUnmuteLocalAudio();
+          }
+
+          setIsAudioOn((prev) => !prev);
         }}
       />
 
@@ -284,18 +300,22 @@ function Header({ name, onclose }: { name: string; onclose: () => void }) {
 
 function Bottom({
   isVideoOn,
+  isAudioOn,
 
   onclose,
   onParticipantsClick,
   onChatClick,
+  onAudioToggle,
   onVideoToggle,
   onShareToggle,
 }: {
   isVideoOn: boolean;
+  isAudioOn: boolean;
   isSharing: boolean;
   onclose: () => void;
   onParticipantsClick: () => void;
   onChatClick: () => void;
+  onAudioToggle: () => void;
   onVideoToggle: () => void;
   onShareToggle: () => void;
 }) {
@@ -303,9 +323,17 @@ function Bottom({
     <div className="flex flex-row w-full min-h-[70px] justify-between items-center bg-neutral-900 px-10 py-2.5 border-b border-neutral-800">
       <div className="flex flex-row gap-5 w-[80px]">
         <IconLabel
-          icon={<ZoomMicOff className="w-6 h-6" />}
+          icon={
+            isAudioOn ? (
+              <ZoomMicOn className="w-6 h-6" />
+            ) : (
+              <ZoomMicOff className="w-6 h-6" />
+            )
+          }
           label="Audio"
-          onclick={() => {}}
+          onclick={() => {
+            onAudioToggle();
+          }}
         />
         <IconLabel
           icon={
@@ -392,14 +420,16 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
         visible ? 'translate-x-0' : 'translate-x-full'
       }`}
     >
-      <div className="flex justify-between items-center px-4 py-3 border-b border-neutral-600 text-white">
-        Chat
-        <button
+      <div className="flex justify-between items-center px-4 py-3 border-b border-neutral-600">
+        <div className="flex flex-row w-fit gap-2.5">
+          <Logo width={25} height={25} />
+          <div className="font-semibold text-sm text-white">Chat</div>
+        </div>
+        <Clear
+          className="cursor-pointer w-[24px] h-[24px] [&>path]:stroke-[#bfc8d9]"
           onClick={handleClose}
-          className="text-neutral-400 hover:text-white"
-        >
-          ✕
-        </button>
+          fill="white"
+        />
       </div>
       <div className="flex-1 p-4 text-white text-sm overflow-y-auto">
         {/* <div className="mb-2">[12:58 PM] 사용자1: 안녕하세요!</div>
