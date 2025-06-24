@@ -11,6 +11,7 @@ import {
   ZoomRecord,
   ZoomShare,
   ZoomVideoOff,
+  ZoomVideoOn,
 } from '@/components/icons';
 import { logger } from '@/lib/logger';
 import { route } from '@/route';
@@ -32,6 +33,8 @@ import {
 } from 'amazon-chime-sdk-js';
 
 export default function DiscussionByIdPage() {
+  const [isVideoOn, setIsVideoOn] = useState(true);
+
   const [meetingSession, setMeetingSession] =
     useState<DefaultMeetingSession | null>(null);
   const [activePanel, setActivePanel] = useState<
@@ -94,10 +97,13 @@ export default function DiscussionByIdPage() {
       />
 
       <div className="flex-1 flex items-center justify-center relative">
-        {meetingSession && <LocalVideo meetingSession={meetingSession} />}
+        {meetingSession && (
+          <LocalVideo meetingSession={meetingSession} isVideoOn={isVideoOn} />
+        )}
       </div>
 
       <Bottom
+        isVideoOn={isVideoOn}
         onclose={() => {
           router.replace(route.deliberationSpaceById(discussion.space_id));
         }}
@@ -108,6 +114,9 @@ export default function DiscussionByIdPage() {
         }}
         onChatClick={() => {
           setActivePanel((prev) => (prev === 'chat' ? null : 'chat'));
+        }}
+        onVideoToggle={() => {
+          setIsVideoOn((prev) => !prev);
         }}
       />
 
@@ -123,67 +132,63 @@ export default function DiscussionByIdPage() {
 
 function LocalVideo({
   meetingSession,
+  isVideoOn,
 }: {
   meetingSession: DefaultMeetingSession;
+  isVideoOn: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
-    if (!meetingSession) return;
+    const av = meetingSession.audioVideo;
 
-    const audioVideo = meetingSession.audioVideo;
-    let rafId: number;
-
-    const tryBind = () => {
-      const tile = audioVideo.getLocalVideoTile();
+    const bind = () => {
+      const tile = av.getLocalVideoTile();
       const element = videoRef.current;
 
-      if (
-        tile &&
-        element &&
-        element.id &&
-        tile.state().boundVideoElement === null
-      ) {
-        logger.debug('Binding video element with ID:', element.id);
-        audioVideo.bindVideoElement(tile.id(), element);
-      } else if (!tile) {
-        logger.debug('Waiting for local video tile...');
-        rafId = requestAnimationFrame(tryBind);
-      } else {
-        logger.debug(
-          'Tile exists but already bound or element missing. Skipping retry.',
-        );
+      if (tile && element && tile.state().boundVideoElement === null) {
+        av.bindVideoElement(tile.id(), element);
       }
     };
 
-    const start = async () => {
-      const av = meetingSession.audioVideo;
-
+    const init = async () => {
       const videoDevices = await av.listVideoInputDevices();
-      logger.debug('videoDevices:', videoDevices);
-
       if (videoDevices.length > 0) {
         await av.startVideoInput(videoDevices[0].deviceId);
       }
-
       av.start();
-      av.startLocalVideoTile();
+      setStarted(true);
+
+      if (isVideoOn) {
+        av.startLocalVideoTile();
+      }
 
       if (videoRef.current) {
         videoRef.current.id = 'local-video-element';
       }
 
-      rafId = requestAnimationFrame(tryBind);
+      bind();
     };
 
-    start();
+    init();
 
     return () => {
-      cancelAnimationFrame(rafId);
-      audioVideo.stopLocalVideoTile();
-      audioVideo.stop();
+      av.stopLocalVideoTile();
+      av.stop();
     };
   }, [meetingSession]);
+
+  useEffect(() => {
+    const av = meetingSession.audioVideo;
+    if (!started) return;
+
+    if (isVideoOn) {
+      av.startLocalVideoTile();
+    } else {
+      av.stopLocalVideoTile();
+    }
+  }, [isVideoOn]);
 
   return (
     <video
@@ -211,13 +216,18 @@ function Header({ name, onclose }: { name: string; onclose: () => void }) {
 }
 
 function Bottom({
+  isVideoOn,
+
   onclose,
   onParticipantsClick,
   onChatClick,
+  onVideoToggle,
 }: {
+  isVideoOn: boolean;
   onclose: () => void;
   onParticipantsClick: () => void;
   onChatClick: () => void;
+  onVideoToggle: () => void;
 }) {
   return (
     <div className="flex flex-row w-full min-h-[70px] justify-between items-center bg-neutral-900 px-10 py-2.5 border-b border-neutral-800">
@@ -228,9 +238,17 @@ function Bottom({
           onclick={() => {}}
         />
         <IconLabel
-          icon={<ZoomVideoOff className="w-6 h-6" />}
+          icon={
+            isVideoOn ? (
+              <ZoomVideoOn className="w-6 h-6" />
+            ) : (
+              <ZoomVideoOff className="w-6 h-6" />
+            )
+          }
           label="Video"
-          onclick={() => {}}
+          onclick={() => {
+            onVideoToggle();
+          }}
         />
       </div>
 
@@ -312,8 +330,8 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
         </button>
       </div>
       <div className="flex-1 p-4 text-white text-sm overflow-y-auto">
-        <div className="mb-2">[12:58 PM] 사용자1: 안녕하세요!</div>
-        <div className="mb-2">[12:59 PM] 사용자2: 반가워요!</div>
+        {/* <div className="mb-2">[12:58 PM] 사용자1: 안녕하세요!</div>
+        <div className="mb-2">[12:59 PM] 사용자2: 반가워요!</div> */}
       </div>
       <div className="border-t border-neutral-600 p-2">
         <input
@@ -354,13 +372,13 @@ function ParticipantsPanel({ onClose }: { onClose: () => void }) {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-2 text-white text-sm">
+      {/* <div className="flex-1 overflow-y-auto px-4 py-2 text-white text-sm">
         {[...Array(8)].map((_, i) => (
           <div key={i} className="py-2 border-b border-neutral-800">
             ID or nickname{i + 1} (Role)
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }
