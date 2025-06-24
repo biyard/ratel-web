@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
+import { peopleToFollow, articles } from './data';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,8 +17,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <h3 className="font-semibold text-white">Hot Promotion</h3>
             </div>
             <div className="flex items-center gap-3 mb-3">
-              {/* <div className="w-12 h-12 bg-[#fcb300] rounded-lg flex items-center justify-center">
-                </div> */}
               <Image
                 src="/images/poll.png"
                 width={100}
@@ -30,7 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </h4>
               </div>
             </div>
-            <button className="text-[#737373] text-sm flex items-center gap-1 hover:text-white">
+            <button className="text-neutral-500 text-sm flex items-center gap-1 hover:text-white">
               View all <ArrowRight className="w-3 h-3" />
             </button>
           </div>
@@ -40,47 +39,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <h3 className="font-semibold text-white">News</h3>
 
             <div className="space-y-4">
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm text-white">
-                  Ratel' Launches Digital Asset Policy Comparison Feature Ahead
-                  of 2025 Election
-                </h4>
-                <p className="text-[#737373] text-xs">
-                  Ratel, a blockchain-based legislative social media platform,
-                  has introduced a new feature that allows voters to...
-                </p>
-                <button className="text-[#737373] text-xs flex items-center gap-1 hover:text-white">
-                  View Detail <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm text-white">
-                  Legislative Platform 'Ratel' Records Public Opinion on
-                  Election Pledges via Blockchain
-                </h4>
-                <p className="text-[#737373] text-xs">
-                  Ratel, a blockchain-based social media platform, has launched
-                  a new feature ahead of South Korea's 2025...
-                </p>
-                <button className="text-[#737373] text-xs flex items-center gap-1 hover:text-white">
-                  View Detail <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm text-white">
-                  Decentralized Legislative Platform 'RATEL' Leads Crypto
-                  Regulatory Reform in South Korea
-                </h4>
-                <p className="text-[#737373] text-xs">
-                  RATEL is the world's first decentralized legislative DAO
-                  platform empowering communities to propose and monitor...
-                </p>
-                <button className="text-[#737373] text-xs flex items-center gap-1 hover:text-white">
-                  View Detail <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
+              {articles.map((article) => (
+                <div key={article.id} className="space-y-2">
+                  <h4 className="font-medium text-sm text-white">{article.title}</h4>
+                  <p className="text-neutral-500 text-xs">{article.description}</p>
+                  <button className="text-neutral-500 text-xs flex items-center gap-1 hover:text-white">
+                    View Detail <ArrowRight className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -89,68 +56,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <h3 className="font-semibold text-white">Add to your feed</h3>
 
             <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src="/trump.jpg?height=40&width=40" />
-                  <AvatarFallback>DT</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h4 className="font-medium text-sm text-white">
-                    Donald Trump
-                  </h4>
-                  <p className="text-[#737373] text-xs">President of the US</p>
+              {peopleToFollow.map((person) => (
+                <div key={person.id} className="flex items-center gap-3">
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage src={person.image} />
+                    <AvatarFallback>{person.fallback}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <h4 className="font-medium text-sm text-white">{person.name}</h4>
+                    <p className="text-neutral-500 text-xs">{person.role}</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="bg-neutral-700 border-neutral-700 text-white hover:bg-[#262626]"
+                  >
+                    + Follow
+                  </Button>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="bg-[#404040] border-[#404040] text-white hover:bg-[#262626]"
-                >
-                  + Follow
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src="/elon.png?height=40&width=40" />
-                  <AvatarFallback>EM</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h4 className="font-medium text-sm text-white">Elon Musk</h4>
-                  <p className="text-[#737373] text-xs">
-                    CEO of Tesla and SpaceX
-                  </p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="bg-[#404040] border-[#404040] text-white hover:bg-[#262626] rounded-b-lg"
-                >
-                  + Follow
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src="/jongsook.png?height=40&width=40" />
-                  <AvatarFallback>JP</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h4 className="font-medium text-sm text-white">
-                    Jongseok Park
-                  </h4>
-                  <p className="text-[#737373] text-xs">National Assembly of</p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="bg-[#404040] border-[#404040] text-white hover:bg-[#262626]"
-                >
-                  + Follow
-                </Button>
-              </div>
+              ))}
             </div>
 
-            <button className="text-[#737373] text-sm flex items-center gap-1 hover:text-white">
+            <button className="text-neutral-500 text-sm flex items-center gap-1 hover:text-white">
               View all <ArrowRight className="w-3 h-3" />
             </button>
           </div>
