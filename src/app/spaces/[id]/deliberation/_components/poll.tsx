@@ -11,6 +11,11 @@ import { AnswerType } from './question/answer_type_select';
 export default function PollPage({
   title,
   survey,
+  startDate,
+  endDate,
+
+  setStartDate,
+  setEndDate,
   setTitle,
   setSurvey,
   userType,
@@ -23,6 +28,11 @@ export default function PollPage({
 }: {
   title: string;
   survey: Poll;
+  startDate: number;
+  endDate: number;
+
+  setStartDate: (startDate: number) => void;
+  setEndDate: (endDate: number) => void;
   setTitle: (title: string) => void;
   setSurvey: (survey: Poll) => void;
   userType: number;
@@ -54,6 +64,10 @@ export default function PollPage({
         <SpaceSurvey
           isEdit={isEdit}
           questions={questions}
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
           onadd={(question: Question) => {
             if (survey.surveys.length === 0) {
               setSurvey({

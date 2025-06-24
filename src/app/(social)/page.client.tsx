@@ -31,7 +31,6 @@ import SuggestionItem from './_components/suggestions-items';
 import PromotionCard from './_components/promotion-card';
 import Loading from '@/app/loading';
 
-
 const FEED_RESET_TIMEOUT_MS = 10000;
 const SIZE = 10;
 
@@ -74,6 +73,7 @@ export default function Home() {
   const { data: postData, error: postError, isLoading } = usePost(page, SIZE);
 
   // Processing and deduplication of feed data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const processFeedData = useCallback((items: any[]): Post[] => {
     if (!items) return [];
 

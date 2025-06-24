@@ -25,10 +25,10 @@ import { SpaceDraftCreateRequest } from '@/lib/api/models/space_draft';
 import { useRouter } from 'next/navigation';
 
 export const DeliberationTab = {
-  THREAD: 'Thread',
+  SUMMARY: 'Summary',
   DELIBERATION: 'Deliberation',
   POLL: 'Poll',
-  FINAL: 'Final Consensus',
+  RECOMMANDATION: 'Recommandation',
 } as const;
 
 export type DeliberationTabType =
@@ -60,7 +60,7 @@ export default function SpaceByIdPage() {
   const router = useRouter();
   const space = data.data;
   const [selectedType, setSelectedType] = useState<DeliberationTabType>(
-    DeliberationTab.THREAD,
+    DeliberationTab.SUMMARY,
   );
   const [isEdit, setIsEdit] = useState(false);
   const [title, setTitle] = useState(space.title ?? '');
@@ -139,7 +139,7 @@ export default function SpaceByIdPage() {
 
   return (
     <div className="flex flex-row w-full gap-5">
-      {selectedType == DeliberationTab.THREAD ? (
+      {selectedType == DeliberationTab.SUMMARY ? (
         <ThreadPage
           title={title}
           thread={thread}
@@ -191,6 +191,10 @@ export default function SpaceByIdPage() {
         <PollPage
           title={title}
           survey={survey}
+          startDate={startedAt}
+          endDate={endedAt}
+          setStartDate={setStartedAt}
+          setEndDate={setEndedAt}
           setTitle={(t: string) => {
             setTitle(t);
           }}
@@ -243,20 +247,14 @@ export default function SpaceByIdPage() {
           setSelectedType(tab);
         }}
         isEdit={isEdit}
-        setStartDate={(startedAt: number) => {
-          setStartedAt(Math.floor(startedAt));
-        }}
-        setEndDate={(endedAt: number) => {
-          setEndedAt(Math.floor(endedAt));
-        }}
         postingSpace={async () => {
           try {
             await handlePostingSpace();
             data.refetch();
 
-            showSuccessToast('success to posting space');
+            showSuccessToast('Your space has been posted successfully.');
           } catch (err) {
-            showErrorToast('failed to posting space');
+            showErrorToast('Failed to post the space. Please try again.');
             logger.error('failed to posting space with error: ', err);
           }
         }}
@@ -265,7 +263,9 @@ export default function SpaceByIdPage() {
         }}
         onsave={async () => {
           if (checkString(title) || checkString(thread.html_contents)) {
-            showErrorToast('Please remove the test keyword');
+            showErrorToast(
+              'Please remove any test-related keywords before saving.',
+            );
             setIsEdit(false);
             return;
           }
@@ -284,10 +284,10 @@ export default function SpaceByIdPage() {
             );
             data.refetch();
 
-            showSuccessToast('success to update space');
+            showSuccessToast('Space has been updated successfully.');
             setIsEdit(false);
           } catch (err) {
-            showErrorToast('failed to update space');
+            showErrorToast('Failed to update the space. Please try again.');
             logger.error('failed to update space with error: ', err);
             setIsEdit(false);
           }
