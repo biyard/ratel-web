@@ -9,9 +9,11 @@ import SpaceDiscussion from './space_discussion';
 import SpaceElearning from './space_elearning';
 import { FileInfo } from '@/lib/api/models/feeds';
 import { DiscussionCreateRequest } from '@/lib/api/models/discussion';
+import { SpaceStatus } from '@/lib/api/models/spaces';
 
 export default function DeliberationPage({
   title,
+  status,
   deliberation,
   setTitle,
   setDeliberation,
@@ -25,6 +27,7 @@ export default function DeliberationPage({
   onback,
 }: {
   title: string;
+  status: SpaceStatus;
   deliberation: Deliberation;
   setTitle: (title: string) => void;
   setDeliberation: (deliberation: Deliberation) => void;
@@ -40,6 +43,7 @@ export default function DeliberationPage({
       <SpaceHeader
         isEdit={isEdit}
         title={title}
+        status={status}
         userType={userType}
         proposerImage={proposerImage}
         proposerName={proposerName}

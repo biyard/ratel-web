@@ -51,3 +51,4 @@ export { default as BottomTriangle } from '@/assets/icons/bottom-triangle.svg';
 export { default as Calendar } from '@/assets/icons/calendar.svg';
 
 export { default as EditOption } from '@/assets/icons/edit-option.svg';
+export { default as Play } from '@/assets/icons/play.svg';

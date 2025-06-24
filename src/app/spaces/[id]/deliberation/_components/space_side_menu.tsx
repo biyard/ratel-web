@@ -8,7 +8,7 @@ import Clock from '@/assets/icons/clock.svg';
 import { BottomTriangle, Discuss, Edit1 } from '@/components/icons';
 import { File, Vote, CheckCircle } from 'lucide-react';
 import { DeliberationTab, DeliberationTabType } from '../page.client';
-import { SpaceStatus } from '@/lib/api/models/spaces';
+import { useUserInfo } from '@/lib/api/hooks/users';
 
 export default function SpaceSideMenu({
   spaceId,
@@ -28,11 +28,13 @@ export default function SpaceSideMenu({
   onsave: () => void;
 }) {
   const { data: space } = useSpaceBySpaceId(spaceId);
+  const { data: userInfo } = useUserInfo();
+  const userId = userInfo ? userInfo.id : 0;
   const created_at = space.created_at;
 
   return (
     <div className="flex flex-col max-w-[250px] max-tablet:!hidden w-full gap-[10px]">
-      {space.status != SpaceStatus.InProgress && (
+      {space.author.some((a) => a.id === userId) && (
         <EditSplitButton
           isEdit={isEdit}
           postingSpace={postingSpace}

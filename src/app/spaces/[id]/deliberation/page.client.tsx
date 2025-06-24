@@ -142,6 +142,7 @@ export default function SpaceByIdPage() {
       {selectedType == DeliberationTab.SUMMARY ? (
         <ThreadPage
           title={title}
+          status={space.status}
           thread={thread}
           setThread={(t: Thread) => {
             setThread(t);
@@ -166,6 +167,7 @@ export default function SpaceByIdPage() {
       ) : selectedType == DeliberationTab.DELIBERATION ? (
         <DeliberationPage
           title={title}
+          status={space.status}
           deliberation={deliberation}
           setTitle={(t: string) => {
             setTitle(t);
@@ -190,11 +192,16 @@ export default function SpaceByIdPage() {
       ) : selectedType == DeliberationTab.POLL ? (
         <PollPage
           title={title}
+          status={space.status}
           survey={survey}
           startDate={startedAt}
           endDate={endedAt}
-          setStartDate={setStartedAt}
-          setEndDate={setEndedAt}
+          setStartDate={(startDate: number) => {
+            setStartedAt(Math.floor(startDate));
+          }}
+          setEndDate={(endDate: number) => {
+            setEndedAt(Math.floor(endDate));
+          }}
           setTitle={(t: string) => {
             setTitle(t);
           }}
@@ -218,6 +225,7 @@ export default function SpaceByIdPage() {
       ) : (
         <FinalConsensusPage
           title={title}
+          status={space.status}
           draft={draft}
           setTitle={(t: string) => {
             setTitle(t);
