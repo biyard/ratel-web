@@ -1,7 +1,7 @@
 'use client';
 
 import { useDiscussionById } from '@/app/(social)/_hooks/use-discussion';
-import { Clear } from '@/components/icons';
+import { Clear, Logo } from '@/components/icons';
 import { logger } from '@/lib/logger';
 import { route } from '@/route';
 import { useParams, useRouter } from 'next/navigation';
@@ -20,17 +20,12 @@ export default function DiscussionByIdPage() {
 
   return (
     <div className="w-screen h-screen bg-black flex flex-col">
-      <div className="flex justify-between items-center bg-neutral-900 text-white px-6 py-3 text-sm font-semibold border-b border-neutral-800">
-        <span>VOICE KOREA</span>
-        <span>{discussion.name}</span>
-        <Clear
-          className="cursor-pointer w-[24px] h-[24px] [&>path]:stroke-neutral-500"
-          onClick={() => {
-            router.replace(route.deliberationSpaceById(discussion.space_id));
-          }}
-          fill="white"
-        />
-      </div>
+      <Header
+        name={discussion.name}
+        onclose={() => {
+          router.replace(route.deliberationSpaceById(discussion.space_id));
+        }}
+      />
 
       <div className="flex-1 flex items-center justify-center relative">
         <div className="w-[120px] h-[120px] bg-pink-200 rounded-xl shadow-lg flex items-center justify-center">
@@ -39,9 +34,6 @@ export default function DiscussionByIdPage() {
             alt="User Avatar"
             className="w-full h-full object-cover rounded-xl"
           />
-        </div>
-        <div className="absolute bottom-[5%] left-[5%] text-white text-sm">
-          Ria H
         </div>
       </div>
 
@@ -60,6 +52,22 @@ export default function DiscussionByIdPage() {
           End
         </button>
       </div>
+    </div>
+  );
+}
+
+function Header({ name, onclose }: { name: string; onclose: () => void }) {
+  return (
+    <div className="flex justify-between items-center bg-neutral-900 text-white px-6 py-3 text-sm font-semibold border-b border-neutral-800">
+      <Logo width={32} height={32} />
+      <span>{name}</span>
+      <Clear
+        className="cursor-pointer w-[24px] h-[24px] [&>path]:stroke-neutral-500"
+        onClick={() => {
+          onclose();
+        }}
+        fill="white"
+      />
     </div>
   );
 }

@@ -26,8 +26,6 @@ export default function ClientLayout({
     pathname,
   );
 
-  console.log('pathname: ', pathname, 'isDiscussionPage: ', isDiscussionPage);
-
   useEffect(() => {
     if (mobileExtends) {
       document.body.style.overflow = 'hidden';
