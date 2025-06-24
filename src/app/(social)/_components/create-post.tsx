@@ -46,6 +46,8 @@ import { postByUserIdQk } from '../_hooks/use-posts';
 import { checkString } from '@/lib/string-filter-utils';
 import { showErrorToast } from '@/lib/toast';
 import ToolbarPlugin from '@/components/toolbar/toolbar';
+import { useRouter } from 'next/navigation';
+import { route } from '@/route';
 
 export const editorTheme = {
   ltr: 'text-left',
@@ -332,6 +334,7 @@ export const PostDraftContext = createContext<PostDraftContextType | undefined>(
 export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const router = useRouter();
   const [expand, setExpand] = useState(false);
   const [draftId, setDraftId] = useState<number | null>(null);
   const [title, setTitle] = useState('');
@@ -387,6 +390,7 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
         setDraftId(draft.id);
         setTitle(draftTitle);
         setImage(draftImage);
+        logger.debug('Draft content:', draftContent);
         setContent(draftContent);
         lastSavedRef.current = {
           title: draftTitle,
@@ -517,7 +521,11 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await saveDraft(title, content, image);
 
-      await post(ratelApi.feeds.publishDraft(draftId), { publish: {} });
+      await post(ratelApi.feeds.publishDraft(draftId), {
+        publish: {},
+      });
+
+      router.push(route.threadByFeedId(draftId));
 
       resetState();
       setExpand(false);
@@ -538,6 +546,7 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     post,
     resetState,
     refetchDrafts,
+    router,
   ]);
 
   const contextValue = {

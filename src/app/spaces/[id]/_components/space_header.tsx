@@ -5,7 +5,6 @@ import ArrowLeft from '@/assets/icons/left.svg';
 // import Bookmark from '@/assets/icons/bookmark.svg';
 import Badge from '@/assets/icons/badge.svg';
 import { getTimeAgo } from '@/lib/time-utils';
-import { useRouter } from 'next/navigation';
 import { UserType } from '@/lib/api/models/user';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
@@ -18,6 +17,7 @@ export interface SpaceHeaderProps {
   createdAt: number;
 
   isEdit?: boolean;
+  onback: () => void;
   setTitle?: (title: string) => void;
 }
 
@@ -28,16 +28,16 @@ export default function SpaceHeader({
   proposerName,
   createdAt,
   isEdit = false,
+  onback = () => {},
   setTitle = () => {},
 }: SpaceHeaderProps) {
-  const router = useRouter();
   return (
     <div className="flex flex-col w-full gap-2.5">
       <div className="flex flex-row w-full justify-between items-center">
         <div
           className="cursor-pointer w-fit h-fit"
           onClick={() => {
-            router.back();
+            onback();
           }}
         >
           <ArrowLeft width={24} height={24} />

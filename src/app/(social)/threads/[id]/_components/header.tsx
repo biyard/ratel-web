@@ -9,15 +9,39 @@ import { getTimeAgo } from '@/lib/time-utils';
 import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import { BadgeIcon } from '@/components/icons';
+import Link from 'next/link';
+import { route } from '@/route';
+import { usePopup } from '@/lib/contexts/popup-service';
+import SpaceCreateModal from './space-create-modal';
+import { SpaceType } from '@/lib/api/models/spaces';
+import { config } from '@/config';
+import { useRouter } from 'next/navigation';
 
 export default function Header({ post_id }: { post_id: number }) {
   const { data: post } = useFeedByID(post_id);
+  const popup = usePopup();
+  const router = useRouter();
+  const space_id = post?.spaces[0]?.id;
 
+  let target;
+  if (space_id) {
+    if (post.spaces[0].space_type === SpaceType.Deliberation) {
+      target = route.deliberationSpaceById(space_id);
+    } else {
+      target = route.commiteeSpaceById(space_id);
+    }
+  }
+  const handleCreateSpace = () => {
+    popup
+      .open(<SpaceCreateModal feed_id={post_id} />)
+      .withoutBackdropClose()
+      .withTitle('Invite to Committee');
+  };
   return (
     <div className="flex flex-col w-full gap-2.5">
-      <div>
+      <button onClick={router.back}>
         <ArrowLeft />
-      </div>
+      </button>
       <div className="flex flex-row justify-between">
         <div>
           {post?.industry?.map((industry) => (
@@ -31,15 +55,18 @@ export default function Header({ post_id }: { post_id: number }) {
             </Badge>
           ))}
         </div>
-
-        <Button
-          variant="rounded_primary"
-          className="bg-white text-black px-2 py-1.5"
-          onClick={async () => {}}
-        >
-          <Plus className="size-5" />
-          Create a Space
-        </Button>
+        {space_id ? (
+          <Link href={target ?? ''}>
+            <Button variant="rounded_secondary">Join Space</Button>
+          </Link>
+        ) : (
+          (config.experiment ?? (
+            <Button variant="rounded_secondary" onClick={handleCreateSpace}>
+              <Plus className="size-5" />
+              Create Space
+            </Button>
+          ))
+        )}
       </div>
 
       <div>

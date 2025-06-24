@@ -62,7 +62,7 @@ export default function SpaceFiles({
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 max-tablet:grid-cols-1 gap-2.5">
+          <div className="grid grid-cols-1 max-tablet:grid-cols-1 gap-2.5">
             {files
               ?.filter((file) => !checkString(file.name))
               .map((file, index) => (
@@ -82,12 +82,13 @@ export default function SpaceFiles({
 function AddImage({ onadd }: { onadd: (file: FileInfo) => void }) {
   return (
     <FileUploaderMetadata
+      isImage={false}
       onUploadSuccess={(file) => {
         onadd(file);
       }}
     >
       <div className="cursor-pointer flex flex-row w-fit h-fit px-[10px] py-[5px] rounded-[8px] bg-neutral-700 hover:bg-neutral-600 font-medium text-white text-sm">
-        Add Image
+        Add File
       </div>
     </FileUploaderMetadata>
   );

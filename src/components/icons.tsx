@@ -1,6 +1,6 @@
 export { default as AlertCircle } from '@/assets/icons/alert-circle.svg';
 export { default as ArrowLeft } from '@/assets/icons/arrow-left.svg';
-export { default as ArrowRight } from '@/assets/icons/arrow-right.svg';
+export { default as ArrowRight } from '@/assets/icons/right.svg';
 export { default as Bell } from '@/assets/icons/bell.svg';
 export { default as Character } from '@/assets/icons/character.svg';
 export { default as CheckboxIcon } from '@/assets/icons/checkbox-icon.svg';
@@ -36,10 +36,18 @@ export { default as Pptx } from '@/assets/icons/files/pptx.svg';
 export { default as Excel } from '@/assets/icons/files/xlsx.svg';
 export { default as Upload } from '@/assets/icons/upload.svg';
 export { default as Add } from '@/assets/icons/add.svg';
+export { default as ChevronLeft } from '@/assets/icons/arrow-left.svg';
 export { default as ChevronRight } from '@/assets/icons/chevron-right.svg';
+
+export { default as BendArrowRight } from '@/assets/icons/bend-arrow-right.svg';
+
+export { default as Palace } from '@/assets/icons/palace.svg';
+export { default as Cube } from '@/assets/icons/cube.svg';
 export { default as CheckCircle } from '@/assets/icons/check-circle.svg';
 export { default as Discuss } from '@/assets/icons/discuss.svg';
 export { default as File } from '@/assets/icons/file.svg';
 export { default as Vote } from '@/assets/icons/vote.svg';
 export { default as BottomTriangle } from '@/assets/icons/bottom-triangle.svg';
 export { default as Calendar } from '@/assets/icons/calendar.svg';
+
+export { default as EditOption } from '@/assets/icons/edit-option.svg';

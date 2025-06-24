@@ -1,14 +1,14 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Header from '@/components/header';
 import Loading from '@/app/loading';
 import Link from 'next/link';
 import { route } from '@/route';
-import { useUserInfo } from '@/lib/api/hooks/users';
 import { useAuth } from '@/lib/contexts/auth-context';
 import { usePopup } from '@/lib/contexts/popup-service';
 import { LoginModal } from '@/components/popup/login-popup';
+import { useUserInfo } from '../_hooks/user';
 
 export default function ClientLayout({
   children,
@@ -19,6 +19,19 @@ export default function ClientLayout({
   const { data, refetch, isLoading } = useUserInfo();
   const { logout } = useAuth();
   const [mobileExtends, setMobileExtends] = useState(false);
+
+  useEffect(() => {
+    if (mobileExtends) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileExtends]);
+
   return (
     <>
       <Header
@@ -43,18 +56,14 @@ export default function ClientLayout({
       >
         <Link
           href={route.settings()}
-          onClick={() => {
-            setMobileExtends(false);
-          }}
+          onClick={() => setMobileExtends(false)}
           className="font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
         >
           {data?.nickname}
         </Link>
         <Link
           href={route.home()}
-          onClick={() => {
-            setMobileExtends(false);
-          }}
+          onClick={() => setMobileExtends(false)}
           className="font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
         >
           Home
@@ -75,7 +84,10 @@ export default function ClientLayout({
           <button
             className="cursor-pointer font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
             onClick={() => {
-              popup.open(<LoginModal />).withTitle('Join the Movement');
+              popup
+                .open(<LoginModal />)
+                .withTitle('Join the Movement')
+                .withoutBackdropClose();
             }}
           >
             Sign In

@@ -11,10 +11,18 @@ import FinalConsensusPage from './_components/final_consensus';
 import { FileInfo } from '@/lib/api/models/feeds';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
-import { spaceUpdateRequest } from '@/lib/api/models/spaces';
+import {
+  postingSpaceRequest,
+  spaceUpdateRequest,
+} from '@/lib/api/models/spaces';
 import { showErrorToast, showSuccessToast } from '@/lib/toast';
 import { logger } from '@/lib/logger';
 import { checkString } from '@/lib/string-filter-utils';
+import { DiscussionCreateRequest } from '@/lib/api/models/discussion';
+import { ElearningCreateRequest } from '@/lib/api/models/elearning';
+import { SurveyCreateRequest } from '@/lib/api/models/survey';
+import { SpaceDraftCreateRequest } from '@/lib/api/models/space_draft';
+import { useRouter } from 'next/navigation';
 
 export const DeliberationTab = {
   THREAD: 'Thread',
@@ -31,30 +39,101 @@ export interface Thread {
   files: FileInfo[];
 }
 
+export interface Poll {
+  surveys: SurveyCreateRequest[];
+}
+
+export interface FinalConsensus {
+  drafts: SpaceDraftCreateRequest[];
+}
+
+export interface Deliberation {
+  discussions: DiscussionCreateRequest[];
+  elearnings: ElearningCreateRequest[];
+}
+
 export default function SpaceByIdPage() {
   const { post } = useApiCall();
   const params = useParams();
   const spaceId = Number(params.id);
   const data = useSpaceBySpaceId(spaceId);
+  const router = useRouter();
   const space = data.data;
   const [selectedType, setSelectedType] = useState<DeliberationTabType>(
     DeliberationTab.THREAD,
   );
   const [isEdit, setIsEdit] = useState(false);
+  const [title, setTitle] = useState(space.title ?? '');
+  const [startedAt, setStartedAt] = useState(
+    space.started_at ?? Date.now() / 1000,
+  );
+  const [endedAt, setEndedAt] = useState(space.ended_at ?? Date.now() / 1000);
   const [thread, setThread] = useState<Thread>({
     html_contents: space.html_contents ?? '',
     files: space.files ?? [],
   });
-  const [title, setTitle] = useState(space.title ?? '');
+  const [deliberation, setDeliberation] = useState<Deliberation>({
+    discussions: space.discussions.map((disc) => ({
+      started_at: disc.started_at,
+      ended_at: disc.ended_at,
+      name: disc.name,
+      description: disc.description,
+    })),
+
+    elearnings: space.elearnings.map((elearning) => ({
+      files: elearning.files,
+    })),
+  });
+  const [survey, setSurvey] = useState<Poll>({
+    surveys: space.surveys.map((survey) => ({
+      started_at: survey.started_at,
+      ended_at: survey.ended_at,
+      questions: survey.questions,
+    })),
+  });
+
+  const [draft, setDraft] = useState<FinalConsensus>({
+    drafts: space.drafts.map((draft) => ({
+      title: draft.title,
+      html_contents: draft.html_contents,
+      files: draft.files,
+    })),
+  });
+
+  logger.debug('startedAt: ', startedAt, 'endedAt: ', endedAt);
+  logger.debug('deliberation: ', deliberation);
+
+  const handlePostingSpace = async () => {
+    await post(
+      ratelApi.spaces.getSpaceBySpaceId(spaceId),
+      postingSpaceRequest(),
+    );
+  };
 
   const handleUpdate = async (
     title: string,
+    started_at: number,
+    ended_at: number,
     html_contents: string,
     files: FileInfo[],
+    discussions: DiscussionCreateRequest[],
+    elearnings: ElearningCreateRequest[],
+    surveys: SurveyCreateRequest[],
+    drafts: SpaceDraftCreateRequest[],
   ) => {
     await post(
       ratelApi.spaces.getSpaceBySpaceId(spaceId),
-      spaceUpdateRequest(html_contents, files, title),
+      spaceUpdateRequest(
+        html_contents,
+        files,
+        discussions,
+        elearnings,
+        surveys,
+        drafts,
+        title,
+        started_at,
+        ended_at,
+      ),
     );
   };
 
@@ -75,23 +154,87 @@ export default function SpaceByIdPage() {
           proposerImage={space.author[0].profile_url ?? ''}
           proposerName={space.author[0].nickname ?? ''}
           createdAt={space?.created_at}
+          onback={() => {
+            if (isEdit) {
+              setIsEdit(false);
+              data.refetch();
+            } else {
+              router.back();
+            }
+          }}
         />
       ) : selectedType == DeliberationTab.DELIBERATION ? (
         <DeliberationPage
           title={title}
+          deliberation={deliberation}
           setTitle={(t: string) => {
             setTitle(t);
+          }}
+          setDeliberation={(d: Deliberation) => {
+            setDeliberation(d);
           }}
           isEdit={isEdit}
           userType={space.author[0].user_type ?? 0}
           proposerImage={space.author[0].profile_url ?? ''}
           proposerName={space.author[0].nickname ?? ''}
           createdAt={space?.created_at}
+          onback={() => {
+            if (isEdit) {
+              setIsEdit(false);
+              data.refetch();
+            } else {
+              router.back();
+            }
+          }}
         />
       ) : selectedType == DeliberationTab.POLL ? (
-        <PollPage />
+        <PollPage
+          title={title}
+          survey={survey}
+          setTitle={(t: string) => {
+            setTitle(t);
+          }}
+          setSurvey={(d: Poll) => {
+            setSurvey(d);
+          }}
+          isEdit={isEdit}
+          userType={space.author[0].user_type ?? 0}
+          proposerImage={space.author[0].profile_url ?? ''}
+          proposerName={space.author[0].nickname ?? ''}
+          createdAt={space?.created_at}
+          onback={() => {
+            if (isEdit) {
+              setIsEdit(false);
+              data.refetch();
+            } else {
+              router.back();
+            }
+          }}
+        />
       ) : (
-        <FinalConsensusPage />
+        <FinalConsensusPage
+          title={title}
+          draft={draft}
+          setTitle={(t: string) => {
+            setTitle(t);
+          }}
+          setDraft={(d: FinalConsensus) => {
+            setDraft(d);
+          }}
+          isEdit={isEdit}
+          userType={space.author[0].user_type ?? 0}
+          proposerImage={space.author[0].profile_url ?? ''}
+          proposerName={space.author[0].nickname ?? ''}
+          createdAt={space?.created_at}
+          onback={() => {
+            if (isEdit) {
+              setIsEdit(false);
+              data.refetch();
+            } else {
+              router.back();
+            }
+          }}
+        />
       )}
       <SpaceSideMenu
         spaceId={spaceId}
@@ -100,6 +243,23 @@ export default function SpaceByIdPage() {
           setSelectedType(tab);
         }}
         isEdit={isEdit}
+        setStartDate={(startedAt: number) => {
+          setStartedAt(Math.floor(startedAt));
+        }}
+        setEndDate={(endedAt: number) => {
+          setEndedAt(Math.floor(endedAt));
+        }}
+        postingSpace={async () => {
+          try {
+            await handlePostingSpace();
+            data.refetch();
+
+            showSuccessToast('success to posting space');
+          } catch (err) {
+            showErrorToast('failed to posting space');
+            logger.error('failed to posting space with error: ', err);
+          }
+        }}
         onedit={() => {
           setIsEdit(true);
         }}
@@ -111,7 +271,17 @@ export default function SpaceByIdPage() {
           }
 
           try {
-            await handleUpdate(title, thread.html_contents, thread.files);
+            await handleUpdate(
+              title,
+              startedAt,
+              endedAt,
+              thread.html_contents,
+              thread.files,
+              deliberation.discussions,
+              deliberation.elearnings,
+              survey.surveys,
+              draft.drafts,
+            );
             data.refetch();
 
             showSuccessToast('success to update space');

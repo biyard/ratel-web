@@ -13,3 +13,7 @@ export function convertNumberToString(value: number): string {
 
   return value.toFixed(1) + ' ' + suffixes[i - 1];
 }
+
+export function formatNumberWithCommas(value: number): string {
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
