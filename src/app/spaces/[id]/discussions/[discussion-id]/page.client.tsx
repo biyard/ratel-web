@@ -44,6 +44,9 @@ export default function DiscussionByIdPage() {
   const [meetingSession, setMeetingSession] =
     useState<DefaultMeetingSession | null>(null);
 
+  const [remoteContentTileOwner, setRemoteContentTileOwner] = useState<
+    string | null
+  >(null);
   const [micStates, setMicStates] = useState<Record<string, boolean>>({});
   const [videoStates, setVideoStates] = useState<Record<string, boolean>>({});
   const [messages, setMessages] = useState<
@@ -53,9 +56,8 @@ export default function DiscussionByIdPage() {
     'participants' | 'chat' | null
   >();
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [focusedAttendeeId, setFocusedAttendeeId] = useState<string | null>(
-    null,
-  );
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setFocusedAttendeeId] = useState<string | null>(null);
 
   const { post, get } = useApiCall();
   const router = useRouter();
@@ -111,6 +113,7 @@ export default function DiscussionByIdPage() {
   useEffect(() => {
     if (!meetingSession) return;
     const av = meetingSession.audioVideo;
+    av.start();
 
     const observer = {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -183,7 +186,6 @@ export default function DiscussionByIdPage() {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onMessageReceived = (dataMessage: any) => {
-      console.log('dataMessage: ', dataMessage);
       const senderId = dataMessage.senderAttendeeId;
       const text = new TextDecoder('utf-8').decode(dataMessage.data);
 
@@ -214,9 +216,8 @@ export default function DiscussionByIdPage() {
       const data = new TextEncoder().encode(text.trim());
 
       av.realtimeSendDataMessage(topic, data, 10000);
-      console.log('[SEND] message sent:', text);
     } catch (err) {
-      console.error('[SEND] failed to send message:', err);
+      logger.error('[SEND] failed to send message:', err);
     }
   };
   return (
@@ -229,33 +230,47 @@ export default function DiscussionByIdPage() {
       />
 
       <div className="flex-1 flex items-center justify-center relative">
-        {meetingSession && focusedAttendeeId ? (
-          <FocusedRemoteVideo
-            meetingSession={meetingSession}
-            attendeeId={focusedAttendeeId}
-          />
-        ) : (
-          <>
-            {meetingSession && (
-              <ContentShareVideo meetingSession={meetingSession} />
-            )}
-
-            {meetingSession && (
-              <div
-                className={
-                  isSharing
-                    ? 'absolute bottom-4 right-4 w-[180px] h-[130px] z-10'
-                    : 'max-w-[2100px] w-full h-full'
+        <>
+          {meetingSession && (
+            <RemoteContentShareVideo
+              meetingSession={meetingSession}
+              onRemoteContentTileUpdate={(tileState) => {
+                if (!tileState) {
+                  setRemoteContentTileOwner(null);
+                  return;
                 }
-              >
-                <LocalVideo
-                  meetingSession={meetingSession}
-                  isVideoOn={isVideoOn}
-                />
-              </div>
-            )}
-          </>
-        )}
+
+                const attendeeId = tileState.boundAttendeeId;
+                if (
+                  attendeeId &&
+                  attendeeId !==
+                    meetingSession.configuration.credentials?.attendeeId
+                ) {
+                  setRemoteContentTileOwner(attendeeId);
+                } else {
+                  setRemoteContentTileOwner(null);
+                }
+              }}
+            />
+          )}
+          {meetingSession && isSharing && (
+            <ContentShareVideo meetingSession={meetingSession} />
+          )}
+          {meetingSession && (
+            <div
+              className={
+                isSharing || remoteContentTileOwner
+                  ? 'absolute bottom-4 right-4 w-[180px] h-[130px] z-10'
+                  : 'max-w-[2100px] w-full h-full'
+              }
+            >
+              <LocalVideo
+                meetingSession={meetingSession}
+                isVideoOn={isVideoOn}
+              />
+            </div>
+          )}
+        </>
       </div>
 
       <Bottom
@@ -284,6 +299,7 @@ export default function DiscussionByIdPage() {
           if (!isSharing) {
             try {
               await av.startContentShareFromScreenCapture();
+
               setIsSharing(true);
             } catch (err) {
               logger.error('Failed to share video with error: ', err);
@@ -334,92 +350,92 @@ export default function DiscussionByIdPage() {
   );
 }
 
-function FocusedRemoteVideo({
+export function RemoteContentShareVideo({
   meetingSession,
-  attendeeId,
+  onRemoteContentTileUpdate,
 }: {
   meetingSession: DefaultMeetingSession;
-  attendeeId: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onRemoteContentTileUpdate: (tileState: any) => void;
 }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const remoteContentRef = useRef<HTMLVideoElement>(null);
+  const boundContentTileIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     const av = meetingSession.audioVideo;
 
+    if (!av) {
+      return;
+    }
+
     const observer = {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       videoTileDidUpdate: (tileState: any) => {
-        console.log('[FocusedRemoteVideo] tile updated:', tileState);
+        const isContent = tileState.isContent && !tileState.localTile;
+        const alreadyBound = boundContentTileIdRef.current === tileState.tileId;
 
-        if (!tileState.boundAttendeeId || !tileState.tileId) return;
-        if (tileState.boundAttendeeId !== attendeeId) return;
-
-        console.log('[FocusedRemoteVideo] matched attendee:', attendeeId);
-
-        if (videoRef.current) {
-          av.bindVideoElement(tileState.tileId, videoRef.current);
+        if (isContent && tileState.tileId) {
+          onRemoteContentTileUpdate(tileState);
         }
+
+        if (
+          isContent &&
+          tileState.tileId &&
+          remoteContentRef.current &&
+          !alreadyBound
+        ) {
+          av.bindVideoElement(tileState.tileId, remoteContentRef.current);
+          boundContentTileIdRef.current = tileState.tileId;
+        }
+      },
+
+      videoTileWasRemoved: (tileId: number) => {
+        logger.debug('[DEBUG] Tile removed:', tileId);
+        if (remoteContentRef.current) {
+          remoteContentRef.current.srcObject = null;
+        }
+
+        onRemoteContentTileUpdate(null);
       },
     };
 
     av.addObserver(observer);
 
+    const tiles = av.getAllVideoTiles();
+
+    tiles.forEach((tile) => {
+      const state = tile.state();
+      logger.debug('[FORCE CHECK] existing tile:', {
+        tileId: state.tileId,
+        isContent: state.isContent,
+        localTile: state.localTile,
+        active: state.active,
+        attendeeId: state.boundAttendeeId,
+        boundVideoElement: state.boundVideoElement,
+      });
+    });
+
+    av.realtimeSubscribeToAttendeeIdPresence((attendeeId, present) => {
+      if (attendeeId.includes('#content')) {
+        logger.debug('[CHECK] #content stream presence:', attendeeId, present);
+      }
+    });
+
     return () => {
       av.removeObserver(observer);
     };
-  }, [meetingSession, attendeeId]);
+  }, [meetingSession]);
 
   return (
     <video
-      ref={videoRef}
-      className="w-full h-full object-contain bg-black"
+      id="remote-content-video"
+      ref={remoteContentRef}
+      className="absolute top-0 left-0 w-full h-full object-contain z-0"
       autoPlay
       muted
     />
   );
 }
-
-// function ContentShareRemoteVideo({
-//   meetingSession,
-// }: {
-//   meetingSession: DefaultMeetingSession;
-// }) {
-//   const contentRef = useRef<HTMLVideoElement>(null);
-
-//   useEffect(() => {
-//     const av = meetingSession.audioVideo;
-
-//     const observer = {
-//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//       videoTileDidUpdate: (tileState: any) => {
-//         if (
-//           tileState.tileId &&
-//           tileState.isContent &&
-//           tileState.boundAttendeeId !==
-//             meetingSession.configuration.credentials?.attendeeId
-//         ) {
-//           if (contentRef.current) {
-//             av.bindVideoElement(tileState.tileId, contentRef.current);
-//           }
-//         }
-//       },
-//     };
-
-//     av.addObserver(observer);
-
-//     return () => {
-//       av.removeObserver(observer);
-//     };
-//   }, [meetingSession]);
-
-//   return (
-//     <video
-//       ref={contentRef}
-//       autoPlay
-//       className="w-full h-full object-contain bg-black"
-//     />
-//   );
-// }
 
 function ContentShareVideo({
   meetingSession,
