@@ -125,9 +125,9 @@ function Header(props: HeaderProps) {
           ))}
 
           {!isLoading &&
-            data &&
-            (data.user_type === UserType.Individual ||
-              data?.user_type === UserType.Team) ? (
+          data &&
+          (data.user_type === UserType.Individual ||
+            data?.user_type === UserType.Team) ? (
             <Profile profileUrl={data.profile_url} name={data.nickname} />
           ) : (
             <button
