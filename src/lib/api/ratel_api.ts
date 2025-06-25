@@ -67,6 +67,16 @@ export const ratelApi = {
   redeems: {
     useRedeemCode: (redeem_id: number) => `/v1/redeems/${redeem_id}`,
   },
+  discussions: {
+    getDiscussionById: (spaceId: number, discussionId: number) =>
+      `/v1/spaces/${spaceId}/discussions/${discussionId}`,
+    actDiscussionById: (spaceId: number, discussionId: number) =>
+      `/v1/spaces/${spaceId}/discussions/${discussionId}`,
+  },
+  meeting: {
+    getMeetingById: (spaceId: number, discussionId: number) =>
+      `/v1/spaces/${spaceId}/meeting/${discussionId}?param-type=read&action=find-one`,
+  },
   spaces: {
     createSpace: () => '/v1/spaces',
     getSpaceBySpaceId: (id: number) => `/v1/spaces/${id}`,

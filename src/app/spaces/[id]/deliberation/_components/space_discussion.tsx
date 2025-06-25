@@ -7,15 +7,26 @@ import TimeDropdown from '@/components/time-dropdown/time-dropdown';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Trash2 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { format } from 'date-fns';
 
+import { v4 as uuidv4 } from 'uuid';
 import discussionImg from '@/assets/images/discussion.png';
-import { DiscussionCreateRequest } from '@/lib/api/models/discussion';
+import {
+  Discussion,
+  DiscussionCreateRequest,
+} from '@/lib/api/models/discussion';
+import { Add } from './add';
+import { SpaceStatus } from '@/lib/api/models/spaces';
+import { ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { route } from '@/route';
 
 export interface SpaceDiscussionProps {
   isEdit?: boolean;
+  status: SpaceStatus;
   discussions: DiscussionCreateRequest[];
+  discussionRaws: Discussion[];
   onremove?: (index: number) => void;
   onupdate?: (index: number, discussion: DiscussionCreateRequest) => void;
   onadd?: (discussion: DiscussionCreateRequest) => void;
@@ -23,11 +34,19 @@ export interface SpaceDiscussionProps {
 
 export default function SpaceDiscussion({
   isEdit = false,
+  status,
   discussions,
+  discussionRaws,
   onadd = () => {},
   onremove = () => {},
   onupdate = () => {},
 }: SpaceDiscussionProps) {
+  const router = useRouter();
+
+  const moveDiscussion = (spaceId: number, discussionId: number) => {
+    router.push(route.discussionById(spaceId, discussionId));
+  };
+
   return (
     <div className="flex flex-col w-full">
       {isEdit ? (
@@ -54,7 +73,11 @@ export default function SpaceDiscussion({
           }}
         />
       ) : (
-        <ViewDiscussion discussions={discussions} />
+        <ViewDiscussion
+          discussions={discussionRaws}
+          status={status}
+          moveDiscussion={moveDiscussion}
+        />
       )}
     </div>
   );
@@ -62,24 +85,36 @@ export default function SpaceDiscussion({
 
 function ViewDiscussion({
   discussions,
+  status,
+  moveDiscussion,
 }: {
-  discussions: DiscussionCreateRequest[];
+  discussions: Discussion[];
+  status: SpaceStatus;
+  moveDiscussion: (spaceId: number, discussionId: number) => void;
 }) {
   return (
     <div className="flex flex-col w-full gap-2.5">
-      <DiscussionSchedules discussions={discussions} />
+      <DiscussionSchedules
+        discussions={discussions}
+        status={status}
+        moveDiscussion={moveDiscussion}
+      />
     </div>
   );
 }
 
 function DiscussionSchedules({
   discussions,
+  status,
+  moveDiscussion,
 }: {
-  discussions: DiscussionCreateRequest[];
+  discussions: Discussion[];
+  status: SpaceStatus;
+  moveDiscussion: (spaceId: number, discussionId: number) => void;
 }) {
   return (
     <div className="flex flex-col gap-2.5">
-      <BlackBox>
+      {/* <BlackBox>
         <div className="flex flex-col gap-3">
           <div className="font-bold text-white text-[15px]/[20px]">
             Schedule
@@ -101,7 +136,7 @@ function DiscussionSchedules({
             ))}
           </div>
         </div>
-      </BlackBox>
+      </BlackBox> */}
 
       <BlackBox>
         <div className="flex flex-col w-full gap-5">
@@ -112,9 +147,14 @@ function DiscussionSchedules({
             {discussions.map((discussion, index) => (
               <React.Fragment key={index}>
                 <DiscussionRoom
+                  status={status}
                   startDate={discussion.started_at}
                   endDate={discussion.ended_at}
                   title={discussion.name}
+                  description={discussion.description}
+                  onclick={() => {
+                    moveDiscussion(discussion.space_id, discussion.id);
+                  }}
                 />
                 {index !== discussions.length - 1 ? (
                   <div className=" w-full h-0.25 gap-1 bg-neutral-800" />
@@ -131,13 +171,20 @@ function DiscussionSchedules({
 }
 
 export function DiscussionRoom({
+  status,
   startDate,
   endDate,
   title,
+  description,
+  onclick,
 }: {
+  status: SpaceStatus;
   startDate: number;
   endDate: number;
   title: string;
+  description: string;
+
+  onclick: () => void;
 }) {
   const now = Math.floor(Date.now() / 1000);
 
@@ -145,7 +192,7 @@ export function DiscussionRoom({
   const isUpcoming = now < startDate;
   const isFinished = now > endDate;
 
-  const formattedDate = format(new Date(startDate * 1000), 'dd MMM, yyyy');
+  const formattedDate = `${format(new Date(startDate * 1000), 'dd MMM, yyyy HH:mm')} - ${format(new Date(endDate * 1000), 'dd MMM, yyyy HH:mm')}`;
 
   const statusLabel = isUpcoming
     ? 'Upcoming discussion'
@@ -178,66 +225,46 @@ export function DiscussionRoom({
           <div className="text-sm text-[#6d6d6d] font-normal">
             {formattedDate}
           </div>
-        </div>
-
-        {/* {isLive && (
-          <div className="flex flex-row w-full justify-end items-end">
-            <button className="flex items-center gap-[10px] px-5 py-2.5 bg-white text-[#000203] rounded-lg font-semibold hover:bg-neutral-300 transition">
-              Join <ArrowRight className="w-[15px] h-[15px]" />
-            </button>
+          <div
+            className="text-sm text-neutral-400 font-normal overflow-hidden text-ellipsis"
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+            }}
+          >
+            {description}
           </div>
-        )} */}
-      </div>
-    </div>
-  );
-}
-
-function DiscussionTable({
-  startDate,
-  endDate,
-  title,
-  description,
-}: {
-  startDate: number;
-  endDate: number;
-  title: string;
-  description: string;
-}) {
-  const start = new Date(startDate * 1000);
-  const end = new Date(endDate * 1000);
-
-  const formattedStartDate = format(start, 'M. dd. yyyy');
-  const formattedEndDate = format(end, 'M. dd. yyyy');
-  const formattedStartTime = format(start, 'HH:mm');
-  const formattedEndTime = format(end, 'HH:mm');
-
-  const displayDate =
-    formattedStartDate === formattedEndDate
-      ? formattedStartDate
-      : `${formattedStartDate} - ${formattedEndDate}`;
-
-  return (
-    <div className="border border-neutral-400 rounded-sm text-neutral-400 text-sm w-full font-medium">
-      <div className="w-full text-center border-b border-neutral-400 py-[19px] font-semibold">
-        {displayDate}
-      </div>
-
-      <div className="grid grid-cols-3 text-center border-b border-neutral-400 py-[19px] font-semibold">
-        <div>Time</div>
-        <div>Type</div>
-        <div>Contents</div>
-      </div>
-
-      <div className="grid grid-cols-3 text-center py-[23px]">
-        <div>
-          {formattedStartTime} - {formattedEndTime}
         </div>
-        <div>{title}</div>
-        <div>{description}</div>
+
+        {isLive && status == SpaceStatus.InProgress && (
+          <div className="flex flex-row w-full justify-end">
+            <JoinButton
+              onClick={() => {
+                onclick();
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+function JoinButton({ onClick }: { onClick: () => void }) {
+  return (
+    <div
+      className="cursor-pointer flex flex-row items-center w-fit h-fit px-5 py-2.5 gap-2.5 bg-white hover:bg-neutral-300 rounded-lg"
+      onClick={() => {
+        onClick();
+      }}
+    >
+      <div className="font-bold text-[#000203] text-sm">Join</div>
+      <ArrowRight className="stroke-black stroke-3 w-[15px] h-[15px]" />
+    </div>
+  );
+}
+
 function EditableDiscussion({
   discussions,
   onremove,
@@ -249,6 +276,11 @@ function EditableDiscussion({
   onadd: () => void;
   onupdate: (index: number, discussion: DiscussionCreateRequest) => void;
 }) {
+  const stableKeys = useMemo(
+    () => discussions.map(() => uuidv4()),
+    [discussions.length],
+  );
+
   return (
     <BlackBox>
       <div className="flex flex-col w-full gap-5">
@@ -256,15 +288,9 @@ function EditableDiscussion({
           Discussion
         </div>
 
-        <AddDiscussion
-          onadd={() => {
-            onadd();
-          }}
-        />
-
         {discussions.map((discussion, index) => (
           <EditableDiscussionInfo
-            key={index}
+            key={stableKeys[index]}
             index={index}
             startedAt={discussion.started_at}
             endedAt={discussion.ended_at}
@@ -278,34 +304,31 @@ function EditableDiscussion({
             }}
           />
         ))}
+
+        <AddDiscussion
+          onadd={() => {
+            onadd();
+          }}
+        />
       </div>
     </BlackBox>
-  );
-}
-
-function RemoveDiscussion({ onremove }: { onremove: () => void }) {
-  return (
-    <div
-      className="cursor-pointer flex flex-row w-fit items-center px-[10px] py-[5px] gap-[5px] rounded-[8px]  bg-neutral-700"
-      onClick={() => {
-        onremove();
-      }}
-    >
-      <Trash2 className="stroke-white w-[20px] h-[20px]" />
-      <div className="font-medium text-white text-base">Remove</div>
-    </div>
   );
 }
 
 function AddDiscussion({ onadd }: { onadd: () => void }) {
   return (
     <div
-      className="cursor-pointer flex flex-row w-fit h-fit px-[10px] py-[5px] rounded-[8px] bg-neutral-700 hover:bg-neutral-600 font-medium text-white text-sm"
       onClick={() => {
         onadd();
       }}
+      className="bg-transparent border-2 border-dashed border-neutral-700 rounded-md h-50 flex flex-col items-center justify-center cursor-pointer hover:bg-neutral-800 transition gap-[10px]"
     >
-      Add Discussion
+      <div className="flex flex-row w-[45px] h-[45px] justify-center items-center rounded-full border border-neutral-500">
+        <Add className="w-5 h-5 stroke-neutral-500 text-neutral-500" />
+      </div>
+      <span className=" text-neutral-500 font-medium text-base">
+        Add Discussion
+      </span>
     </div>
   );
 }
@@ -347,10 +370,31 @@ function EditableDiscussionInfo({
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 border border-neutral-700 rounded-md p-4">
+      <div className="flex flex-row w-full justify-end">
+        <div
+          className="cursor-pointer w-fit h-fit"
+          onClick={() => {
+            onremove(index);
+          }}
+        >
+          <Trash2 className="stroke-white w-[15px] h-[15px]" />
+        </div>
+      </div>
+      <div className="flex flex-col w-full justify-start items-start gap-[10px]">
+        <div className="font-medium text-neutral-300 text-[15px] w-[80px]">
+          Title
+        </div>
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onBlur={() => update(startTime, endTime, title, desc)}
+        />
+      </div>
+
       <div className="flex flex-wrap w-full justify-between items-center gap-[10px]">
         <div className="font-medium text-neutral-300 text-[15px] w-[80px]">
-          Set Date
+          Period
         </div>
         <div className="flex flex-row gap-[10px] items-center flex-wrap">
           <div className="flex flex-row gap-[10px]">
@@ -395,17 +439,6 @@ function EditableDiscussionInfo({
 
       <div className="flex flex-col w-full justify-start items-start gap-[10px]">
         <div className="font-medium text-neutral-300 text-[15px] w-[80px]">
-          Title
-        </div>
-        <Input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onBlur={() => update(startTime, endTime, title, desc)}
-        />
-      </div>
-
-      <div className="flex flex-col w-full justify-start items-start gap-[10px]">
-        <div className="font-medium text-neutral-300 text-[15px] w-[80px]">
           Description
         </div>
         <Textarea
@@ -414,12 +447,6 @@ function EditableDiscussionInfo({
           onBlur={() => update(startTime, endTime, title, desc)}
         />
       </div>
-
-      <div className="flex flex-row w-full justify-end">
-        <RemoveDiscussion onremove={() => onremove(index)} />
-      </div>
-
-      <div className="flex flex-row w-full h-[1px] bg-neutral-700" />
     </div>
   );
 }

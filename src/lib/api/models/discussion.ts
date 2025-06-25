@@ -34,3 +34,53 @@ export interface DiscussionParticipant {
   user_id: number;
   participant_id: string;
 }
+
+export interface StartMeetingRequest {
+  start_meeting: object;
+}
+
+export function startMeetingRequest(): StartMeetingRequest {
+  return {
+    start_meeting: {},
+  };
+}
+
+export interface ParticipantMeetingRequest {
+  participant_meeting: object;
+}
+
+export function participantMeetingRequest(): ParticipantMeetingRequest {
+  return {
+    participant_meeting: {},
+  };
+}
+
+export interface ExitMeetingRequest {
+  exit_meeting: object;
+}
+
+export function exitMeetingRequest(): ExitMeetingRequest {
+  return {
+    exit_meeting: {},
+  };
+}
+
+export interface StartRecordingRequest {
+  start_recording: object;
+}
+
+export function startRecordingRequest(): StartRecordingRequest {
+  return {
+    start_recording: {},
+  };
+}
+
+export interface EndRecordingRequest {
+  end_recording: object;
+}
+
+export function endRecordingRequest(): EndRecordingRequest {
+  return {
+    end_recording: {},
+  };
+}

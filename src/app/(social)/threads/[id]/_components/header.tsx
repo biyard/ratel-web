@@ -14,7 +14,6 @@ import { route } from '@/route';
 import { usePopup } from '@/lib/contexts/popup-service';
 import SpaceCreateModal from './space-create-modal';
 import { SpaceType } from '@/lib/api/models/spaces';
-import { config } from '@/config';
 import { useRouter } from 'next/navigation';
 
 export default function Header({ post_id }: { post_id: number }) {
@@ -60,12 +59,10 @@ export default function Header({ post_id }: { post_id: number }) {
             <Button variant="rounded_secondary">Join Space</Button>
           </Link>
         ) : (
-          (config.experiment ?? (
-            <Button variant="rounded_secondary" onClick={handleCreateSpace}>
-              <Plus className="size-5" />
-              Create Space
-            </Button>
-          ))
+          <Button variant="rounded_secondary" onClick={handleCreateSpace}>
+            <Plus className="size-5" />
+            Create Space
+          </Button>
         )}
       </div>
 

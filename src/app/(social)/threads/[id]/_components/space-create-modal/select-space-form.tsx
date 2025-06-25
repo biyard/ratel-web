@@ -1,6 +1,7 @@
 'use client';
 import { Space, SpaceType } from '@/lib/api/models/spaces';
-import { Cube, Discuss, Palace, Vote } from '@/components/icons';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Discuss } from '@/components/icons';
 import { useState } from 'react';
 import { LoadablePrimaryButton } from '@/components/button/primary-button';
 import { apiFetch } from '@/lib/api/apiFetch';
@@ -20,33 +21,33 @@ interface SpaceFormProps {
 }
 
 const SpaceForms: SpaceFormProps[] = [
-  {
-    type: SpaceType.Legislation,
-    Icon: <Palace />,
-    label: 'Legislation',
-    description: 'Propose and decide on new rules or policies.',
-    disabled: true,
-  },
-  {
-    type: SpaceType.Poll,
-    Icon: <Vote />,
-    label: 'Poll',
-    description: 'Collect quick opinions or preferences.',
-    disabled: true,
-  },
+  // {
+  //   type: SpaceType.Legislation,
+  //   Icon: <Palace />,
+  //   label: 'Legislation',
+  //   description: 'Propose and decide on new rules or policies.',
+  //   disabled: true,
+  // },
+  // {
+  //   type: SpaceType.Poll,
+  //   Icon: <Vote />,
+  //   label: 'Poll',
+  //   description: 'Collect quick opinions or preferences.',
+  //   disabled: true,
+  // },
   {
     type: SpaceType.Deliberation,
     Icon: <Discuss />,
     label: 'Deliberation',
     description: 'Share perspectives and engage in in-depth discussion.',
   },
-  {
-    type: SpaceType.Nft,
-    Icon: <Cube />,
-    label: 'NFT',
-    description: 'Submit information to issue an NFT.',
-    disabled: true,
-  },
+  // {
+  //   type: SpaceType.Nft,
+  //   Icon: <Cube />,
+  //   label: 'NFT',
+  //   description: 'Submit information to issue an NFT.',
+  //   disabled: true,
+  // },
 ];
 export default function SelectSpaceForm({
   feed_id,
