@@ -3,7 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import ImageExtension from '@tiptap/extension-image';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';
 import UserCircleIcon from '@/assets/icons/user-circle.svg';
@@ -31,7 +31,6 @@ export function CreatePost() {
   } = usePostDraft();
 
   const { data: userInfo, isLoading } = useUserInfo();
-  const editorRef = useRef(null);
 
   //Tiptap editor Initializtion
   const editor = useEditor({
@@ -47,8 +46,6 @@ export function CreatePost() {
           class: 'rounded-lg border border-neutral-600',
         },
       }),
-
-      
     ],
     content: content || '',
     onUpdate: ({ editor }) => {
