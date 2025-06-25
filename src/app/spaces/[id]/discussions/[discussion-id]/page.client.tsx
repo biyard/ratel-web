@@ -41,14 +41,22 @@ export default function DiscussionByIdPage() {
   const [isSharing, setIsSharing] = useState(false);
   const [isAudioOn, setIsAudioOn] = useState(true);
 
-  const [micStates, setMicStates] = useState<Record<string, boolean>>({});
-  const [videoStates, setVideoStates] = useState<Record<string, boolean>>({});
   const [meetingSession, setMeetingSession] =
     useState<DefaultMeetingSession | null>(null);
+
+  const [micStates, setMicStates] = useState<Record<string, boolean>>({});
+  const [videoStates, setVideoStates] = useState<Record<string, boolean>>({});
+  const [messages, setMessages] = useState<
+    { senderId: string; text: string }[]
+  >([]);
   const [activePanel, setActivePanel] = useState<
     'participants' | 'chat' | null
   >();
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [focusedAttendeeId, setFocusedAttendeeId] = useState<string | null>(
+    null,
+  );
+
   const { post, get } = useApiCall();
   const router = useRouter();
   const params = useParams();
@@ -167,6 +175,50 @@ export default function DiscussionByIdPage() {
     };
   }, [meetingSession]);
 
+  useEffect(() => {
+    if (!meetingSession) return;
+    const av = meetingSession.audioVideo;
+
+    const topic = 'chat';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const onMessageReceived = (dataMessage: any) => {
+      console.log('dataMessage: ', dataMessage);
+      const senderId = dataMessage.senderAttendeeId;
+      const text = new TextDecoder('utf-8').decode(dataMessage.data);
+
+      setMessages((prev) => [...prev, { senderId, text }]);
+    };
+
+    av.realtimeSubscribeToReceiveDataMessage(topic, onMessageReceived);
+
+    return () => {
+      av.realtimeUnsubscribeFromReceiveDataMessage(topic);
+    };
+  }, [meetingSession]);
+
+  const sendMessage = (text: string) => {
+    if (!meetingSession || !text.trim()) return;
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        senderId: meetingSession.configuration.credentials?.attendeeId ?? '',
+        text: text.trim(),
+      },
+    ]);
+
+    try {
+      const av = meetingSession.audioVideo;
+      const topic = 'chat';
+      const data = new TextEncoder().encode(text.trim());
+
+      av.realtimeSendDataMessage(topic, data, 10000);
+      console.log('[SEND] message sent:', text);
+    } catch (err) {
+      console.error('[SEND] failed to send message:', err);
+    }
+  };
   return (
     <div className="w-screen h-screen bg-black flex flex-col">
       <Header
@@ -177,20 +229,32 @@ export default function DiscussionByIdPage() {
       />
 
       <div className="flex-1 flex items-center justify-center relative">
-        {meetingSession && isSharing && (
-          <ContentShareVideo meetingSession={meetingSession} />
-        )}
+        {meetingSession && focusedAttendeeId ? (
+          <FocusedRemoteVideo
+            meetingSession={meetingSession}
+            attendeeId={focusedAttendeeId}
+          />
+        ) : (
+          <>
+            {meetingSession && (
+              <ContentShareVideo meetingSession={meetingSession} />
+            )}
 
-        {meetingSession && (
-          <div
-            className={
-              isSharing
-                ? 'absolute bottom-4 right-4 w-[180px] h-[130px] z-10'
-                : 'w-full h-full'
-            }
-          >
-            <LocalVideo meetingSession={meetingSession} isVideoOn={isVideoOn} />
-          </div>
+            {meetingSession && (
+              <div
+                className={
+                  isSharing
+                    ? 'absolute bottom-4 right-4 w-[180px] h-[130px] z-10'
+                    : 'max-w-[2100px] w-full h-full'
+                }
+              >
+                <LocalVideo
+                  meetingSession={meetingSession}
+                  isVideoOn={isVideoOn}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -250,15 +314,112 @@ export default function DiscussionByIdPage() {
           videoStates={videoStates}
           users={users}
           participants={participants}
+          setFocusedAttendeeId={(attendeeId: string | null) => {
+            setFocusedAttendeeId(attendeeId);
+          }}
+          meetingSession={meetingSession!}
           onClose={() => setActivePanel(null)}
         />
       )}
       {activePanel === 'chat' && (
-        <ChatPanel onClose={() => setActivePanel(null)} />
+        <ChatPanel
+          onClose={() => setActivePanel(null)}
+          messages={messages}
+          onSend={(text: string) => {
+            sendMessage(text);
+          }}
+        />
       )}
     </div>
   );
 }
+
+function FocusedRemoteVideo({
+  meetingSession,
+  attendeeId,
+}: {
+  meetingSession: DefaultMeetingSession;
+  attendeeId: string;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const av = meetingSession.audioVideo;
+
+    const observer = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      videoTileDidUpdate: (tileState: any) => {
+        console.log('[FocusedRemoteVideo] tile updated:', tileState);
+
+        if (!tileState.boundAttendeeId || !tileState.tileId) return;
+        if (tileState.boundAttendeeId !== attendeeId) return;
+
+        console.log('[FocusedRemoteVideo] matched attendee:', attendeeId);
+
+        if (videoRef.current) {
+          av.bindVideoElement(tileState.tileId, videoRef.current);
+        }
+      },
+    };
+
+    av.addObserver(observer);
+
+    return () => {
+      av.removeObserver(observer);
+    };
+  }, [meetingSession, attendeeId]);
+
+  return (
+    <video
+      ref={videoRef}
+      className="w-full h-full object-contain bg-black"
+      autoPlay
+      muted
+    />
+  );
+}
+
+// function ContentShareRemoteVideo({
+//   meetingSession,
+// }: {
+//   meetingSession: DefaultMeetingSession;
+// }) {
+//   const contentRef = useRef<HTMLVideoElement>(null);
+
+//   useEffect(() => {
+//     const av = meetingSession.audioVideo;
+
+//     const observer = {
+//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//       videoTileDidUpdate: (tileState: any) => {
+//         if (
+//           tileState.tileId &&
+//           tileState.isContent &&
+//           tileState.boundAttendeeId !==
+//             meetingSession.configuration.credentials?.attendeeId
+//         ) {
+//           if (contentRef.current) {
+//             av.bindVideoElement(tileState.tileId, contentRef.current);
+//           }
+//         }
+//       },
+//     };
+
+//     av.addObserver(observer);
+
+//     return () => {
+//       av.removeObserver(observer);
+//     };
+//   }, [meetingSession]);
+
+//   return (
+//     <video
+//       ref={contentRef}
+//       autoPlay
+//       className="w-full h-full object-contain bg-black"
+//     />
+//   );
+// }
 
 function ContentShareVideo({
   meetingSession,
@@ -485,8 +646,17 @@ function IconLabel({
   );
 }
 
-function ChatPanel({ onClose }: { onClose: () => void }) {
+function ChatPanel({
+  onClose,
+  messages,
+  onSend,
+}: {
+  onClose: () => void;
+  messages: { senderId: string; text: string }[];
+  onSend: (text: string) => void;
+}) {
   const [visible, setVisible] = useState(false);
+  const [input, setInput] = useState('');
 
   useEffect(() => {
     setTimeout(() => setVisible(true), 10);
@@ -495,6 +665,11 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
   const handleClose = () => {
     setVisible(false);
     setTimeout(onClose, 300);
+  };
+
+  const handleSend = () => {
+    onSend(input);
+    setInput('');
   };
 
   return (
@@ -514,13 +689,32 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
           fill="white"
         />
       </div>
-      <div className="flex-1 p-4 text-white text-sm overflow-y-auto"></div>
+
+      <div className="flex-1 p-4 text-white text-sm overflow-y-auto space-y-2">
+        {messages.map((msg, i) => (
+          <div key={i} className="break-words">
+            <span className="text-neutral-400 mr-2">{msg.senderId}:</span>
+            <span>{msg.text}</span>
+          </div>
+        ))}
+      </div>
+
       <div className="border-t border-neutral-600 p-2">
-        <input
-          type="text"
-          placeholder="Type message here"
-          className="w-full rounded-md px-3 py-2 text-sm bg-neutral-800 text-white border border-neutral-700"
-        />
+        <div className="flex flex-row gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type message here"
+            className="flex-1 rounded-md px-3 py-2 text-sm bg-neutral-800 text-white border border-neutral-700"
+          />
+          <button
+            onClick={handleSend}
+            className="text-white bg-blue-600 px-3 py-2 rounded-md text-sm"
+          >
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -537,6 +731,8 @@ function ParticipantsPanel({
   videoStates: Record<string, boolean>;
   users: DiscussionParticipant[];
   participants: Participant[];
+  setFocusedAttendeeId: (attendeeId: string | null) => void;
+  meetingSession: DefaultMeetingSession;
   onClose: () => void;
 }) {
   const [visible, setVisible] = useState(false);
@@ -576,7 +772,7 @@ function ParticipantsPanel({
         />
       </div>
 
-      <div className="flex flex-1 overflow-y-auto px-[10px] py-[20px] gap-[20px]">
+      <div className="flex flex-col flex-1 overflow-y-auto px-[10px] py-[20px] gap-[20px]">
         {participants.map((participant, index) => {
           const attendeeId = userIdToAttendeeId.get(participant.id);
 
@@ -586,6 +782,7 @@ function ParticipantsPanel({
           return (
             <div
               key={index}
+              onDoubleClick={() => {}}
               className="flex flex-row w-full justify-between items-center"
             >
               <div className="flex flex-row w-fit items-center gap-1">
