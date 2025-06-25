@@ -224,10 +224,12 @@ function CommentInfo({ comment }: { comment: SpaceComment }) {
             />
             <button
               onClick={handleReply}
-              className="self-end bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm flex items-center gap-1"
+              className="self-end  bg-primary  p-3 rounded-full text-sm hover:text-[#1E1E1E] flex items-center gap-1"
             >
-              <Send size={16} />
-              Send
+              {/* <Send size={16} /> */}
+               <Comment width={24} height={24} className="[&>path]:stroke-black " />
+              
+        
             </button>
           </div>
         )}
