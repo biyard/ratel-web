@@ -23,19 +23,19 @@ export default function Toolbar({
   onImageUpload,
   enableImage = true,
 }: ToolbarProps) {
-  const setLink = useCallback(() => {
-    if (!editor) return;
-    const previousUrl = editor.getAttributes('link').href;
-    const url = window.prompt('URL', previousUrl);
+//   const setLink = useCallback(() => {
+//     if (!editor) return;
+//     const previousUrl = editor.getAttributes('link').href;
+//     const url = window.prompt('URL', previousUrl);
 
-    if (url === null) return;
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run();
-      return;
-    }
+//     if (url === null) return;
+//     if (url === '') {
+//       editor.chain().focus().extendMarkRange('link').unsetLink().run();
+//       return;
+//     }
 
-    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-  }, [editor]);
+//     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+//   }, [editor]);
 
   //   const addImage = useCallback(() => {
   //     if (!editor) return;

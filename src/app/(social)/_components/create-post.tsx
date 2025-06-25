@@ -14,7 +14,7 @@ import { usePostDraft } from './post-draft-context';
 import Image from 'next/image';
 import Toolbar from '@/components/toolbar/toolbar-tip';
 import { checkString } from '@/lib/string-filter-utils';
-import Link from '@tiptap/extension-link';
+// import Link from '@tiptap/extension-link';
 
 export function CreatePost() {
   const {
@@ -47,6 +47,8 @@ export function CreatePost() {
           class: 'rounded-lg border border-neutral-600',
         },
       }),
+
+      
     ],
     content: content || '',
     onUpdate: ({ editor }) => {
@@ -149,8 +151,8 @@ export function CreatePost() {
           <div className="px-4 pt-2">
             <div className="relative inline-block">
               <Image
-                width={300}
-                height={200}
+                width={100}
+                height={100}
                 src={image}
                 alt="Uploaded content"
                 className="object-cover rounded-lg border border-neutral-600 max-h-40"
