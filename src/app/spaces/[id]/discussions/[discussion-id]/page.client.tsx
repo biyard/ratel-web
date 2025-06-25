@@ -4,10 +4,11 @@ import { useDiscussionById } from '@/app/(social)/_hooks/use-discussion';
 import { logger } from '@/lib/logger';
 import { route } from '@/route';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import {
+  exitMeetingRequest,
   participantMeetingRequest,
   startMeetingRequest,
 } from '@/lib/api/models/discussion';
@@ -191,6 +192,59 @@ export default function DiscussionByIdPage() {
     };
   }, [meetingSession]);
 
+  const exitedAttendeesRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!meetingSession || !users || users.length === 0) return;
+    const av = meetingSession.audioVideo;
+
+    const handlePresenceChange = async (
+      attendeeId: string,
+      present: boolean,
+    ) => {
+      const selfAttendeeId =
+        meetingSession.configuration.credentials?.attendeeId;
+
+      if (attendeeId === selfAttendeeId && !present) {
+        console.log('[Skip] 본인 새로고침 감지 - exit 안 함');
+        return;
+      }
+
+      if (present) {
+        exitedAttendeesRef.current.delete(attendeeId);
+      } else {
+        exitedAttendeesRef.current.add(attendeeId);
+      }
+
+      try {
+        const joinInfo = await get(
+          ratelApi.meeting.getMeetingById(spaceId, discussionId),
+        );
+
+        setParticipants((prev) => {
+          const incomingIds = new Set(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            joinInfo.participants.map((p: any) => p.id),
+          );
+          return [
+            ...prev.filter((p) => incomingIds.has(p.id)),
+            ...joinInfo.participants.filter(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (p: any) => !prev.some((pp) => pp.id === p.id),
+            ),
+          ];
+        });
+      } catch (err) {
+        console.error('Failed to update participants:', err);
+      }
+    };
+
+    av.realtimeSubscribeToAttendeeIdPresence(handlePresenceChange);
+    return () => {
+      av.realtimeUnsubscribeToAttendeeIdPresence(handlePresenceChange);
+    };
+  }, [meetingSession, users]);
+
   const sendMessage = (text: string) => {
     if (!meetingSession || !text.trim()) return;
 
@@ -216,7 +270,11 @@ export default function DiscussionByIdPage() {
     <div className="w-screen h-screen bg-black flex flex-col">
       <Header
         name={discussion.name}
-        onclose={() => {
+        onclose={async () => {
+          await post(
+            ratelApi.discussions.actDiscussionById(spaceId, discussionId),
+            exitMeetingRequest(),
+          );
           router.replace(route.deliberationSpaceById(discussion.space_id));
         }}
       />
@@ -269,7 +327,11 @@ export default function DiscussionByIdPage() {
         isVideoOn={isVideoOn}
         isAudioOn={isAudioOn}
         isSharing={isSharing}
-        onclose={() => {
+        onclose={async () => {
+          await post(
+            ratelApi.discussions.actDiscussionById(spaceId, discussionId),
+            exitMeetingRequest(),
+          );
           router.replace(route.deliberationSpaceById(discussion.space_id));
         }}
         onParticipantsClick={() => {

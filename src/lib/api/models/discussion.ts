@@ -54,3 +54,13 @@ export function participantMeetingRequest(): ParticipantMeetingRequest {
     participant_meeting: {},
   };
 }
+
+export interface ExitMeetingRequest {
+  exit_meeting: object;
+}
+
+export function exitMeetingRequest(): ExitMeetingRequest {
+  return {
+    exit_meeting: {},
+  };
+}

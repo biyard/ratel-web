@@ -79,6 +79,10 @@ export default function LocalVideo({
       className="absolute top-0 left-0 w-full h-full bg-black object-cover"
       autoPlay
       muted
+      onLoadedMetadata={() => console.log('Video metadata loaded')}
+      onCanPlay={() => console.log('Video can play')}
+      onPlay={() => console.log('Video playing')}
+      onError={(e) => console.error('Video error:', e)}
     />
   );
 }
