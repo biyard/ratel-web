@@ -17,37 +17,45 @@ export default function LocalVideo({
   useEffect(() => {
     const av = meetingSession.audioVideo;
 
-    const bind = () => {
-      const tile = av.getLocalVideoTile();
-      const element = videoRef.current;
-
-      if (tile && element && tile.state().boundVideoElement === null) {
-        av.bindVideoElement(tile.id(), element);
-      }
-    };
-
     const init = async () => {
-      const videoDevices = await av.listVideoInputDevices();
-      if (videoDevices.length > 0) {
-        await av.startVideoInput(videoDevices[0].deviceId);
-      }
-      av.start();
-      setStarted(true);
+      try {
+        const devices = await av.listVideoInputDevices();
+        if (devices.length > 0) {
+          await av.startVideoInput(devices[0].deviceId);
+        } else {
+          console.warn('No video input devices found.');
+          return;
+        }
 
-      if (isVideoOn) {
-        av.startLocalVideoTile();
-      }
+        if (isVideoOn) {
+          av.startLocalVideoTile();
+        }
 
-      if (videoRef.current) {
-        videoRef.current.id = 'local-video-element';
+        if (videoRef.current) {
+          videoRef.current.id = 'local-video-element';
+        }
+        setStarted(true);
+      } catch (err) {
+        console.error('Failed to init local video:', err);
       }
-
-      bind();
     };
 
     init();
 
+    const observer = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      videoTileDidUpdate: (tileState: any) => {
+        if (tileState.localTile && videoRef.current) {
+          console.log('Binding local video tile', tileState.tileId);
+          av.bindVideoElement(tileState.tileId, videoRef.current);
+        }
+      },
+    };
+
+    av.addObserver(observer);
+
     return () => {
+      av.removeObserver(observer);
       av.stopLocalVideoTile();
       av.stop();
     };
