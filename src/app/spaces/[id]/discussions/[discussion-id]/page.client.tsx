@@ -43,7 +43,7 @@ export default function DiscussionByIdPage() {
   const [micStates, setMicStates] = useState<Record<string, boolean>>({});
   const [videoStates, setVideoStates] = useState<Record<string, boolean>>({});
   const [messages, setMessages] = useState<
-    { senderId: string; text: string }[]
+    { senderId: string; text: string; timestamp: number }[]
   >([]);
   const [activePanel, setActivePanel] = useState<
     'participants' | 'chat' | null
@@ -181,8 +181,9 @@ export default function DiscussionByIdPage() {
     const onMessageReceived = (dataMessage: any) => {
       const senderId = dataMessage.senderAttendeeId;
       const text = new TextDecoder('utf-8').decode(dataMessage.data);
+      const timestamp = Date.now();
 
-      setMessages((prev) => [...prev, { senderId, text }]);
+      setMessages((prev) => [...prev, { senderId, text, timestamp }]);
     };
 
     av.realtimeSubscribeToReceiveDataMessage(topic, onMessageReceived);
@@ -253,6 +254,7 @@ export default function DiscussionByIdPage() {
       {
         senderId: meetingSession.configuration.credentials?.attendeeId ?? '',
         text: text.trim(),
+        timestamp: Date.now(),
       },
     ]);
 
@@ -395,9 +397,14 @@ export default function DiscussionByIdPage() {
         <ChatPanel
           onClose={() => setActivePanel(null)}
           messages={messages}
+          users={users}
+          participants={participants}
           onSend={(text: string) => {
             sendMessage(text);
           }}
+          myAttendeeId={
+            meetingSession?.configuration.credentials?.attendeeId ?? ''
+          }
         />
       )}
     </div>
