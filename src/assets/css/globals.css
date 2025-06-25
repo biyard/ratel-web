@@ -80,7 +80,7 @@ a {
 }
 
 .sidemenu-link {
-  @apply flex flex-row items-center gap-1 px-1 py-2 rounded-md font-bold text-sm hover:bg-gray-800;
+  @apply flex flex-row items-center gap-1 px-1 py-2 rounded-md font-bold text-sm hover:bg-gray-600;
 }
 
 .med-16 {

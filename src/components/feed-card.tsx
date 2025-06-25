@@ -224,7 +224,7 @@ export function IndustryTag({ industry }: { industry: string }) {
 
 export function OnboradingTag() {
   return (
-    <span className="rounded-sm bg-primary px-2 text-xs/[25px] font-semibold align-middle uppercase">
+    <span className="rounded-sm bg-primary text-white px-2 text-xs/[25px] font-semibold align-middle uppercase">
       Onboard
     </span>
   );

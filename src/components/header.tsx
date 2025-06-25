@@ -8,6 +8,7 @@ import InternetIcon from '@/assets/icons/internet.svg';
 import RoundBubbleIcon from '@/assets/icons/round-bubble.svg';
 import BellIcon from '@/assets/icons/bell.svg';
 import Hamburger from '@/assets/icons/hamburger.svg';
+import CloseIcon from '@/assets/icons/remove.svg';
 import Link from 'next/link';
 import Profile from './profile';
 import { LoginModal } from './popup/login-popup';
@@ -124,9 +125,9 @@ function Header(props: HeaderProps) {
           ))}
 
           {!isLoading &&
-          data &&
-          (data.user_type === UserType.Individual ||
-            data?.user_type === UserType.Team) ? (
+            data &&
+            (data.user_type === UserType.Individual ||
+              data?.user_type === UserType.Team) ? (
             <Profile profileUrl={data.profile_url} name={data.nickname} />
           ) : (
             <button
@@ -147,12 +148,14 @@ function Header(props: HeaderProps) {
         </div>
 
         <div
-          className="hidden max-tablet:block"
-          onClick={() => {
-            props.setMobileExtends(!props.mobileExtends);
-          }}
+          className="hidden max-tablet:block cursor-pointer"
+          onClick={() => props.setMobileExtends(!props.mobileExtends)}
         >
-          <Hamburger />
+          {props.mobileExtends ? (
+            <CloseIcon className="transition-all" />
+          ) : (
+            <Hamburger className="transition-all" />
+          )}
         </div>
       </nav>
     </header>
