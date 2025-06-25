@@ -64,3 +64,23 @@ export function exitMeetingRequest(): ExitMeetingRequest {
     exit_meeting: {},
   };
 }
+
+export interface StartRecordingRequest {
+  start_recording: object;
+}
+
+export function startRecordingRequest(): StartRecordingRequest {
+  return {
+    start_recording: {},
+  };
+}
+
+export interface EndRecordingRequest {
+  end_recording: object;
+}
+
+export function endRecordingRequest(): EndRecordingRequest {
+  return {
+    end_recording: {},
+  };
+}

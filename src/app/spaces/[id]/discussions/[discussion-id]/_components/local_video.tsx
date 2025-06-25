@@ -46,7 +46,6 @@ export default function LocalVideo({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       videoTileDidUpdate: (tileState: any) => {
         if (tileState.localTile && videoRef.current) {
-          console.log('Binding local video tile', tileState.tileId);
           av.bindVideoElement(tileState.tileId, videoRef.current);
         }
       },

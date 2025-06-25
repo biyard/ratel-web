@@ -8,9 +8,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useApiCall } from '@/lib/api/use-send';
 import { ratelApi } from '@/lib/api/ratel_api';
 import {
+  endRecordingRequest,
   exitMeetingRequest,
   participantMeetingRequest,
   startMeetingRequest,
+  startRecordingRequest,
 } from '@/lib/api/models/discussion';
 
 import {
@@ -33,6 +35,7 @@ export default function DiscussionByIdPage() {
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isSharing, setIsSharing] = useState(false);
   const [isAudioOn, setIsAudioOn] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
 
   const [meetingSession, setMeetingSession] =
     useState<DefaultMeetingSession | null>(null);
@@ -207,7 +210,6 @@ export default function DiscussionByIdPage() {
         meetingSession.configuration.credentials?.attendeeId;
 
       if (attendeeId === selfAttendeeId && !present) {
-        console.log('[Skip] 본인 새로고침 감지 - exit 안 함');
         return;
       }
 
@@ -268,6 +270,7 @@ export default function DiscussionByIdPage() {
       logger.error('[SEND] failed to send message:', err);
     }
   };
+
   return (
     <div className="w-screen h-screen bg-black flex flex-col">
       <Header
@@ -329,12 +332,27 @@ export default function DiscussionByIdPage() {
         isVideoOn={isVideoOn}
         isAudioOn={isAudioOn}
         isSharing={isSharing}
+        isRecording={isRecording}
         onclose={async () => {
           await post(
             ratelApi.discussions.actDiscussionById(spaceId, discussionId),
             exitMeetingRequest(),
           );
           router.replace(route.deliberationSpaceById(discussion.space_id));
+        }}
+        onRecordClick={async () => {
+          if (!isRecording) {
+            await post(
+              ratelApi.discussions.actDiscussionById(spaceId, discussionId),
+              startRecordingRequest(),
+            );
+          } else {
+            await post(
+              ratelApi.discussions.actDiscussionById(spaceId, discussionId),
+              endRecordingRequest(),
+            );
+          }
+          setIsRecording(!isRecording);
         }}
         onParticipantsClick={() => {
           setActivePanel((prev) =>

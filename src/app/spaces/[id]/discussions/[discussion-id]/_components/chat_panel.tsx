@@ -150,7 +150,6 @@ export default function ChatPanel({
               if (e.key === 'Enter') {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('test');
                 handleSend();
               }
             }}

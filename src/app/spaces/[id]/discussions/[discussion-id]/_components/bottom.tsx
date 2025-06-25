@@ -16,8 +16,10 @@ import React, { JSX } from 'react';
 export default function Bottom({
   isVideoOn,
   isAudioOn,
+  isRecording,
 
   onclose,
+  onRecordClick,
   onParticipantsClick,
   onChatClick,
   onAudioToggle,
@@ -27,6 +29,8 @@ export default function Bottom({
   isVideoOn: boolean;
   isAudioOn: boolean;
   isSharing: boolean;
+  isRecording: boolean;
+  onRecordClick: () => void;
   onclose: () => void;
   onParticipantsClick: () => void;
   onChatClick: () => void;
@@ -80,9 +84,17 @@ export default function Bottom({
           }}
         />
         <IconLabel
-          icon={<ZoomRecord className="w-6 h-6" />}
+          icon={
+            isRecording ? (
+              <ZoomClose className="w-6 h-6" />
+            ) : (
+              <ZoomRecord className="w-6 h-6" />
+            )
+          }
           label="Record"
-          onclick={() => {}}
+          onclick={() => {
+            onRecordClick();
+          }}
         />
       </div>
 
