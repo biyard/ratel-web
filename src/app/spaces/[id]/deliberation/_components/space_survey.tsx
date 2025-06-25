@@ -65,10 +65,7 @@ function EditableSurvey({
   ) => void;
   onremove: (index: number) => void;
 }) {
-  const stableKeys = useMemo(
-    () => questions.map(() => uuidv4()),
-    [questions.length],
-  );
+  const stableKeys = useMemo(() => questions.map(() => uuidv4()), [questions]);
 
   return (
     <div className="flex flex-col w-full gap-2.5">
