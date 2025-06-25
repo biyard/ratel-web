@@ -41,8 +41,8 @@ export default function DiscussionByIdPage() {
   const [isSharing, setIsSharing] = useState(false);
   const [isAudioOn, setIsAudioOn] = useState(true);
 
-  const [micStates] = useState<Record<string, boolean>>({}); //FIXME: implement mic states
-  const [videoStates] = useState<Record<string, boolean>>({}); //FIXME: implement video states
+  const [micStates, setMicStates] = useState<Record<string, boolean>>({});
+  const [videoStates, setVideoStates] = useState<Record<string, boolean>>({});
   const [meetingSession, setMeetingSession] =
     useState<DefaultMeetingSession | null>(null);
   const [activePanel, setActivePanel] = useState<
@@ -99,6 +99,73 @@ export default function DiscussionByIdPage() {
 
     startChime();
   }, []);
+
+  useEffect(() => {
+    if (!meetingSession) return;
+    const av = meetingSession.audioVideo;
+
+    const observer = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      videoTileDidUpdate: (tileState: any) => {
+        const attendeeId = tileState.boundAttendeeId;
+        if (!attendeeId) return;
+
+        setVideoStates((prev) => ({
+          ...prev,
+          [attendeeId]: tileState.active,
+        }));
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      videoTileWasRemoved: (tileId: any) => {
+        const tile = av.getVideoTile(tileId);
+        const attendeeId = tile?.state().boundAttendeeId;
+        if (!attendeeId) return;
+
+        setVideoStates((prev) => ({
+          ...prev,
+          [attendeeId]: false,
+        }));
+      },
+    };
+
+    av.addObserver(observer);
+    return () => av.removeObserver(observer);
+  }, [meetingSession]);
+
+  useEffect(() => {
+    if (!meetingSession) return;
+    const av = meetingSession.audioVideo;
+
+    const activeAttendeeIds = new Set<string>();
+
+    av.realtimeSubscribeToAttendeeIdPresence((attendeeId, present) => {
+      if (present) {
+        activeAttendeeIds.add(attendeeId);
+        av.realtimeSubscribeToVolumeIndicator(
+          attendeeId,
+          (_attendeeId, _volume, muted) => {
+            setMicStates((prev) => ({
+              ...prev,
+              [attendeeId]: !muted,
+            }));
+          },
+        );
+      } else {
+        activeAttendeeIds.delete(attendeeId);
+        setMicStates((prev) => {
+          const copy = { ...prev };
+          delete copy[attendeeId];
+          return copy;
+        });
+      }
+    });
+
+    return () => {
+      activeAttendeeIds.forEach((id) => {
+        av.realtimeUnsubscribeFromVolumeIndicator(id);
+      });
+    };
+  }, [meetingSession]);
 
   return (
     <div className="w-screen h-screen bg-black flex flex-col">
@@ -515,8 +582,6 @@ function ParticipantsPanel({
 
           const isMicOn = micStates[attendeeId ?? ''] ?? false;
           const isVideoOn = videoStates[attendeeId ?? ''] ?? false;
-
-          console.log('isMicOn: ', isMicOn, 'isVideoOn: ', isVideoOn);
 
           return (
             <div
