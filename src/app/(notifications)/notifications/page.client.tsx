@@ -5,6 +5,9 @@ import {
   RotateCcw,
   MoreHorizontal,
   Warehouse,
+  Phone,
+  Video,
+  MoreVertical
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useState } from 'react';
@@ -22,11 +25,10 @@ export default function NotificationClientPage() {
           <div className="flex justify-center">
             <button
               onClick={() => setActiveTab('notification')}
-              className={`text-xl font-semibold transition-colors relative ${
-                activeTab === 'notification'
+              className={`text-xl font-semibold transition-colors relative ${activeTab === 'notification'
                   ? 'text-white'
                   : 'text-neutral-500 hover:text-white'
-              }`}
+                }`}
             >
               Notification
               {activeTab === 'notification' && (
@@ -37,11 +39,10 @@ export default function NotificationClientPage() {
           <div className="flex justify-center">
             <button
               onClick={() => setActiveTab('message')}
-              className={`text-xl font-semibold transition-colors relative ${
-                activeTab === 'message'
+              className={`text-xl font-semibold transition-colors relative ${activeTab === 'message'
                   ? 'text-white'
                   : 'text-neutral-500 hover:text-white'
-              }`}
+                }`}
             >
               Message
               {activeTab === 'message' && (
@@ -112,12 +113,81 @@ export default function NotificationClientPage() {
       )}
 
       {activeTab === 'message' && (
-        <div className="space-y-4">
-          <div className="h-96 flex items-center justify-center text-neutral-500">
-            <div className="text-center">
-              <MessageCircle className="w-12 h-12 mx-auto mb-4 text-[#404040]" />
-              <p>No messages yet</p>
-              <p className="text-sm mt-2">Start a conversation with someone</p>
+        <div className="grid grid-cols-2 gap-6">
+          {/* Notification Section */}
+          <div className="space-y-4">
+            {/* Search Bar */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#737373] w-4 h-4" />
+              <Input
+                placeholder="Search"
+                className="pl-10 bg-[#262626] border-[#404040] text-white placeholder-[#737373] w-full"
+              />
+            </div>
+
+            {/* Filter Tabs */}
+            <div className="flex items-center gap-2 text-sm overflow-x-auto">
+              <button className="bg-white text-black px-4 py-2 rounded-full font-medium whitespace-nowrap">
+                All
+              </button>
+              <button className="text-[#737373] hover:text-white px-3 py-2 whitespace-nowrap">Unread</button>
+              <button className="text-[#737373] hover:text-white px-3 py-2 whitespace-nowrap">
+                My Connections
+              </button>
+              <button className="text-[#737373] hover:text-white px-3 py-2 whitespace-nowrap">Other</button>
+              <button className="text-[#737373] hover:text-white px-3 py-2 whitespace-nowrap">Archived</button>
+              <button className="text-[#737373] hover:text-white px-2 py-2">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Notification List */}
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {Array.from({ length: 8 }, (_, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 p-2 hover:bg-[#262626] rounded-lg transition-colors cursor-pointer group"
+                  onClick={() => console.log(`Clicked notification from User ${i + 1}`)}
+                >
+                  <Avatar className="w-10 h-10 flex-shrink-0">
+                    <AvatarFallback className="bg-[#404040] text-white text-sm">U</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <p className="font-medium text-white text-sm group-hover:text-[#fcb300] transition-colors cursor-pointer">
+                        [User name]
+                      </p>
+                      <span className="text-[#737373] text-xs whitespace-nowrap">12hrs ago</span>
+                    </div>
+                    <p className="text-[#737373] text-xs group-hover:text-[#a1a1a1] transition-colors">
+                      Hey Where's your computer scienc...
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Message Section */}
+          <div className="flex flex-col">
+            {/* Message Header */}
+            <div className="flex items-center justify-end gap-4 mb-4">
+              <Phone className="w-5 h-5 text-[#737373] cursor-pointer hover:text-white" />
+              <Video className="w-5 h-5 text-[#737373] cursor-pointer hover:text-white" />
+              <MessageCircle className="w-5 h-5 text-[#737373] cursor-pointer hover:text-white" />
+              <MoreVertical className="w-5 h-5 text-[#737373] cursor-pointer hover:text-white" />
+            </div>
+
+            {/* Message Content */}
+            <div className="flex flex-col items-center justify-center flex-1 min-h-96">
+              <div className="w-20 h-20 bg-[#262626] rounded-full flex items-center justify-center mb-6">
+                <MessageCircle className="w-10 h-10 text-[#404040]" />
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">Your messages</h3>
+              <p className="text-[#737373] text-center mb-6">Send a message to start a chat.</p>
+              <Button className="bg-white text-black hover:bg-gray-200 px-8 py-2 rounded-full font-medium">
+                Send Message
+              </Button>
             </div>
           </div>
         </div>
