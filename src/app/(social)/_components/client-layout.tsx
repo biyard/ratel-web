@@ -11,14 +11,20 @@ import { LoginModal } from '@/components/popup/login-popup';
 import { useUserInfo } from '../_hooks/user';
 import { usePathname } from 'next/navigation';
 
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const popup = usePopup();
   const { data, refetch, isLoading } = useUserInfo();
   const { logout } = useAuth();
   const [mobileExtends, setMobileExtends] = useState(false);
   const pathname = usePathname();
 
-  const isDiscussionPage = /^\/spaces\/[^\/]+\/discussions\/[^\/]+$/.test(pathname);
+  const isDiscussionPage = /^\/spaces\/[^\/]+\/discussions\/[^\/]+$/.test(
+    pathname,
+  );
 
   useEffect(() => {
     document.body.style.overflow = mobileExtends ? 'hidden' : '';
@@ -57,10 +63,18 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               : 'hidden'
           }
         >
-          <Link href={route.settings()} onClick={() => setMobileExtends(false)} className={linkClass}>
+          <Link
+            href={route.settings()}
+            onClick={() => setMobileExtends(false)}
+            className={linkClass}
+          >
             {data?.nickname}
           </Link>
-          <Link href={route.home()} onClick={() => setMobileExtends(false)} className={linkClass}>
+          <Link
+            href={route.home()}
+            onClick={() => setMobileExtends(false)}
+            className={linkClass}
+          >
             Home
           </Link>
 

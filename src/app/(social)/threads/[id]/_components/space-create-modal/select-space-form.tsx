@@ -1,6 +1,6 @@
 'use client';
 import { Space, SpaceType } from '@/lib/api/models/spaces';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 import { Discuss } from '@/components/icons';
 import { useState } from 'react';
 import { LoadablePrimaryButton } from '@/components/button/primary-button';
