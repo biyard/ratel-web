@@ -33,6 +33,9 @@ export const ratelApi = {
   promotions: {
     get_promotions: () => '/v1/promotions?param-type=read&action=hot-promotion',
   },
+  responses: {
+    respond_answer: (spaceId: number) => `/v1/spaces/${spaceId}/responses`,
+  },
   groups: {
     create_group: (team_id: number) => `/v1/teams/${team_id}/groups`,
     invite_member: (team_id: number, group_id: number) =>

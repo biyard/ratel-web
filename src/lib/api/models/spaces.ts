@@ -3,6 +3,7 @@ import { SpaceComment } from './comments';
 import { Discussion, DiscussionCreateRequest } from './discussion';
 import { Elearning, ElearningCreateRequest } from './elearning';
 import { FileInfo } from './feeds';
+import { SurveyResponse } from './response';
 import { SpaceDraft, SpaceDraftCreateRequest } from './space_draft';
 import { Survey, SurveyCreateRequest } from './survey';
 import { UserType } from './user';
@@ -28,6 +29,7 @@ export interface Space {
   discussions: Discussion[];
   elearnings: Elearning[];
   surveys: Survey[];
+  user_responses: SurveyResponse[];
   drafts: SpaceDraft[];
 }
 

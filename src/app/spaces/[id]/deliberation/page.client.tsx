@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SpaceSideMenu from './_components/space_side_menu';
 import { useParams } from 'next/navigation';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
@@ -23,6 +23,7 @@ import { ElearningCreateRequest } from '@/lib/api/models/elearning';
 import { SurveyCreateRequest } from '@/lib/api/models/survey';
 import { SpaceDraftCreateRequest } from '@/lib/api/models/space_draft';
 import { useRouter } from 'next/navigation';
+import { Answer, surveyResponseCreateRequest } from '@/lib/api/models/response';
 
 export const DeliberationTab = {
   SUMMARY: 'Summary',
@@ -41,6 +42,11 @@ export interface Thread {
 
 export interface Poll {
   surveys: SurveyCreateRequest[];
+}
+
+export interface SurveyAnswer {
+  answers: Answer[];
+  is_completed: boolean;
 }
 
 export interface FinalConsensus {
@@ -92,6 +98,12 @@ export default function SpaceByIdPage() {
     })),
   });
 
+  const [answer, setAnswer] = useState<SurveyAnswer>({
+    answers:
+      space.user_responses.length != 0 ? space.user_responses[0].answers : [],
+    is_completed: space.user_responses.length != 0,
+  });
+
   const [draft, setDraft] = useState<FinalConsensus>({
     drafts: space.drafts.map((draft) => ({
       title: draft.title,
@@ -99,6 +111,15 @@ export default function SpaceByIdPage() {
       files: draft.files,
     })),
   });
+
+  useEffect(() => {
+    if (space.user_responses && space.user_responses.length > 0) {
+      setAnswer({
+        answers: space.user_responses[0].answers,
+        is_completed: true,
+      });
+    }
+  }, [space.user_responses]);
 
   const discussions = space.discussions;
 
@@ -199,6 +220,13 @@ export default function SpaceByIdPage() {
           survey={survey}
           startDate={startedAt}
           endDate={endedAt}
+          answer={answer}
+          setAnswers={(answers: Answer[]) => {
+            setAnswer((prev) => ({
+              ...prev,
+              answers,
+            }));
+          }}
           setStartDate={(startDate: number) => {
             setStartedAt(Math.floor(startDate));
           }}
@@ -216,6 +244,22 @@ export default function SpaceByIdPage() {
           proposerImage={space.author[0].profile_url ?? ''}
           proposerName={space.author[0].nickname ?? ''}
           createdAt={space?.created_at}
+          onsend={async () => {
+            console.log('answer: ', answer);
+            try {
+              await post(
+                ratelApi.responses.respond_answer(spaceId),
+                surveyResponseCreateRequest(answer.answers),
+              );
+              showSuccessToast('Your response has been saved successfully.');
+              data.refetch();
+            } catch (err) {
+              showErrorToast(
+                'There was a problem saving your response. Please try again later.',
+              );
+              logger.error('failed to create response with error: ', err);
+            }
+          }}
           onback={() => {
             if (isEdit) {
               setIsEdit(false);
