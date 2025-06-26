@@ -8,45 +8,38 @@ import Clock from '@/assets/icons/clock.svg';
 import { BottomTriangle, Discuss, Edit1 } from '@/components/icons';
 import { File, Vote, CheckCircle } from 'lucide-react';
 import { DeliberationTab, DeliberationTabType } from '../page.client';
-import CalendarDayPicker from '@/components/calendar-picker/calendar';
+import { useUserInfo } from '@/lib/api/hooks/users';
 import { SpaceStatus } from '@/lib/api/models/spaces';
 
 export default function SpaceSideMenu({
   spaceId,
+  status,
   selectedType,
   setSelectedType,
-  setStartDate,
-  setEndDate,
   isEdit,
   postingSpace,
   onedit,
   onsave,
 }: {
   spaceId: number;
+  status: SpaceStatus;
   selectedType: DeliberationTabType;
   setSelectedType: (tab: DeliberationTabType) => void;
-  setStartDate: (startedAt: number) => void;
-  setEndDate: (endedAt: number) => void;
   isEdit: boolean;
   postingSpace: () => void;
   onedit: () => void;
   onsave: () => void;
 }) {
   const { data: space } = useSpaceBySpaceId(spaceId);
+  const { data: userInfo } = useUserInfo();
+  const userId = userInfo ? userInfo.id : 0;
   const created_at = space.created_at;
-  const [startAt, setStartAt] = useState<Date>(() =>
-    space.started_at ? new Date(space.started_at * 1000) : new Date(),
-  );
-  const [endedAt, setEndedAt] = useState<Date>(() =>
-    space.ended_at ? new Date(space.ended_at * 1000) : new Date(),
-  );
-  const [startCalendarOpen, setStartCalendarOpen] = useState(false);
-  const [endCalendarOpen, setEndCalendarOpen] = useState(false);
 
   return (
     <div className="flex flex-col max-w-[250px] max-tablet:!hidden w-full gap-[10px]">
-      {space.status != SpaceStatus.InProgress && (
+      {space.author.some((a) => a.id === userId) && (
         <EditSplitButton
+          status={status}
           isEdit={isEdit}
           postingSpace={postingSpace}
           onedit={onedit}
@@ -56,13 +49,13 @@ export default function SpaceSideMenu({
       <BlackBox>
         <div className="flex flex-col gap-2.5 w-full">
           <div
-            className={`cursor-pointer flex flex-row w-full gap-1 items-center px-1 py-2 rounded-sm ${selectedType == DeliberationTab.THREAD ? 'bg-neutral-800' : ''}`}
+            className={`cursor-pointer flex flex-row w-full gap-1 items-center px-1 py-2 rounded-sm ${selectedType == DeliberationTab.SUMMARY ? 'bg-neutral-800' : ''}`}
             onClick={() => {
-              setSelectedType(DeliberationTab.THREAD);
+              setSelectedType(DeliberationTab.SUMMARY);
             }}
           >
             <File className="[&>path]:stroke-neutral-80 w-5 h-5" />
-            <div className="font-bold text-white text-sm">Thread</div>
+            <div className="font-bold text-white text-sm">Summary</div>
           </div>
 
           <div
@@ -86,13 +79,13 @@ export default function SpaceSideMenu({
           </div>
 
           <div
-            className={`cursor-pointer flex flex-row gap-1 items-center px-1 py-2 rounded-sm ${selectedType == DeliberationTab.FINAL ? 'bg-neutral-800' : ''}`}
+            className={`cursor-pointer flex flex-row gap-1 items-center px-1 py-2 rounded-sm ${selectedType == DeliberationTab.RECOMMANDATION ? 'bg-neutral-800' : ''}`}
             onClick={() => {
-              setSelectedType(DeliberationTab.FINAL);
+              setSelectedType(DeliberationTab.RECOMMANDATION);
             }}
           >
             <CheckCircle className="[&>path]:stroke-neutral-80 w-5 h-5" />
-            <div className="font-bold text-white text-sm">Final Consensus</div>
+            <div className="font-bold text-white text-sm">Recommandation</div>
           </div>
         </div>
       </BlackBox>
@@ -101,81 +94,14 @@ export default function SpaceSideMenu({
           <div className="flex flex-row gap-1 items-center">
             <Clock width={20} height={20} />
             <div className="font-bold text-neutral-500 text-sm/[14px]">
-              Timeline
+              Created
             </div>
           </div>
 
           <div className="flex flex-col w-full gap-[6px]">
-            <div className="font-medium text-white text-[15px]/[12px]">
-              Created
-            </div>
             <div className="font-medium text-neutral-80 text-xs/[12px]">
               {getTimeWithFormat(created_at)}
             </div>
-          </div>
-
-          <div
-            className="relative flex flex-col w-full gap-[6px] cursor-pointer"
-            onClick={() => {
-              if (!isEdit) {
-                return;
-              }
-              setStartCalendarOpen((prev) => !prev);
-              setEndCalendarOpen(false);
-            }}
-          >
-            <div className="font-medium text-white text-[15px]/[12px]">
-              Start
-            </div>
-            <div className="font-medium text-neutral-80 text-xs/[12px]">
-              {getTimeWithFormat(startAt.getTime() / 1000)}
-            </div>
-
-            {isEdit && startCalendarOpen && (
-              <div className="absolute right-0 mt-7 z-10 bg-white text-black rounded-xl shadow-xl p-4">
-                <CalendarDayPicker
-                  value={startAt.getTime()}
-                  onChange={(date) => {
-                    if (date) {
-                      setStartAt(date);
-                      setStartDate(date.getTime() / 1000);
-                      setStartCalendarOpen(false);
-                    }
-                  }}
-                />
-              </div>
-            )}
-          </div>
-
-          <div
-            className="relative flex flex-col w-full gap-[6px] cursor-pointer"
-            onClick={() => {
-              if (!isEdit) {
-                return;
-              }
-              setEndCalendarOpen((prev) => !prev);
-              setStartCalendarOpen(false);
-            }}
-          >
-            <div className="font-medium text-white text-[15px]/[12px]">End</div>
-            <div className="font-medium text-neutral-80 text-xs/[12px]">
-              {getTimeWithFormat(endedAt.getTime() / 1000)}
-            </div>
-
-            {isEdit && endCalendarOpen && (
-              <div className="absolute right-0 mt-7 z-10 bg-white text-black rounded-xl shadow-xl p-4">
-                <CalendarDayPicker
-                  value={endedAt.getTime()}
-                  onChange={(date) => {
-                    if (date) {
-                      setEndedAt(date);
-                      setEndDate(date.getTime() / 1000);
-                      setEndCalendarOpen(false);
-                    }
-                  }}
-                />
-              </div>
-            )}
           </div>
         </div>
       </BlackBox>
@@ -185,11 +111,13 @@ export default function SpaceSideMenu({
 
 function EditSplitButton({
   isEdit,
+  status,
   postingSpace,
   onedit,
   onsave,
 }: {
   isEdit: boolean;
+  status: SpaceStatus;
   postingSpace: () => void;
   onedit: () => void;
   onsave: () => void;
@@ -217,7 +145,7 @@ function EditSplitButton({
     <div className="relative flex items-center w-full h-[46px] gap-2">
       {/* Left "Edit" Button */}
       <button
-        className="flex items-center justify-start flex-row w-full bg-white hover:bg-neutral-300 text-black px-4 py-3 gap-1 rounded-l-[100px] rounded-r-[4px]"
+        className={`flex items-center justify-start flex-row w-full bg-white hover:bg-neutral-300 text-black px-4 py-3 gap-1 ${status != SpaceStatus.InProgress ? 'rounded-l-[100px] rounded-r-[4px]' : 'rounded-[100px]'}`}
         onClick={() => {
           if (isEdit) {
             onsave();
@@ -233,28 +161,32 @@ function EditSplitButton({
       </button>
 
       {/* Right Dropdown Toggle */}
-      <div className="relative h-full" ref={popupRef}>
-        <button
-          className="w-[48px] h-full flex items-center justify-center bg-neutral-500 rounded-r-[100px] rounded-l-[4px]"
-          onClick={() => setShowPopup((prev) => !prev)}
-        >
-          <BottomTriangle />
-        </button>
-
-        {/* Pop-up Menu */}
-        {showPopup && (
-          <div
-            className="absolute top-full right-0 mt-2 px-4 py-2 min-w-[150px] bg-white hover:bg-neutral-300 text-black rounded shadow-lg text-sm cursor-pointer whitespace-nowrap z-50"
-            onClick={() => {
-              console.log('Posting API called');
-              postingSpace();
-              setShowPopup(false);
-            }}
+      {status != SpaceStatus.InProgress ? (
+        <div className="relative h-full" ref={popupRef}>
+          <button
+            className="w-[48px] h-full flex items-center justify-center bg-neutral-500 rounded-r-[100px] rounded-l-[4px]"
+            onClick={() => setShowPopup((prev) => !prev)}
           >
-            Posting
-          </div>
-        )}
-      </div>
+            <BottomTriangle />
+          </button>
+
+          {/* Pop-up Menu */}
+          {showPopup && (
+            <div
+              className="absolute top-full right-0 mt-2 px-4 py-2 min-w-[150px] bg-white hover:bg-neutral-300 text-black rounded shadow-lg text-sm cursor-pointer whitespace-nowrap z-50"
+              onClick={() => {
+                console.log('Posting API called');
+                postingSpace();
+                setShowPopup(false);
+              }}
+            >
+              Posting
+            </div>
+          )}
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

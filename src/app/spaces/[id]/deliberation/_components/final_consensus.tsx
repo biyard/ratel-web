@@ -6,9 +6,11 @@ import SpaceHeader from '../../_components/space_header';
 import SpaceContents from '../../_components/space_contents';
 import SpaceFiles from './space_files';
 import { FileInfo } from '@/lib/api/models/feeds';
+import { SpaceStatus } from '@/lib/api/models/spaces';
 
 export default function FinalConsensusPage({
   title,
+  status,
   draft,
   setTitle,
   setDraft,
@@ -21,6 +23,7 @@ export default function FinalConsensusPage({
   onback,
 }: {
   title: string;
+  status: SpaceStatus;
   draft: FinalConsensus;
   setTitle: (title: string) => void;
   setDraft: (draft: FinalConsensus) => void;
@@ -47,6 +50,7 @@ export default function FinalConsensusPage({
         <SpaceHeader
           isEdit={isEdit}
           title={title}
+          status={status}
           userType={userType}
           proposerImage={proposerImage}
           proposerName={proposerName}

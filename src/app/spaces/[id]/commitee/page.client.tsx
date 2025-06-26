@@ -21,6 +21,7 @@ export default function SpaceByIdPage() {
     <div className="flex flex-col w-full justify-start items-start">
       <SpaceHeader
         title={space?.title ?? ''}
+        status={space.status}
         userType={space?.author[0].user_type ?? 0}
         proposerImage={space?.author[0].profile_url ?? ''}
         proposerName={space?.author[0].nickname ?? ''}

@@ -24,4 +24,6 @@ export const route = {
   threadByFeedId: (feedId: number) => {
     return `/threads/${feedId}`;
   },
+  discussionById: (spaceId: number, discussionId: number) =>
+    `/spaces/${spaceId}/discussions/${discussionId}`,
 };
