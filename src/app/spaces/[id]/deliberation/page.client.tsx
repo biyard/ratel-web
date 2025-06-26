@@ -245,7 +245,6 @@ export default function SpaceByIdPage() {
           proposerName={space.author[0].nickname ?? ''}
           createdAt={space?.created_at}
           onsend={async () => {
-            console.log('answer: ', answer);
             try {
               await post(
                 ratelApi.responses.respond_answer(spaceId),
