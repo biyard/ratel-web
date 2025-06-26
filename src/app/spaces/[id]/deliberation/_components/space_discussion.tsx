@@ -7,29 +7,32 @@ import TimeDropdown from '@/components/time-dropdown/time-dropdown';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Trash2 } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { format } from 'date-fns';
 
 import { v4 as uuidv4 } from 'uuid';
 import discussionImg from '@/assets/images/discussion.png';
-import {
-  Discussion,
-  DiscussionCreateRequest,
-} from '@/lib/api/models/discussion';
+import { Discussion, Member } from '@/lib/api/models/discussion';
 import { Add } from './add';
 import { SpaceStatus } from '@/lib/api/models/spaces';
 import { ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { route } from '@/route';
+import { UserGroup } from '@/components/icons';
+import { usePopup } from '@/lib/contexts/popup-service';
+import InviteMemberPopup from './invite_member';
+import { DiscussionInfo } from '../page.client';
+import { TotalUser } from '@/lib/api/models/user';
+import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 
 export interface SpaceDiscussionProps {
   isEdit?: boolean;
   status: SpaceStatus;
-  discussions: DiscussionCreateRequest[];
+  discussions: DiscussionInfo[];
   discussionRaws: Discussion[];
   onremove?: (index: number) => void;
-  onupdate?: (index: number, discussion: DiscussionCreateRequest) => void;
-  onadd?: (discussion: DiscussionCreateRequest) => void;
+  onupdate?: (index: number, discussion: DiscussionInfo) => void;
+  onadd?: (discussion: DiscussionInfo) => void;
 }
 
 export default function SpaceDiscussion({
@@ -42,6 +45,8 @@ export default function SpaceDiscussion({
   onupdate = () => {},
 }: SpaceDiscussionProps) {
   const router = useRouter();
+  const { data: userInfo } = useSuspenseUserInfo();
+  const userId = userInfo?.id || 0;
 
   const moveDiscussion = (spaceId: number, discussionId: number) => {
     router.push(route.discussionById(spaceId, discussionId));
@@ -63,9 +68,10 @@ export default function SpaceDiscussion({
               ended_at,
               name,
               description,
+              participants: [],
             });
           }}
-          onupdate={(index: number, discussion: DiscussionCreateRequest) => {
+          onupdate={(index: number, discussion: DiscussionInfo) => {
             onupdate(index, discussion);
           }}
           onremove={(index: number) => {
@@ -74,6 +80,7 @@ export default function SpaceDiscussion({
         />
       ) : (
         <ViewDiscussion
+          userId={userId}
           discussions={discussionRaws}
           status={status}
           moveDiscussion={moveDiscussion}
@@ -84,10 +91,12 @@ export default function SpaceDiscussion({
 }
 
 function ViewDiscussion({
+  userId,
   discussions,
   status,
   moveDiscussion,
 }: {
+  userId: number;
   discussions: Discussion[];
   status: SpaceStatus;
   moveDiscussion: (spaceId: number, discussionId: number) => void;
@@ -95,6 +104,7 @@ function ViewDiscussion({
   return (
     <div className="flex flex-col w-full gap-2.5">
       <DiscussionSchedules
+        userId={userId}
         discussions={discussions}
         status={status}
         moveDiscussion={moveDiscussion}
@@ -104,10 +114,12 @@ function ViewDiscussion({
 }
 
 function DiscussionSchedules({
+  userId,
   discussions,
   status,
   moveDiscussion,
 }: {
+  userId: number;
   discussions: Discussion[];
   status: SpaceStatus;
   moveDiscussion: (spaceId: number, discussionId: number) => void;
@@ -147,11 +159,13 @@ function DiscussionSchedules({
             {discussions.map((discussion, index) => (
               <React.Fragment key={index}>
                 <DiscussionRoom
+                  userId={userId}
                   status={status}
                   startDate={discussion.started_at}
                   endDate={discussion.ended_at}
                   title={discussion.name}
                   description={discussion.description}
+                  members={discussion.members}
                   onclick={() => {
                     moveDiscussion(discussion.space_id, discussion.id);
                   }}
@@ -171,18 +185,22 @@ function DiscussionSchedules({
 }
 
 export function DiscussionRoom({
+  userId,
   status,
   startDate,
   endDate,
   title,
   description,
+  members,
   onclick,
 }: {
+  userId: number;
   status: SpaceStatus;
   startDate: number;
   endDate: number;
   title: string;
   description: string;
+  members: Member[];
 
   onclick: () => void;
 }) {
@@ -199,6 +217,8 @@ export function DiscussionRoom({
     : isFinished
       ? 'Finished discussion'
       : 'On-going';
+
+  const isMember = members.some((member) => member.id === userId);
 
   return (
     <div className="flex flex-row w-full items-start justify-between gap-5">
@@ -237,7 +257,7 @@ export function DiscussionRoom({
           </div>
         </div>
 
-        {isLive && status == SpaceStatus.InProgress && (
+        {isLive && status == SpaceStatus.InProgress && isMember && (
           <div className="flex flex-row w-full justify-end">
             <JoinButton
               onClick={() => {
@@ -271,10 +291,10 @@ function EditableDiscussion({
   onadd,
   onupdate,
 }: {
-  discussions: DiscussionCreateRequest[];
+  discussions: DiscussionInfo[];
   onremove: (index: number) => void;
   onadd: () => void;
-  onupdate: (index: number, discussion: DiscussionCreateRequest) => void;
+  onupdate: (index: number, discussion: DiscussionInfo) => void;
 }) {
   const stableKeys = useMemo(
     () => discussions.map(() => uuidv4()),
@@ -296,7 +316,8 @@ function EditableDiscussion({
             endedAt={discussion.ended_at}
             name={discussion.name}
             description={discussion.description}
-            onupdate={(index: number, discussion: DiscussionCreateRequest) => {
+            participants={discussion.participants}
+            onupdate={(index: number, discussion: DiscussionInfo) => {
               onupdate(index, discussion);
             }}
             onremove={(index: number) => {
@@ -339,6 +360,7 @@ function EditableDiscussionInfo({
   endedAt,
   name,
   description,
+  participants,
   onupdate,
   onremove,
 }: {
@@ -347,31 +369,59 @@ function EditableDiscussionInfo({
   endedAt: number;
   name: string;
   description: string;
-  onupdate: (index: number, discussion: DiscussionCreateRequest) => void;
+  participants: TotalUser[];
+  onupdate: (index: number, discussion: DiscussionInfo) => void;
   onremove: (index: number) => void;
 }) {
+  const popup = usePopup();
   const [startTime, setStartTime] = useState<number>(startedAt);
   const [endTime, setEndTime] = useState<number>(endedAt);
   const [title, setTitle] = useState<string>(name);
   const [desc, setDesc] = useState<string>(description);
+  const [users, setUsers] = useState<TotalUser[]>(participants);
+
+  useEffect(() => {
+    setUsers(participants);
+  }, [participants]);
 
   const update = (
     newStart: number,
     newEnd: number,
     newTitle: string,
     newDesc: string,
+    newParticipants: TotalUser[],
   ) => {
     onupdate(index, {
       started_at: newStart,
       ended_at: newEnd,
       name: newTitle,
       description: newDesc,
+      participants: newParticipants,
     });
   };
 
   return (
     <div className="flex flex-col gap-5 border border-neutral-700 rounded-md p-4">
-      <div className="flex flex-row w-full justify-end">
+      <div className="flex flex-row w-full justify-end items-center gap-[10px]">
+        <div
+          className="cursor-pointer flex flex-row items-center px-[20px] py-[10px] bg-white rounded-lg gap-[10px]"
+          onClick={() => {
+            popup
+              .open(
+                <InviteMemberPopup
+                  users={users}
+                  onclick={(users: TotalUser[]) => {
+                    update(startTime, endTime, title, desc, users);
+                    popup.close();
+                  }}
+                />,
+              )
+              .withTitle('Invite to Discussion');
+          }}
+        >
+          <UserGroup className="w-[15px] h-[15px] stroke-neutral-500" />
+          <div className="font-bold text-sm text-[#000203]">Invite Member</div>
+        </div>
         <div
           className="cursor-pointer w-fit h-fit"
           onClick={() => {
@@ -388,7 +438,7 @@ function EditableDiscussionInfo({
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          onBlur={() => update(startTime, endTime, title, desc)}
+          onBlur={() => update(startTime, endTime, title, desc, users)}
         />
       </div>
 
@@ -403,7 +453,7 @@ function EditableDiscussionInfo({
               onChange={(date) => {
                 const newStart = Math.floor(date / 1000);
                 setStartTime(newStart);
-                update(newStart, endTime, title, desc);
+                update(newStart, endTime, title, desc, users);
               }}
             />
             <TimeDropdown
@@ -411,7 +461,7 @@ function EditableDiscussionInfo({
               onChange={(timestamp) => {
                 const newStart = Math.floor(timestamp / 1000);
                 setStartTime(newStart);
-                update(newStart, endTime, title, desc);
+                update(newStart, endTime, title, desc, users);
               }}
             />
           </div>
@@ -422,7 +472,7 @@ function EditableDiscussionInfo({
               onChange={(date) => {
                 const newEnd = Math.floor(date / 1000);
                 setEndTime(newEnd);
-                update(startTime, newEnd, title, desc);
+                update(startTime, newEnd, title, desc, users);
               }}
             />
             <TimeDropdown
@@ -430,7 +480,7 @@ function EditableDiscussionInfo({
               onChange={(timestamp) => {
                 const newEnd = Math.floor(timestamp / 1000);
                 setEndTime(newEnd);
-                update(startTime, newEnd, title, desc);
+                update(startTime, newEnd, title, desc, users);
               }}
             />
           </div>
@@ -444,7 +494,7 @@ function EditableDiscussionInfo({
         <Textarea
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
-          onBlur={() => update(startTime, endTime, title, desc)}
+          onBlur={() => update(startTime, endTime, title, desc, users)}
         />
       </div>
     </div>

@@ -24,6 +24,7 @@ import { SurveyCreateRequest } from '@/lib/api/models/survey';
 import { SpaceDraftCreateRequest } from '@/lib/api/models/space_draft';
 import { useRouter } from 'next/navigation';
 import { Answer, surveyResponseCreateRequest } from '@/lib/api/models/response';
+import { TotalUser, UserType } from '@/lib/api/models/user';
 
 export const DeliberationTab = {
   SUMMARY: 'Summary',
@@ -53,8 +54,17 @@ export interface FinalConsensus {
   drafts: SpaceDraftCreateRequest[];
 }
 
+export interface DiscussionInfo {
+  started_at: number;
+  ended_at: number;
+  name: string;
+  description: string;
+
+  participants: TotalUser[];
+}
+
 export interface Deliberation {
-  discussions: DiscussionCreateRequest[];
+  discussions: DiscussionInfo[];
   elearnings: ElearningCreateRequest[];
 }
 
@@ -84,6 +94,16 @@ export default function SpaceByIdPage() {
       ended_at: disc.ended_at,
       name: disc.name,
       description: disc.description,
+      participants: disc.members.map((member) => ({
+        id: member.id,
+        created_at: member.created_at,
+        updated_at: member.updated_at,
+        nickname: member.nickname,
+        username: member.username,
+        email: member.email,
+        profile_url: member.profile_url ?? '',
+        user_type: UserType.Individual,
+      })),
     })),
 
     elearnings: space.elearnings.map((elearning) => ({
@@ -325,6 +345,14 @@ export default function SpaceByIdPage() {
             return;
           }
 
+          const discussions = deliberation.discussions.map((disc) => ({
+            started_at: disc.started_at,
+            ended_at: disc.ended_at,
+            name: disc.name,
+            description: disc.description,
+            participants: disc.participants.map((member) => member.id),
+          }));
+
           try {
             await handleUpdate(
               title,
@@ -332,7 +360,7 @@ export default function SpaceByIdPage() {
               endedAt,
               thread.html_contents,
               thread.files,
-              deliberation.discussions,
+              discussions,
               deliberation.elearnings,
               survey.surveys,
               draft.drafts,

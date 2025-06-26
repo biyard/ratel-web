@@ -16,6 +16,19 @@ export interface Discussion {
   pipeline_id: string;
 
   participants: DiscussionParticipant[];
+  members: Member[];
+}
+
+export interface Member {
+  id: number;
+  created_at: number;
+  updated_at: number;
+
+  nickname: string;
+  email: string;
+  profile_url?: string;
+
+  username: string;
 }
 
 export interface DiscussionCreateRequest {
@@ -23,6 +36,8 @@ export interface DiscussionCreateRequest {
   ended_at: number;
   name: string;
   description: string;
+
+  participants: number[];
 }
 
 export interface DiscussionParticipant {
