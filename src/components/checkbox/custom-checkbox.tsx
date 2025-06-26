@@ -2,7 +2,7 @@ interface CustomCheckboxProps {
   isRounded?: boolean;
   checked: boolean;
   onChange: () => void;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 export default function CustomCheckbox({
