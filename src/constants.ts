@@ -13,6 +13,9 @@ export const QK_GET_FEED_BY_FEED_ID = 'get-feeds-by-feed-id';
 export const QK_GET_NETWORK = 'get-networks';
 
 export const QK_GET_SPACE_BY_SPACE_ID = 'get-space-by-space-id';
+export const QK_GET_DISCUSSION_BY_DISCUSSION_ID =
+  'get-discussion-by-discussion-id';
+export const QK_GET_MEETING_BY_DISCUSSION_ID = 'get-meeting-by-discussion-id';
 
 export const QK_GET_TEAM_BY_ID = 'get-team-by-id';
 export const QK_GET_TEAM_BY_USERNAME = 'get-team-by-username';

@@ -6,11 +6,18 @@ import { Poll } from '../page.client';
 import SpaceSurvey from './space_survey';
 import { Question } from '@/lib/api/models/survey';
 import { AnswerType } from './question/answer_type_select';
+import { SpaceStatus } from '@/lib/api/models/spaces';
 // import { Poll } from '../page.client';
 
 export default function PollPage({
   title,
+  status,
   survey,
+  startDate,
+  endDate,
+
+  setStartDate,
+  setEndDate,
   setTitle,
   setSurvey,
   userType,
@@ -22,7 +29,13 @@ export default function PollPage({
   onback,
 }: {
   title: string;
+  status: SpaceStatus;
   survey: Poll;
+  startDate: number;
+  endDate: number;
+
+  setStartDate: (startDate: number) => void;
+  setEndDate: (endDate: number) => void;
   setTitle: (title: string) => void;
   setSurvey: (survey: Poll) => void;
   userType: number;
@@ -40,6 +53,7 @@ export default function PollPage({
       <SpaceHeader
         isEdit={isEdit}
         title={title}
+        status={status}
         userType={userType}
         proposerImage={proposerImage}
         proposerName={proposerName}
@@ -54,6 +68,10 @@ export default function PollPage({
         <SpaceSurvey
           isEdit={isEdit}
           questions={questions}
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
           onadd={(question: Question) => {
             if (survey.surveys.length === 0) {
               setSurvey({

@@ -51,3 +51,14 @@ export { default as BottomTriangle } from '@/assets/icons/bottom-triangle.svg';
 export { default as Calendar } from '@/assets/icons/calendar.svg';
 
 export { default as EditOption } from '@/assets/icons/edit-option.svg';
+export { default as Play } from '@/assets/icons/play.svg';
+
+export { default as ZoomMicOff } from '@/assets/icons/mic-off.svg';
+export { default as ZoomMicOn } from '@/assets/icons/mic-on.svg';
+export { default as ZoomVideoOff } from '@/assets/icons/video-off.svg';
+export { default as ZoomVideoOn } from '@/assets/icons/video-on.svg';
+export { default as ZoomParticipants } from '@/assets/icons/zoom-user.svg';
+export { default as ZoomChat } from '@/assets/icons/chat.svg';
+export { default as ZoomShare } from '@/assets/icons/zoom-share.svg';
+export { default as ZoomRecord } from '@/assets/icons/record.svg';
+export { default as ZoomClose } from '@/assets/icons/zoom-close.svg';
