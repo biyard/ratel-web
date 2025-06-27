@@ -6,10 +6,10 @@ import { getTimeAgo } from '@/lib/time-utils';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 import { checkString } from '@/lib/string-filter-utils';
 import Image from 'next/image';
-import { useSpaceByIdContext } from '../commitee/providers.client';
+import { useCommiteeSpaceByIdContext } from '../commitee/providers.client';
 
 export default function SpaceComments({ spaceId }: { spaceId: number }) {
-  const { close, setClose, setExpand } = useSpaceByIdContext();
+  const { close, setClose, setExpand } = useCommiteeSpaceByIdContext();
 
   const space = useSpaceBySpaceId(spaceId);
   const numberOfComments = space.data.feed_comments.length;

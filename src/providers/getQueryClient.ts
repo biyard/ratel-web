@@ -46,3 +46,16 @@ export function getQueryClient() {
     return browserQueryClient;
   }
 }
+
+interface InitDataOptions {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  key: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+}
+
+export function initData(cli: QueryClient, options: InitDataOptions[]) {
+  for (const { key, data } of options) {
+    cli.setQueryData(key, data);
+  }
+}

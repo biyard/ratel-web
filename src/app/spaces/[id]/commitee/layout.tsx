@@ -3,7 +3,7 @@ import React, { Suspense } from 'react';
 import SpaceSideMenu from '../_components/space_side_menu';
 import CreateCommentBox from '../_components/create_comment_box';
 import SpaceComments from '../_components/space_comments';
-import ClientProviders from './providers.client';
+import Provider from './providers';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,7 +20,7 @@ export default async function SpaceByIdLayout({
   const spaceId = Number(id);
 
   return (
-    <ClientProviders>
+    <Provider spaceId={spaceId}>
       <div className="flex flex-col w-full min-h-screen justify-between max-w-desktop mx-auto text-white pt-3 gap-5 max-tablet:px-5 mb-8">
         <div className="flex flex-row w-full gap-5">
           <div className="flex-1 flex w-full">
@@ -39,6 +39,6 @@ export default async function SpaceByIdLayout({
         <SpaceComments spaceId={spaceId} />
         <CreateCommentBox spaceId={spaceId} />
       </div>
-    </ClientProviders>
+    </Provider>
   );
 }

@@ -41,7 +41,7 @@ export default function Header({ post_id }: { post_id: number }) {
     popup
       .open(<SpaceCreateModal feed_id={post_id} />)
       .withoutBackdropClose()
-      .withTitle('Invite to Committee');
+      .withTitle('Select a Space Type');
   };
   return (
     <div className="flex flex-col w-full gap-2.5">

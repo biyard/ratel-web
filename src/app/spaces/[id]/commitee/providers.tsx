@@ -1,38 +1,27 @@
-import { cookies } from 'next/headers';
 import { ReactNode } from 'react';
 import ClientProviders from './providers.client';
+import { getRedeemCode, getSpaceById } from '@/lib/api/ratel_api';
+import { getQueryClient, initData } from '@/providers/getQueryClient';
+import { SSRHydration } from '@/lib/query-utils';
 
-export default async function CookieProvider({
+export default async function Provider({
   children,
+  spaceId,
 }: {
   children: ReactNode;
+  spaceId: number;
 }) {
-  const cookieStore = await cookies();
+  const queryClient = getQueryClient();
 
-  const token = cookieStore.get('auth_token')?.value;
-  const userId = cookieStore.get('user_id')?.value;
-  const id = cookieStore.get('id')?.value;
+  const space = await getSpaceById(spaceId);
+  const redeemCode = await getRedeemCode(spaceId);
 
-  const isLoggedIn = !!token && !!userId;
+  // Initialize the query client with the space data
+  initData(queryClient, [space, redeemCode]);
 
   return (
-    <ClientProviders value={{ isLoggedIn, userId, id, token }}>
-      {children}
-    </ClientProviders>
+    <SSRHydration queryClient={queryClient}>
+      <ClientProviders spaceId={spaceId}>{children}</ClientProviders>
+    </SSRHydration>
   );
-}
-
-export type CookieContext = {
-  userId?: string;
-  token?: string;
-  id?: string;
-};
-
-export async function getCookieContext(): Promise<CookieContext> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth_token')?.value;
-  const userId = cookieStore.get('user_id')?.value;
-  const id = cookieStore.get('id')?.value;
-
-  return { userId, token, id };
 }

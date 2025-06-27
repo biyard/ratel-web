@@ -11,7 +11,7 @@ import { writeCommentRequest } from '@/lib/api/models/feeds/comment';
 import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';
 import DoubleArrowUp from '@/assets/icons/double-arrow-up.svg';
 import Clear from '@/assets/icons/clear.svg';
-import { useSpaceByIdContext } from '../commitee/providers.client';
+import { useCommiteeSpaceByIdContext } from '../commitee/providers.client';
 
 export interface CreateCommentBoxProps {
   handleSubmit: (value: string) => void;
@@ -32,7 +32,7 @@ export interface SendButtonProps {
 }
 
 export default function CreateCommentBox({ spaceId }: { spaceId: number }) {
-  const { close, setClose, expand, setExpand } = useSpaceByIdContext();
+  const { close, setClose, expand, setExpand } = useCommiteeSpaceByIdContext();
   const [description, setDescription] = useState('');
   const { post } = useApiCall();
   const { data: user } = useSuspenseUserInfo();
