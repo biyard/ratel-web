@@ -8,7 +8,7 @@ import { X, Loader2 } from 'lucide-react';
 import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';
 import UserCircleIcon from '@/assets/icons/user-circle.svg';
 import Certified from '@/assets/icons/certified.svg';
-import SaveDraftIcon from '@/assets/icons/save-draft.svg'
+import SaveDraftIcon from '@/assets/icons/save-draft.svg';
 import { cn } from '@/lib/utils';
 import { useUserInfo } from '../_hooks/user';
 import { usePostDraft } from './post-draft-context';
@@ -176,11 +176,15 @@ export function CreatePost() {
 
           <div className="flex items-center gap-4">
             {/* Status indicator */}
-            {status === 'saving' && (
+            {status === 'saving' ? (
               <div className="flex items-center gap-2 text-sm text-neutral-400">
                 <Loader2 className="animate-spin" size={16} />
                 <span>Saving...</span>
               </div>
+            ) : (
+              <span className='flex flex-row px-2 gap-2"'>
+                <SaveDraftIcon /> Save
+              </span>
             )}
             {status === 'error' && (
               <span className="text-sm text-red-500">Error saving!</span>
@@ -200,10 +204,10 @@ export function CreatePost() {
                 <Loader2 className="animate-spin" />
               ) : (
                 <span className="flex flex-row px-2 gap-2">
-                <UserCircleIcon />
+                  <UserCircleIcon />
                   Post
-              </span>
-            )}
+                </span>
+              )}
             </button>
           </div>
         </div>
