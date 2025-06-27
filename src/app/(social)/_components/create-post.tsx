@@ -8,6 +8,7 @@ import { X, Loader2 } from 'lucide-react';
 import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';
 import UserCircleIcon from '@/assets/icons/user-circle.svg';
 import Certified from '@/assets/icons/certified.svg';
+import SaveDraftIcon from '@/assets/icons/save-draft.svg'
 import { cn } from '@/lib/utils';
 import { useUserInfo } from '../_hooks/user';
 import { usePostDraft } from './post-draft-context';
