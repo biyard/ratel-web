@@ -27,16 +27,14 @@ export default function ClientLayout({
   );
 
   useEffect(() => {
-    if (mobileExtends) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
+    document.body.style.overflow = mobileExtends ? 'hidden' : '';
     return () => {
       document.body.style.overflow = '';
     };
   }, [mobileExtends]);
+
+  const linkClass =
+    'font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center';
 
   return (
     <>
@@ -46,6 +44,7 @@ export default function ClientLayout({
           setMobileExtends={setMobileExtends}
         />
       )}
+
       <Suspense
         fallback={
           <div className="w-full h-full flex items-center justify-center">
@@ -55,32 +54,33 @@ export default function ClientLayout({
       >
         {children}
       </Suspense>
+
       {!isDiscussionPage && (
         <div
           className={
             mobileExtends
-              ? 'fixed top-[80px] left-0 w-screen h-screen z-20 text-white bg-neutral-800 hidden max-tablet:flex max-tablet:flex-col max-tablet:items-center max-tablet:justify-center gap-[50px]'
+              ? 'fixed top-[80px] left-0 w-screen h-screen z-20 text-white bg-neutral-800 hidden max-tablet:flex max-tablet:flex-col max-tablet:items-start max-tablet:justify-start pt-6 px-4 gap-[50px]'
               : 'hidden'
           }
         >
           <Link
             href={route.settings()}
             onClick={() => setMobileExtends(false)}
-            className="font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
+            className={linkClass}
           >
             {data?.nickname}
           </Link>
           <Link
             href={route.home()}
             onClick={() => setMobileExtends(false)}
-            className="font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
+            className={linkClass}
           >
             Home
           </Link>
 
           {!isLoading && data ? (
             <div
-              className="cursor-pointer font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
+              className={linkClass + ' cursor-pointer'}
               onClick={() => {
                 logout();
                 refetch();
@@ -91,7 +91,7 @@ export default function ClientLayout({
             </div>
           ) : (
             <button
-              className="cursor-pointer font-bold text-neutral-500 text-[20px] hover:text-primary flex flex-row w-full justify-center items-center"
+              className={linkClass + ' cursor-pointer'}
               onClick={() => {
                 popup
                   .open(<LoginModal />)
