@@ -100,6 +100,7 @@ function ViewSurvey({
   endDate: number;
   onSend: () => void;
 }) {
+  console.log('startDate: ', startDate, 'endDate: ', endDate);
   const formattedDate = `${format(new Date(startDate * 1000), 'dd MMM, yyyy')} - ${format(new Date(endDate * 1000), 'dd MMM, yyyy')}`;
   return (
     <div className="flex flex-col w-full gap-[10px]">
