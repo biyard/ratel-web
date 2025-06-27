@@ -17,6 +17,8 @@ interface Question {
 
 interface SurveyViewerProps {
   status: SpaceStatus;
+  startDate: number;
+  endDate: number;
   questions: Question[];
   answer: SurveyAnswer;
   setAnswers: (answer: Answer[]) => void;
@@ -25,11 +27,15 @@ interface SurveyViewerProps {
 
 export default function SurveyViewer({
   status,
+  startDate,
+  endDate,
   questions,
   answer,
   setAnswers,
   onConfirm,
 }: SurveyViewerProps) {
+  const now = Math.floor(Date.now() / 1000);
+  const isLive = startDate <= now && now <= endDate;
   const popup = usePopup();
   const is_completed = answer.is_completed;
   const answers: Answer[] = answer.answers;
@@ -191,7 +197,7 @@ export default function SurveyViewer({
       })}
 
       <div
-        className={`flex flex-row w-full justify-end ${is_completed || status != SpaceStatus.InProgress ? 'hidden' : ''}`}
+        className={`flex flex-row w-full justify-end ${is_completed || status != SpaceStatus.InProgress || !isLive ? 'hidden' : ''}`}
       >
         <div
           className="cursor-pointer flex flex-row w-[180px] h-fit py-[14px] px-[40px] justify-center items-center bg-primary hover:opacity-70 rounded-lg font-bold text-[15px] text-[#000203]"
