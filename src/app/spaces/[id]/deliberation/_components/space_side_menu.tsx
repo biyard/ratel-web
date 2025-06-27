@@ -144,21 +144,25 @@ function EditSplitButton({
   return (
     <div className="relative flex items-center w-full h-[46px] gap-2">
       {/* Left "Edit" Button */}
-      <button
-        className={`flex items-center justify-start flex-row w-full bg-white hover:bg-neutral-300 text-black px-4 py-3 gap-1 ${status != SpaceStatus.InProgress ? 'rounded-l-[100px] rounded-r-[4px]' : 'rounded-[100px]'}`}
-        onClick={() => {
-          if (isEdit) {
-            onsave();
-          } else {
-            onedit();
-          }
-        }}
-      >
-        <Edit1 className="w-[18px] h-[18px]" />
-        <span className="font-bold text-neutral-900 text-base/[22px]">
-          {isEdit ? 'Save' : 'Edit'}
-        </span>
-      </button>
+      {status != SpaceStatus.InProgress ? (
+        <button
+          className={`flex items-center justify-start flex-row w-full bg-white hover:bg-neutral-300 text-black px-4 py-3 gap-1 ${status != SpaceStatus.InProgress ? 'rounded-l-[100px] rounded-r-[4px]' : 'rounded-[100px]'}`}
+          onClick={() => {
+            if (isEdit) {
+              onsave();
+            } else {
+              onedit();
+            }
+          }}
+        >
+          <Edit1 className="w-[18px] h-[18px]" />
+          <span className="font-bold text-neutral-900 text-base/[22px]">
+            {isEdit ? 'Save' : 'Edit'}
+          </span>
+        </button>
+      ) : (
+        <></>
+      )}
 
       {/* Right Dropdown Toggle */}
       {status != SpaceStatus.InProgress ? (
@@ -175,7 +179,6 @@ function EditSplitButton({
             <div
               className="absolute top-full right-0 mt-2 px-4 py-2 min-w-[150px] bg-white hover:bg-neutral-300 text-black rounded shadow-lg text-sm cursor-pointer whitespace-nowrap z-50"
               onClick={() => {
-                console.log('Posting API called');
                 postingSpace();
                 setShowPopup(false);
               }}
