@@ -34,7 +34,7 @@ export default async function RootLayout({
       <body className={`${raleway.variable} antialiased bg-bg`}>
         <CookieProvider>
           <Providers dehydratedState={dehydratedState}>
-            <ClientLayout>{children}</ClientLayout>
+            <ClientLayout> {children}</ClientLayout>
             <PopupZone />
             <ReactQueryDevtools initialIsOpen={false} />
           </Providers>
