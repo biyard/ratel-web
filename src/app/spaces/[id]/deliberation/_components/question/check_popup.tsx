@@ -12,12 +12,9 @@ export default function CheckPopup({
     <div className="w-full max-w-[450px] px-[20px]">
       <div className="flex flex-col gap-[40px]">
         <div className="font-semibold text-base text-white">
-          Voting is anonymous and once submitted, the vote cannot be changed.
-          <br />
-          This is a measure to maintain the fairness and security of the vote.
-          <br />
-          After voting, it cannot be modified, and we ask for your understanding
-          in order to ensure the reliability of the results.
+          For the integrity and security of the vote, all submissions are
+          anonymous and final. Votes cannot be changed once cast, and we
+          appreciate your understanding in ensuring reliable results.
         </div>
 
         <div className="flex flex-row w-full justify-end items-center gap-[10px]">
