@@ -1,26 +1,5 @@
-import React, {
-  createContext,
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useState,
-} from 'react';
-
-type SpaceByIdContext = {
-  expand: boolean;
-  setExpand: Dispatch<SetStateAction<boolean>>;
-  close: boolean;
-  setClose: Dispatch<SetStateAction<boolean>>;
-};
-
-const noop: Dispatch<SetStateAction<boolean>> = () => {};
-
-const SpaceByIdContext = createContext({
-  expand: false,
-  setExpand: noop,
-  close: true,
-  setClose: noop,
-});
+import React, { useContext, useState } from 'react';
+import { SpaceByIdContext } from './context';
 
 export default function ClientProviders({
   children,
