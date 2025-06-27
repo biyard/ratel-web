@@ -16,7 +16,7 @@ import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { route } from '@/route';
 import { config } from '@/config';
-import { useUserInfo } from '@/lib/api/hooks/users';
+import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { UserType } from '@/lib/api/models/user';
 import LoginIcon from '@/assets/icons/login.svg';
 export interface HeaderProps {
@@ -27,7 +27,8 @@ export interface HeaderProps {
 function Header(props: HeaderProps) {
   const popup = usePopup();
 
-  const { data, isLoading } = useUserInfo();
+  const { data } = useSuspenseUserInfo();
+  const loggedIn = data && data.user_type !== UserType.Individual;
 
   logger.debug('Header data:', data);
 
@@ -43,6 +44,7 @@ function Header(props: HeaderProps) {
       ),
       visible: true,
       href: route.home(),
+      authorized: false,
     },
     {
       name: 'Explore',
@@ -55,6 +57,7 @@ function Header(props: HeaderProps) {
       ),
       visible: config.experiment,
       href: route.explore(),
+      authorized: false,
     },
     {
       name: 'My Network',
@@ -67,6 +70,7 @@ function Header(props: HeaderProps) {
       ),
       visible: true,
       href: route.myNetwork(),
+      authorized: true,
     },
     {
       name: 'Message',
@@ -79,6 +83,7 @@ function Header(props: HeaderProps) {
       ),
       visible: config.experiment,
       href: route.messages(),
+      authorized: true,
     },
     {
       name: 'Notification',
@@ -91,6 +96,7 @@ function Header(props: HeaderProps) {
       ),
       visible: config.experiment,
       href: route.notifications(),
+      authorized: true,
     },
   ];
 
@@ -114,7 +120,7 @@ function Header(props: HeaderProps) {
               key={`nav-item-${index}`}
               href={item.href}
               className="flex flex-col items-center justify-center group p-2.5"
-              hidden={!item.visible}
+              hidden={!item.visible || (item.authorized && !loggedIn)}
             >
               {item.icon}
               <span className="whitespace-nowrap text-neutral-500 group-hover:text-white text-[15px] font-medium transition-all">
@@ -124,8 +130,7 @@ function Header(props: HeaderProps) {
             </Link>
           ))}
 
-          {!isLoading &&
-          data &&
+          {data &&
           (data.user_type === UserType.Individual ||
             data?.user_type === UserType.Team) ? (
             <Profile profileUrl={data.profile_url} name={data.nickname} />

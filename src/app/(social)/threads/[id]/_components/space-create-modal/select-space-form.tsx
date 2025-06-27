@@ -49,13 +49,7 @@ const SpaceForms: SpaceFormProps[] = [
   //   disabled: true,
   // },
 ];
-export default function SelectSpaceForm({
-  feed_id,
-  user_ids,
-}: {
-  feed_id: number;
-  user_ids?: number[];
-}) {
+export default function SelectSpaceForm({ feed_id }: { feed_id: number }) {
   const [isLoading, setLoading] = useState(false);
   const router = useRouter();
   const popup = usePopup();
@@ -73,7 +67,7 @@ export default function SelectSpaceForm({
             create_space: {
               space_type: selectedType,
               feed_id,
-              user_ids,
+              user_ids: [],
               num_of_redeem_codes: 0,
             },
           }),
