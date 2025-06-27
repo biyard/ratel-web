@@ -18,7 +18,7 @@ export default function SpaceByIdPage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col w-full justify-start items-start">
+    <div className="flex flex-col w-full justify-start items-start mb-4">
       <SpaceHeader
         title={space?.title ?? ''}
         status={space.status}
