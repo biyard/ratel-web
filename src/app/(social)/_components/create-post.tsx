@@ -189,7 +189,7 @@ export function CreatePost() {
               onClick={publishPost}
               disabled={isSubmitDisabled}
               className={cn(
-                'flex items-center gap-2 p-3 rounded-full font-medium text-sm transition-all',
+                'flex items-center gap-2 p-3 rounded-full font-semibold text-[16px] transition-all',
                 !isSubmitDisabled
                   ? 'bg-primary text-black hover:bg-primary/50'
                   : 'bg-neutral-700 text-neutral-500 cursor-not-allowed',
@@ -198,7 +198,10 @@ export function CreatePost() {
               {status === 'publishing' ? (
                 <Loader2 className="animate-spin" />
               ) : (
-                <UserCircleIcon />
+                <span className='flex flex-row px-2 gap-2'>
+                  <UserCircleIcon />
+                  Post
+                </span>
               )}
             </button>
           </div>
