@@ -183,7 +183,7 @@ function CommentInfo({ comment }: { comment: SpaceComment }) {
                 alt="reply arrowicon"
               />
 
-              <p className='ml-2'>Reply</p>
+              <p className="ml-2">Reply</p>
             </button>
           </div>
 

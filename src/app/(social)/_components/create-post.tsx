@@ -102,7 +102,6 @@ export function CreatePost() {
 
   return (
     <div className="w-full bg-neutral-900 border-t-6 border-x border-b border-primary rounded-t-lg overflow-hidden ">
-  
       <div className="flex items-center p-4 justify-between">
         <div className="flex items-center gap-3">
           <div className="size-6 rounded-full">
