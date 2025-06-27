@@ -146,7 +146,7 @@ function EditSplitButton({
       {/* Left "Edit" Button */}
       {status != SpaceStatus.InProgress ? (
         <button
-          className={`flex items-center justify-start flex-row w-full bg-white hover:bg-neutral-300 text-black px-4 py-3 gap-1 ${status != SpaceStatus.InProgress ? 'rounded-l-[100px] rounded-r-[4px]' : 'rounded-[100px]'}`}
+          className={`flex items-center justify-start flex-row w-full bg-white hover:bg-neutral-300 text-black px-4 py-3 gap-1 rounded-l-[100px] rounded-r-[4px]'}`}
           onClick={() => {
             if (isEdit) {
               onsave();
