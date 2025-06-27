@@ -15,6 +15,8 @@ import { usePostDraft } from './post-draft-context';
 import Image from 'next/image';
 import Toolbar from '@/components/toolbar/toolbar-tip';
 import { checkString } from '@/lib/string-filter-utils';
+import { DraftPopup } from '@/components/popup/draft-popup';
+
 // import Link from '@tiptap/extension-link';
 
 export function CreatePost() {
@@ -29,6 +31,7 @@ export function CreatePost() {
     setImage,
     publishPost,
     status,
+    saveDraft,
   } = usePostDraft();
 
   const { data: userInfo, isLoading } = useUserInfo();
@@ -93,8 +96,13 @@ export function CreatePost() {
     return null;
   }
 
+  const handleManualSave = () => {
+    saveDraft(title, content, image);
+  };
+
   return (
-    <div className="w-full bg-neutral-900 border-t-6 border-x border-b border-primary rounded-t-lg overflow-hidden">
+    <div className="w-full bg-neutral-900 border-t-6 border-x border-b border-primary rounded-t-lg overflow-hidden ">
+      {status === 'saved' && <DraftPopup />}
       {/* Header */}
       <div className="flex items-center p-4 justify-between">
         <div className="flex items-center gap-3">
@@ -182,9 +190,12 @@ export function CreatePost() {
                 <span>Saving...</span>
               </div>
             ) : (
-              <span className='flex flex-row px-2 gap-2"'>
+              <button
+                onClick={handleManualSave}
+                className="flex flex-row mx-2 font-semibold text-white gap-2"
+              >
                 <SaveDraftIcon /> Save
-              </span>
+              </button>
             )}
             {status === 'error' && (
               <span className="text-sm text-red-500">Error saving!</span>

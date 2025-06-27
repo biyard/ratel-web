@@ -15,7 +15,8 @@ import { usePopup } from '@/lib/contexts/popup-service';
 import { logger } from '@/lib/logger';
 import { route } from '@/route';
 import { config } from '@/config';
-import { useUserInfo } from '@/lib/api/hooks/users';
+import { useUserInfo } from '@/app/(social)/_hooks/user';
+// import { useUserInfo } from '@/lib/api/hooks/users';
 import { UserType } from '@/lib/api/models/user';
 import LoginIcon from '@/assets/icons/login.svg';
 export interface HeaderProps {

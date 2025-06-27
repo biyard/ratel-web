@@ -31,6 +31,7 @@ export type DraftStatus =
   | 'creating'
   | 'saving'
   | 'publishing'
+  | 'saved'
   | 'error';
 
 export interface PostDraftContextType {
@@ -44,12 +45,20 @@ export interface PostDraftContextType {
   image: string | null;
   setImage: (image: string | null) => void;
   status: DraftStatus;
+
+  setStatus: (status: DraftStatus) => void;
+
   publishPost: () => Promise<void>;
   loadDraft: (id: number) => Promise<void>;
   newDraft: () => void;
+  saveDraft: (
+    title: string,
+    content: string | null,
+    image: string | null,
+  ) => Promise<void>;
 }
 
-export const PostDraftContext = createContext<PostDraftContextType | undefined>(
+const PostDraftContext = createContext<PostDraftContextType | undefined>(
   undefined,
 );
 
@@ -57,6 +66,10 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { get, post } = useApiCall();
+  const { data: user } = useUserInfo();
+
   const [expand, setExpand] = useState(false);
   const [draftId, setDraftId] = useState<number | null>(null);
   const [title, setTitle] = useState('');
@@ -70,16 +83,12 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     image: null as string | null,
   });
 
-  const { get, post } = useApiCall();
-  const { data: user } = useUserInfo();
-  const queryClient = useQueryClient();
-
-  const refetchDrafts = useCallback(() => {
-    if (!user) return;
-    queryClient.invalidateQueries({
-      queryKey: postByUserIdQk(user.id, 1, 20, FeedStatus.Draft),
-    });
-  }, [user, queryClient]);
+  // useEffect(() => {
+  //   if (status === 'saved') {
+  //     const timer = setTimeout(() => setStatus('idle'), 800);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [status]);
 
   const resetState = useCallback(() => {
     setDraftId(null);
@@ -87,12 +96,16 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     setContent('');
     setImage(null);
     setStatus('idle');
-    lastSavedRef.current = {
-      title: '',
-      content: '',
-      image: null,
-    };
+    lastSavedRef.current = { title: '', content: '', image: null };
   }, []);
+
+  const refetchDrafts = useCallback(() => {
+    if (user) {
+      queryClient.invalidateQueries({
+        queryKey: postByUserIdQk(user.id, 1, 20, FeedStatus.Draft),
+      });
+    }
+  }, [user, queryClient]);
 
   const newDraft = useCallback(() => {
     resetState();
@@ -104,28 +117,28 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
       setStatus('loading');
       try {
         const draft: Feed = await get(ratelApi.feeds.getFeedsByFeedId(id));
-        const draftTitle = draft.title || '';
-        const draftContent = draft.html_contents || '';
+
+        const draftTitle = draft.title ?? '';
+        const draftContent = draft.html_contents ?? '';
         const draftImage =
           draft.url && draft.url_type === UrlType.Image ? draft.url : null;
 
         setDraftId(draft.id);
         setTitle(draftTitle);
-        setImage(draftImage);
-        logger.debug('Draft content:', draftContent);
         setContent(draftContent);
+        setImage(draftImage);
+
         lastSavedRef.current = {
           title: draftTitle,
           content: draftContent,
           image: draftImage,
         };
+
         setExpand(true);
-        logger.debug('Draft loaded:', draft);
-      } catch (error: unknown) {
-        logger.error('LoadDraft error:', error);
+        setStatus('saved');
+      } catch (error) {
+        logger.error('Failed to load draft:', error);
         setStatus('error');
-      } finally {
-        setStatus('idle');
       }
     },
     [get],
@@ -137,16 +150,18 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
       currentContent: string | null,
       currentImage: string | null,
     ) => {
-      if (status === 'saving' || status === 'creating' || !user) return;
-
+      if (!user || status === 'saving' || status === 'creating') return;
       if (!currentTitle.trim() || currentContent === null) return;
 
       const lastSaved = lastSavedRef.current;
-      if (
+      const isUnchanged =
         currentTitle === lastSaved.title &&
         currentContent === lastSaved.content &&
-        currentImage === lastSaved.image
-      ) {
+        currentImage === lastSaved.image;
+
+      if (isUnchanged) return;
+      if (checkString(currentTitle) || checkString(currentContent)) {
+        showErrorToast('Please remove the test keyword');
         return;
       }
 
@@ -155,27 +170,20 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
 
       try {
         let currentDraftId = draftId;
-        if (checkString(currentTitle) || checkString(currentContent)) {
-          showErrorToast('Please remove the test keyword');
-          return;
-        }
 
         if (isCreating) {
-          const data: Feed = await post(
+          const created: Feed = await post(
             ratelApi.feeds.createDraft(),
             createDraftRequest(FeedType.Post, user.id),
           );
-          currentDraftId = data.id;
+          currentDraftId = created.id;
           setDraftId(currentDraftId);
         }
 
         if (currentDraftId) {
-          let url = '';
-          let url_type = UrlType.None;
-          if (currentImage) {
-            url = currentImage;
-            url_type = UrlType.Image;
-          }
+          const url = currentImage || '';
+          const url_type = currentImage ? UrlType.Image : UrlType.None;
+
           await post(
             ratelApi.feeds.updateDraft(currentDraftId),
             updateDraftRequest(
@@ -189,75 +197,73 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
             ),
           );
 
-          // Update last saved values
           lastSavedRef.current = {
             title: currentTitle,
             content: currentContent,
             image: currentImage,
           };
+
+          refetchDrafts();
         }
-        refetchDrafts();
-      } catch (error: unknown) {
-        logger.error('Save draft error:', error);
+
+        setStatus('saved');
+      } catch (error) {
+        logger.error('Error saving draft:', error);
         setStatus('error');
-      } finally {
-        setStatus('idle');
       }
     },
     [draftId, user, post, refetchDrafts, status],
   );
 
-  // Auto-save effect
   useEffect(() => {
     if (!title.trim() && !content?.trim()) return;
     if (status !== 'idle') return;
 
-    const lastSaved = lastSavedRef.current;
-    if (
-      (title === lastSaved.title &&
-        content === lastSaved.content &&
-        image === lastSaved.image) ||
-      content === null
-    ) {
-      return;
-    }
+    const {
+      title: savedTitle,
+      content: savedContent,
+      image: savedImage,
+    } = lastSavedRef.current;
+    const isUnchanged =
+      title === savedTitle && content === savedContent && image === savedImage;
 
-    const handler = setTimeout(() => {
+    if (isUnchanged || content === null) return;
+
+    const timeout = setTimeout(() => {
       saveDraft(title, content, image);
     }, 1500);
 
-    return () => {
-      clearTimeout(handler);
-    };
+    return () => clearTimeout(timeout);
   }, [title, content, image, status, saveDraft]);
 
   const publishPost = useCallback(async () => {
-    if (checkString(title) || checkString(content ?? '')) {
+    if (
+      !user ||
+      !draftId ||
+      !title.trim() ||
+      content == null ||
+      status !== 'idle'
+    )
+      return;
+    if (checkString(title) || checkString(content)) {
       showErrorToast('Please remove the test keyword');
       return;
     }
 
-    if (!draftId || !title.trim() || status !== 'idle' || content == null)
-      return;
-
     setStatus('publishing');
     try {
       await saveDraft(title, content, image);
-
-      await post(ratelApi.feeds.publishDraft(draftId), {
-        publish: {},
-      });
+      await post(ratelApi.feeds.publishDraft(draftId), { publish: {} });
 
       router.push(route.threadByFeedId(draftId));
 
       resetState();
       setExpand(false);
       refetchDrafts();
-    } catch (error: unknown) {
-      logger.error('Publish error:', error);
+      setStatus('saved');
+    } catch (error) {
+      logger.error('Publish failed:', error);
       setStatus('error');
-    } finally {
-      setStatus('idle');
     }
   }, [
     draftId,
@@ -265,14 +271,15 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     content,
     image,
     status,
-    saveDraft,
+    user,
     post,
-    resetState,
-    refetchDrafts,
+    saveDraft,
     router,
+    refetchDrafts,
+    resetState,
   ]);
 
-  const contextValue = {
+  const contextValue: PostDraftContextType = {
     expand,
     setExpand,
     draftId,
@@ -283,9 +290,11 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
     image,
     setImage,
     status,
+    setStatus,
     publishPost,
     loadDraft,
     newDraft,
+    saveDraft,
   };
 
   return (
@@ -295,7 +304,7 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export const usePostDraft = () => {
+export const usePostDraft = (): PostDraftContextType => {
   const context = useContext(PostDraftContext);
   if (context === undefined) {
     throw new Error('usePostDraft must be used within a PostDraftProvider');
