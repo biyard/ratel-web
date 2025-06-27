@@ -61,7 +61,7 @@ export interface Post {
 }
 
 export default function Home() {
-  const {status} = usePostDraft()
+  const { status } = usePostDraft();
   const { post } = useApiCall();
   const network = useNetwork();
   const { data: promotion } = usePromotion();
