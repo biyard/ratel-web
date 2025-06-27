@@ -15,9 +15,6 @@ import { usePostDraft } from './post-draft-context';
 import Image from 'next/image';
 import Toolbar from '@/components/toolbar/toolbar-tip';
 import { checkString } from '@/lib/string-filter-utils';
-import { DraftPopup } from '@/components/popup/draft-popup';
-
-// import Link from '@tiptap/extension-link';
 
 export function CreatePost() {
   const {
