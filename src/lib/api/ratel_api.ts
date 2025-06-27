@@ -48,6 +48,9 @@ export const ratelApi = {
     follow: (user_id: number) => `/v1/my-networks/${user_id}`,
     unfollow: (user_id: number) => `/v1/my-networks/${user_id}`,
   },
+  news: {
+    getNewsDetails: (news_id: number) => `/v1/news/${news_id}`,
+  },
   feeds: {
     comment: () => '/v1/feeds',
     writePost: () => '/v1/feeds',
