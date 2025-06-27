@@ -81,9 +81,11 @@ export default function SpaceByIdPage() {
   const [isEdit, setIsEdit] = useState(false);
   const [title, setTitle] = useState(space.title ?? '');
   const [startedAt, setStartedAt] = useState(
-    space.started_at ?? Date.now() / 1000,
+    changeStartedAt(Math.floor(space.started_at ?? Date.now() / 1000)),
   );
-  const [endedAt, setEndedAt] = useState(space.ended_at ?? Date.now() / 1000);
+  const [endedAt, setEndedAt] = useState(
+    changeEndedAt(Math.floor(space.ended_at ?? Date.now() / 1000)),
+  );
   const [thread, setThread] = useState<Thread>({
     html_contents: space.html_contents ?? '',
     files: space.files ?? [],
@@ -112,8 +114,8 @@ export default function SpaceByIdPage() {
   });
   const [survey, setSurvey] = useState<Poll>({
     surveys: space.surveys.map((survey) => ({
-      started_at: survey.started_at,
-      ended_at: survey.ended_at,
+      started_at: changeStartedAt(survey.started_at),
+      ended_at: changeEndedAt(survey.ended_at),
       questions: survey.questions,
     })),
   });
@@ -217,6 +219,7 @@ export default function SpaceByIdPage() {
             setTitle(t);
           }}
           setDeliberation={(d: Deliberation) => {
+            console.log('deliberation: ', d);
             setDeliberation(d);
           }}
           isEdit={isEdit}
@@ -378,4 +381,18 @@ export default function SpaceByIdPage() {
       />
     </div>
   );
+}
+
+function changeStartedAt(timestamp: number) {
+  const date = new Date(timestamp * 1000);
+  date.setUTCHours(0, 0, 0, 0);
+  const newDate = Math.floor(date.getTime() / 1000);
+  return newDate;
+}
+
+function changeEndedAt(timestamp: number) {
+  const date = new Date(timestamp * 1000);
+  date.setUTCHours(23, 59, 59, 0);
+  const newDate = Math.floor(date.getTime() / 1000);
+  return newDate;
 }
