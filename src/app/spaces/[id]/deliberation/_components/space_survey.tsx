@@ -1,7 +1,7 @@
 'use client';
 
 import { Question } from '@/lib/api/models/survey';
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 import SurveyQuestionEditor from './question/survey_question_editor';
 import { AnswerType } from './question/answer_type_select';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,13 +9,19 @@ import SurveyViewer from './question/survey_viewer';
 import { format } from 'date-fns';
 import { Add } from './add';
 import CustomCalendar from '@/components/calendar-picker/calendar-picker';
+import { SurveyAnswer } from '../page.client';
+import { Answer } from '@/lib/api/models/response';
+import { SpaceStatus } from '@/lib/api/models/spaces';
 
 export interface SpaceSurveyProps {
   isEdit?: boolean;
+  status: SpaceStatus;
   questions: Question[];
   startDate: number;
   endDate: number;
+  answer: SurveyAnswer;
 
+  setAnswers: (answers: Answer[]) => void;
   setStartDate: (startDate: number) => void;
   setEndDate: (endDate: number) => void;
   onadd: (question: Question) => void;
@@ -24,19 +30,24 @@ export interface SpaceSurveyProps {
     updated: { answerType: AnswerType; title: string; options?: string[] },
   ) => void;
   onremove: (index: number) => void;
+  onsend: () => void;
 }
 
 export default function SpaceSurvey({
   isEdit = false,
+  status,
   questions,
   startDate,
   endDate,
+  answer,
 
+  setAnswers,
   setStartDate,
   setEndDate,
   onadd,
   onupdate,
   onremove,
+  onsend,
 }: SpaceSurveyProps) {
   return (
     <div className="flex flex-col w-full">
@@ -59,9 +70,13 @@ export default function SpaceSurvey({
         />
       ) : (
         <ViewSurvey
+          status={status}
+          answer={answer}
+          setAnswers={setAnswers}
           questions={questions}
           startDate={startDate}
           endDate={endDate}
+          onSend={onsend}
         />
       )}
     </div>
@@ -69,13 +84,21 @@ export default function SpaceSurvey({
 }
 
 function ViewSurvey({
+  status,
+  answer,
+  setAnswers,
   questions,
   startDate,
   endDate,
+  onSend,
 }: {
+  status: SpaceStatus;
+  answer: SurveyAnswer;
+  setAnswers: (answer: Answer[]) => void;
   questions: Question[];
   startDate: number;
   endDate: number;
+  onSend: () => void;
 }) {
   const formattedDate = `${format(new Date(startDate * 1000), 'dd MMM, yyyy')} - ${format(new Date(endDate * 1000), 'dd MMM, yyyy')}`;
   return (
@@ -84,7 +107,13 @@ function ViewSurvey({
         <div className="text-base text-white font-semibold">Period</div>
         <div className="text-sm text-white font-normal">{formattedDate}</div>
       </div>
-      <SurveyViewer questions={questions} />
+      <SurveyViewer
+        status={status}
+        questions={questions}
+        answer={answer}
+        setAnswers={setAnswers}
+        onConfirm={onSend}
+      />
     </div>
   );
 }
@@ -114,7 +143,19 @@ function EditableSurvey({
   ) => void;
   onremove: (index: number) => void;
 }) {
-  const stableKeys = useMemo(() => questions.map(() => uuidv4()), [questions]);
+  const [stableKeys, setStableKeys] = useState<string[]>(() =>
+    questions.map(() => uuidv4()),
+  );
+
+  const handleAdd = () => {
+    onadd();
+    setStableKeys((prev) => [...prev, uuidv4()]);
+  };
+
+  const handleRemove = (index: number) => {
+    onremove(index);
+    setStableKeys((prev) => prev.filter((_, i) => i !== index));
+  };
 
   return (
     <div className="flex flex-col w-full gap-2.5">
@@ -162,7 +203,7 @@ function EditableSurvey({
                 });
               }}
               onremove={(index: number) => {
-                onremove(index);
+                handleRemove(index);
               }}
             />
           </div>
@@ -170,7 +211,7 @@ function EditableSurvey({
       })}
       <div
         onClick={() => {
-          onadd();
+          handleAdd();
         }}
         className="bg-transparent border-2 border-dashed border-neutral-700 rounded-md h-50 flex flex-col items-center justify-center cursor-pointer hover:bg-neutral-800 transition gap-[10px]"
       >

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SpaceSideMenu from './_components/space_side_menu';
 import { useParams } from 'next/navigation';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
@@ -23,6 +23,8 @@ import { ElearningCreateRequest } from '@/lib/api/models/elearning';
 import { SurveyCreateRequest } from '@/lib/api/models/survey';
 import { SpaceDraftCreateRequest } from '@/lib/api/models/space_draft';
 import { useRouter } from 'next/navigation';
+import { Answer, surveyResponseCreateRequest } from '@/lib/api/models/response';
+import { TotalUser, UserType } from '@/lib/api/models/user';
 
 export const DeliberationTab = {
   SUMMARY: 'Summary',
@@ -43,12 +45,26 @@ export interface Poll {
   surveys: SurveyCreateRequest[];
 }
 
+export interface SurveyAnswer {
+  answers: Answer[];
+  is_completed: boolean;
+}
+
 export interface FinalConsensus {
   drafts: SpaceDraftCreateRequest[];
 }
 
+export interface DiscussionInfo {
+  started_at: number;
+  ended_at: number;
+  name: string;
+  description: string;
+
+  participants: TotalUser[];
+}
+
 export interface Deliberation {
-  discussions: DiscussionCreateRequest[];
+  discussions: DiscussionInfo[];
   elearnings: ElearningCreateRequest[];
 }
 
@@ -78,6 +94,16 @@ export default function SpaceByIdPage() {
       ended_at: disc.ended_at,
       name: disc.name,
       description: disc.description,
+      participants: disc.members.map((member) => ({
+        id: member.id,
+        created_at: member.created_at,
+        updated_at: member.updated_at,
+        nickname: member.nickname,
+        username: member.username,
+        email: member.email,
+        profile_url: member.profile_url ?? '',
+        user_type: UserType.Individual,
+      })),
     })),
 
     elearnings: space.elearnings.map((elearning) => ({
@@ -92,6 +118,12 @@ export default function SpaceByIdPage() {
     })),
   });
 
+  const [answer, setAnswer] = useState<SurveyAnswer>({
+    answers:
+      space.user_responses.length != 0 ? space.user_responses[0].answers : [],
+    is_completed: space.user_responses.length != 0,
+  });
+
   const [draft, setDraft] = useState<FinalConsensus>({
     drafts: space.drafts.map((draft) => ({
       title: draft.title,
@@ -99,6 +131,15 @@ export default function SpaceByIdPage() {
       files: draft.files,
     })),
   });
+
+  useEffect(() => {
+    if (space.user_responses && space.user_responses.length > 0) {
+      setAnswer({
+        answers: space.user_responses[0].answers,
+        is_completed: true,
+      });
+    }
+  }, [space.user_responses]);
 
   const discussions = space.discussions;
 
@@ -199,6 +240,13 @@ export default function SpaceByIdPage() {
           survey={survey}
           startDate={startedAt}
           endDate={endedAt}
+          answer={answer}
+          setAnswers={(answers: Answer[]) => {
+            setAnswer((prev) => ({
+              ...prev,
+              answers,
+            }));
+          }}
           setStartDate={(startDate: number) => {
             setStartedAt(Math.floor(startDate));
           }}
@@ -216,6 +264,21 @@ export default function SpaceByIdPage() {
           proposerImage={space.author[0].profile_url ?? ''}
           proposerName={space.author[0].nickname ?? ''}
           createdAt={space?.created_at}
+          onsend={async () => {
+            try {
+              await post(
+                ratelApi.responses.respond_answer(spaceId),
+                surveyResponseCreateRequest(answer.answers),
+              );
+              showSuccessToast('Your response has been saved successfully.');
+              data.refetch();
+            } catch (err) {
+              showErrorToast(
+                'There was a problem saving your response. Please try again later.',
+              );
+              logger.error('failed to create response with error: ', err);
+            }
+          }}
           onback={() => {
             if (isEdit) {
               setIsEdit(false);
@@ -282,6 +345,14 @@ export default function SpaceByIdPage() {
             return;
           }
 
+          const discussions = deliberation.discussions.map((disc) => ({
+            started_at: disc.started_at,
+            ended_at: disc.ended_at,
+            name: disc.name,
+            description: disc.description,
+            participants: disc.participants.map((member) => member.id),
+          }));
+
           try {
             await handleUpdate(
               title,
@@ -289,7 +360,7 @@ export default function SpaceByIdPage() {
               endedAt,
               thread.html_contents,
               thread.files,
-              deliberation.discussions,
+              discussions,
               deliberation.elearnings,
               survey.surveys,
               draft.drafts,

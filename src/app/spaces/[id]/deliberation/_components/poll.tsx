@@ -2,11 +2,12 @@
 
 import React from 'react';
 import SpaceHeader from '../../_components/space_header';
-import { Poll } from '../page.client';
+import { Poll, SurveyAnswer } from '../page.client';
 import SpaceSurvey from './space_survey';
 import { Question } from '@/lib/api/models/survey';
 import { AnswerType } from './question/answer_type_select';
 import { SpaceStatus } from '@/lib/api/models/spaces';
+import { Answer } from '@/lib/api/models/response';
 // import { Poll } from '../page.client';
 
 export default function PollPage({
@@ -15,7 +16,9 @@ export default function PollPage({
   survey,
   startDate,
   endDate,
+  answer,
 
+  setAnswers,
   setStartDate,
   setEndDate,
   setTitle,
@@ -27,13 +30,16 @@ export default function PollPage({
   isEdit,
 
   onback,
+  onsend,
 }: {
   title: string;
   status: SpaceStatus;
   survey: Poll;
   startDate: number;
   endDate: number;
+  answer: SurveyAnswer;
 
+  setAnswers: (answers: Answer[]) => void;
   setStartDate: (startDate: number) => void;
   setEndDate: (endDate: number) => void;
   setTitle: (title: string) => void;
@@ -44,6 +50,7 @@ export default function PollPage({
   createdAt: number;
   isEdit: boolean;
 
+  onsend: () => void;
   onback: () => void;
 }) {
   const questions =
@@ -67,11 +74,15 @@ export default function PollPage({
       <div className="flex flex-col mt-[25px] gap-2.5">
         <SpaceSurvey
           isEdit={isEdit}
+          status={status}
           questions={questions}
           startDate={startDate}
           endDate={endDate}
+          answer={answer}
+          setAnswers={setAnswers}
           setStartDate={setStartDate}
           setEndDate={setEndDate}
+          onsend={onsend}
           onadd={(question: Question) => {
             if (survey.surveys.length === 0) {
               setSurvey({

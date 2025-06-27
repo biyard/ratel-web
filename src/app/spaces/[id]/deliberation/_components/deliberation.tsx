@@ -4,14 +4,11 @@
 // import TimeDropdown from '@/components/time-dropdown/time-dropdown';
 import React from 'react';
 import SpaceHeader from '../../_components/space_header';
-import { Deliberation } from '../page.client';
+import { Deliberation, DiscussionInfo } from '../page.client';
 import SpaceDiscussion from './space_discussion';
 import SpaceElearning from './space_elearning';
 import { FileInfo } from '@/lib/api/models/feeds';
-import {
-  Discussion,
-  DiscussionCreateRequest,
-} from '@/lib/api/models/discussion';
+import { Discussion } from '@/lib/api/models/discussion';
 import { SpaceStatus } from '@/lib/api/models/spaces';
 
 export default function DeliberationPage({
@@ -64,13 +61,13 @@ export default function DeliberationPage({
           status={status}
           discussions={deliberation.discussions}
           discussionRaws={discussions}
-          onadd={(discussion: DiscussionCreateRequest) => {
+          onadd={(discussion: DiscussionInfo) => {
             setDeliberation({
               ...deliberation,
               discussions: [...deliberation.discussions, discussion],
             });
           }}
-          onupdate={(index: number, discussion: DiscussionCreateRequest) => {
+          onupdate={(index: number, discussion: DiscussionInfo) => {
             const updated = [...deliberation.discussions];
             updated[index] = discussion;
             setDeliberation({
