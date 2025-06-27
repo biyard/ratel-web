@@ -132,7 +132,9 @@ function InviteMemberButton({
 }) {
   const containerClass = clsx(
     'flex flex-row w-full justify-center items-center my-[15px] py-[15px] rounded-lg font-bold text-[#000203] text-base',
-    isError ? 'cursor-not-allowed bg-neutral-500' : 'cursor-pointer bg-primary',
+    isError
+      ? 'cursor-not-allowed bg-neutral-500 hover:opacity-60'
+      : 'cursor-pointer bg-primary hover:opacity-60',
   );
   return (
     <div className="flex flex-col w-full">

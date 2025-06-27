@@ -109,6 +109,8 @@ function ViewSurvey({
       </div>
       <SurveyViewer
         status={status}
+        startDate={startDate}
+        endDate={endDate}
         questions={questions}
         answer={answer}
         setAnswers={setAnswers}

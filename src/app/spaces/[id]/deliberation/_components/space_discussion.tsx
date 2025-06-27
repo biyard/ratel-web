@@ -404,7 +404,7 @@ function EditableDiscussionInfo({
     <div className="flex flex-col gap-5 border border-neutral-700 rounded-md p-4">
       <div className="flex flex-row w-full justify-end items-center gap-[10px]">
         <div
-          className="cursor-pointer flex flex-row items-center px-[20px] py-[10px] bg-white rounded-lg gap-[10px]"
+          className="cursor-pointer flex flex-row items-center px-[20px] py-[10px] bg-white hover:bg-neutral-300 rounded-lg gap-[10px]"
           onClick={() => {
             popup
               .open(
@@ -419,7 +419,7 @@ function EditableDiscussionInfo({
               .withTitle('Invite to Discussion');
           }}
         >
-          <UserGroup className="w-[15px] h-[15px] stroke-neutral-500" />
+          <UserGroup className="w-[18px] h-[18px] stroke-neutral-500" />
           <div className="font-bold text-sm text-[#000203]">Invite Member</div>
         </div>
         <div
@@ -428,7 +428,7 @@ function EditableDiscussionInfo({
             onremove(index);
           }}
         >
-          <Trash2 className="stroke-white w-[15px] h-[15px]" />
+          <Trash2 className="stroke-white w-[18px] h-[18px]" />
         </div>
       </div>
       <div className="flex flex-col w-full justify-start items-start gap-[10px]">
