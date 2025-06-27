@@ -1,3 +1,4 @@
+'use client';
 import Loading from '@/app/loading';
 import React, { Suspense } from 'react';
 // import CreateCommentBox from '../_components/create_comment_box';
@@ -12,6 +13,11 @@ interface LayoutProps {
 }
 
 export default function SpaceByIdLayout({ children }: LayoutProps) {
+  // const [expand, setExpand] = useState(false);
+  // const [close, setClose] = useState(true);
+  // const params = useParams();
+  // const spaceId = Number(params.id);
+
   return (
     <div className="flex flex-col w-full min-h-screen justify-between max-w-desktop mx-auto text-white pt-3 gap-5 max-tablet:px-5 mb-8">
       <div className="flex flex-row w-full gap-5">
@@ -26,7 +32,45 @@ export default function SpaceByIdLayout({ children }: LayoutProps) {
             {children}
           </Suspense>
         </div>
+        {/* <SpaceSideMenu spaceId={spaceId} /> */}
       </div>
+      {/* <SpaceComments
+        spaceId={spaceId}
+        setClose={() => {
+          const c = close;
+          setClose(!c);
+          if (c) {
+            setExpand(true);
+          }
+        }}
+      /> */}
+      {/* <div
+        className={
+          close
+            ? 'fixed bottom-0 w-[1152px] max-[1152px]:w-full max-[1152px]:px-[10px] max-tablet:pr-[40px] hidden'
+            : 'fixed bottom-0 w-[1152px] max-[1152px]:w-full max-[1152px]:px-[10px] max-tablet:pr-[40px]'
+        }
+      >
+        <CreateCommentBox
+          spaceId={spaceId}
+          expand={expand}
+          setExpand={(description: string) => {
+            if (description.length == 0) {
+              setClose(true);
+              setExpand(false);
+            } else {
+              setExpand(!expand);
+            }
+          }}
+          setClose={() => {
+            const c = close;
+            setClose(!c);
+            if (c) {
+              setExpand(true);
+            }
+          }}
+        />
+      </div> */}
     </div>
   );
 }
