@@ -11,6 +11,7 @@ import { writeCommentRequest } from '@/lib/api/models/feeds/comment';
 import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';
 import DoubleArrowUp from '@/assets/icons/double-arrow-up.svg';
 import Clear from '@/assets/icons/clear.svg';
+import { useCommitteeSpaceByIdContext } from '../committee/providers.client';
 
 export interface CreateCommentBoxProps {
   handleSubmit: (value: string) => void;
@@ -30,17 +31,8 @@ export interface SendButtonProps {
   handleSubmit: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-export default function CreateCommentBox({
-  spaceId,
-  expand,
-  setExpand,
-  setClose,
-}: {
-  spaceId: number;
-  expand: boolean;
-  setExpand: (description: string) => void;
-  setClose: () => void;
-}) {
+export default function CreateCommentBox({ spaceId }: { spaceId: number }) {
+  const { close, setClose, expand, setExpand } = useCommitteeSpaceByIdContext();
   const [description, setDescription] = useState('');
   const { post } = useApiCall();
   const { data: user } = useSuspenseUserInfo();
@@ -55,41 +47,67 @@ export default function CreateCommentBox({
     space.refetch();
   };
 
-  return !expand ? (
-    <div className="flex flex-row w-full justify-end items-center px-[14px] py-[15px] rounded-t-[8px] bg-primary">
-      <div className="flex flex-row w-full justify-end items-end gap-[30px]">
-        <DoubleArrowUp
-          className="cursor-pointer w-fit h-fit"
-          onClick={() => {
-            setExpand(description);
-          }}
+  const handleExpand = () => {
+    if (description.length === 0) {
+      setClose(true);
+      setExpand(false);
+    } else {
+      setExpand(!expand);
+    }
+  };
+
+  const handleClose = () => {
+    const newClose = !close;
+    setClose(newClose);
+    if (newClose) {
+      setExpand(true);
+    }
+  };
+
+  return (
+    <div
+      className={
+        close
+          ? 'fixed bottom-0 w-[1152px] max-[1152px]:w-full max-[1152px]:px-[10px] max-tablet:pr-[40px] hidden'
+          : 'fixed bottom-0 w-[1152px] max-[1152px]:w-full max-[1152px]:px-[10px] max-tablet:pr-[40px]'
+      }
+    >
+      !expand ? (
+      <div className="flex flex-row w-full justify-end items-center px-[14px] py-[15px] rounded-t-[8px] bg-primary">
+        <div className="flex flex-row w-full justify-end items-end gap-[30px]">
+          <DoubleArrowUp
+            className="cursor-pointer w-fit h-fit"
+            onClick={handleExpand}
+          />
+          <Clear
+            className="cursor-pointer w-fit h-fit"
+            onClick={() => {
+              handleClose();
+            }}
+          />
+        </div>
+      </div>
+      ) : (
+      <div className="flex flex-col w-full justify-start items-start px-[14px] py-[15px] border-b-[1px] border-l-[1px] border-r-[1px] border-t-[6px] rounded-t-[8px] border-primary gap-[10px] bg-neutral-900">
+        {/* <Title title={title} setTitle={setTitle} /> */}
+        <div className="flex flex-row w-full justify-end items-end">
+          <DoubleArrowDown
+            className="cursor-pointer w-fit h-fit"
+            onClick={handleExpand}
+          />
+        </div>
+        <Description
+          description={description}
+          setDescription={setDescription}
         />
-        <Clear
-          className="cursor-pointer w-fit h-fit"
-          onClick={() => {
-            setClose();
+        <SendButton
+          handleSubmit={() => {
+            handleSubmit(description);
+            handleClose();
           }}
         />
       </div>
-    </div>
-  ) : (
-    <div className="flex flex-col w-full justify-start items-start px-[14px] py-[15px] border-b-[1px] border-l-[1px] border-r-[1px] border-t-[6px] rounded-t-[8px] border-primary gap-[10px] bg-neutral-900">
-      {/* <Title title={title} setTitle={setTitle} /> */}
-      <div className="flex flex-row w-full justify-end items-end">
-        <DoubleArrowDown
-          className="cursor-pointer w-fit h-fit"
-          onClick={() => {
-            setExpand(description);
-          }}
-        />
-      </div>
-      <Description description={description} setDescription={setDescription} />
-      <SendButton
-        handleSubmit={() => {
-          handleSubmit(description);
-          setDescription('');
-        }}
-      />
+      )
     </div>
   );
 }

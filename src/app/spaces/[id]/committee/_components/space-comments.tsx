@@ -6,14 +6,11 @@ import { getTimeAgo } from '@/lib/time-utils';
 import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 import { checkString } from '@/lib/string-filter-utils';
 import Image from 'next/image';
+import { useCommitteeSpaceByIdContext } from '../providers.client';
 
-export default function SpaceComments({
-  spaceId,
-  setClose,
-}: {
-  spaceId: number;
-  setClose: () => void;
-}) {
+export default function SpaceComments({ spaceId }: { spaceId: number }) {
+  const { close, setClose, setExpand } = useCommitteeSpaceByIdContext();
+
   const space = useSpaceBySpaceId(spaceId);
   const numberOfComments = space.data.feed_comments.length;
   const comments = space.data.feed_comments;
@@ -25,7 +22,14 @@ export default function SpaceComments({
           {numberOfComments?.toLocaleString()} Reply
         </div>
       </div>
-      <CreateComment setClose={setClose} />
+      <CreateComment
+        setClose={() => {
+          setClose(!close);
+          if (close) {
+            setExpand(true);
+          }
+        }}
+      />
       {comments
         ?.filter((v) => !checkString(v.html_contents))
         .map((comment, index) => (
