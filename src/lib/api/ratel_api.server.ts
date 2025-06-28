@@ -30,6 +30,10 @@ async function getDataFromServer<T>(
     ignoreError: true,
   });
 
+  if (res.data) {
+    queryClient.setQueryData(key, res.data);
+  }
+
   return {
     key,
     data: res.data,

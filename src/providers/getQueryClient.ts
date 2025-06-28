@@ -34,6 +34,7 @@ export function makeQueryClient() {
 const serverClients = new Map<string, QueryClient>();
 
 export function getOrMakeQueryClient(session: string) {
+  // FIXME: implement session cleanup to prevent memory leaks
   if (serverClients.has(session)) {
     return serverClients.get(session)!;
   }

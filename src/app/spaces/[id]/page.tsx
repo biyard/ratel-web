@@ -20,6 +20,6 @@ export default async function Page({
     return <CommitteeSpacePage />;
   }
 
-  logger.debug('SpacePage params', space);
-  return <></>;
+  logger.debug('Unknown space type:', space.data?.space_type);
+  return <div>Unsupported space type</div>;
 }
