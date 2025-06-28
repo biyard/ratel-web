@@ -72,42 +72,42 @@ export default function CreateCommentBox({ spaceId }: { spaceId: number }) {
           : 'fixed bottom-0 w-[1152px] max-[1152px]:w-full max-[1152px]:px-[10px] max-tablet:pr-[40px]'
       }
     >
-      !expand ? (
-      <div className="flex flex-row w-full justify-end items-center px-[14px] py-[15px] rounded-t-[8px] bg-primary">
-        <div className="flex flex-row w-full justify-end items-end gap-[30px]">
-          <DoubleArrowUp
-            className="cursor-pointer w-fit h-fit"
-            onClick={handleExpand}
+      {!expand ? (
+        <div className="flex flex-row w-full justify-end items-center px-[14px] py-[15px] rounded-t-[8px] bg-primary">
+          <div className="flex flex-row w-full justify-end items-end gap-[30px]">
+            <DoubleArrowUp
+              className="cursor-pointer w-fit h-fit"
+              onClick={handleExpand}
+            />
+            <Clear
+              className="cursor-pointer w-fit h-fit"
+              onClick={() => {
+                handleClose();
+              }}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col w-full justify-start items-start px-[14px] py-[15px] border-b-[1px] border-l-[1px] border-r-[1px] border-t-[6px] rounded-t-[8px] border-primary gap-[10px] bg-neutral-900">
+          {/* <Title title={title} setTitle={setTitle} /> */}
+          <div className="flex flex-row w-full justify-end items-end">
+            <DoubleArrowDown
+              className="cursor-pointer w-fit h-fit"
+              onClick={handleExpand}
+            />
+          </div>
+          <Description
+            description={description}
+            setDescription={setDescription}
           />
-          <Clear
-            className="cursor-pointer w-fit h-fit"
-            onClick={() => {
+          <SendButton
+            handleSubmit={() => {
+              handleSubmit(description);
               handleClose();
             }}
           />
         </div>
-      </div>
-      ) : (
-      <div className="flex flex-col w-full justify-start items-start px-[14px] py-[15px] border-b-[1px] border-l-[1px] border-r-[1px] border-t-[6px] rounded-t-[8px] border-primary gap-[10px] bg-neutral-900">
-        {/* <Title title={title} setTitle={setTitle} /> */}
-        <div className="flex flex-row w-full justify-end items-end">
-          <DoubleArrowDown
-            className="cursor-pointer w-fit h-fit"
-            onClick={handleExpand}
-          />
-        </div>
-        <Description
-          description={description}
-          setDescription={setDescription}
-        />
-        <SendButton
-          handleSubmit={() => {
-            handleSubmit(description);
-            handleClose();
-          }}
-        />
-      </div>
-      )
+      )}
     </div>
   );
 }

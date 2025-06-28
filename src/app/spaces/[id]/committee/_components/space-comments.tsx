@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import Comment from '@/assets/icons/comment.svg';
 import { SpaceComment } from '@/lib/api/models/comments';
 import { getTimeAgo } from '@/lib/time-utils';
@@ -7,6 +6,8 @@ import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 import { checkString } from '@/lib/string-filter-utils';
 import Image from 'next/image';
 import { useCommitteeSpaceByIdContext } from '../providers.client';
+import { ThumbUp } from '@/components/icons';
+import React, { useState } from 'react';
 
 export default function SpaceComments({ spaceId }: { spaceId: number }) {
   const { close, setClose, setExpand } = useCommitteeSpaceByIdContext();
@@ -56,8 +57,29 @@ function CreateComment({ setClose }: { setClose: () => void }) {
 }
 
 function CommentInfo({ comment }: { comment: SpaceComment }) {
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+
+  const [showReplyInput, setShowReplyInput] = useState(false);
+  const [replyText, setReplyText] = useState('');
+
+  const handleLike = () => {
+    setLiked(!liked);
+    setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+    // TODO: Call API to persist like
+  };
+
+  const handleReply = () => {
+    if (replyText.trim()) {
+      // TODO: Call API to submit reply
+      console.log(`Reply to ${comment.id}:`, replyText);
+      setReplyText('');
+      setShowReplyInput(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-[14px]  border-b border-b-neutral-800">
+    <div className="flex flex-col gap-[14px] pb-5 border-b border-b-neutral-800">
       <div className="flex flex-row gap-2 items-center">
         {comment.author?.[0]?.profile_url ? (
           <Image
@@ -81,19 +103,90 @@ function CommentInfo({ comment }: { comment: SpaceComment }) {
         </div>
       </div>
 
-      <div className="flex flex-col mx-10 gap-5">
+      <div className="flex flex-col mx-10 gap-3">
         <div className="font-normal text-neutral-300 text-[15px]/[22.5px]">
           {comment.html_contents}
         </div>
 
-        {/* <div className="flex flex-row w-full justify-end items-center gap-2">
-          <ThumbUp
-            width={24}
-            height={24}
-            className="[&>path]:stroke-[#aeaaab]"
-          />
-          <div className="font-medium text-base/[24px] text-[#aeaaab]">{0}</div>
-        </div> */}
+        <div className="flex flex-row  items-center gap-4">
+          {/* Number of replies */}
+          <div className="flex flex-row">
+            <p className="text-primary">
+              201 Reply {/*To be replaced by real data from BE*/}
+            </p>
+            <Image
+              src="/logos/arr-down.png"
+              alt="reply ropdown icon"
+              width={24}
+              height={24}
+            ></Image>
+          </div>
+
+          {/* Reply Button */}
+          <div className="">
+            <button
+              onClick={() => setShowReplyInput((prev) => !prev)}
+              className="text-sm text-neutral-400 hover:text-white flex  flex-row"
+            >
+              <Image
+                width={24}
+                height={24}
+                src="/logos/reply-arrow.png"
+                alt="reply arrowicon"
+              />
+
+              <p className="ml-2">Reply</p>
+            </button>
+          </div>
+
+          <div className="flex ml-auto">
+            {/* number of Comments */}
+            <div>
+              <Image
+                width={24}
+                height={24}
+                src="/logos/comment-icon.png"
+                alt="comment icon"
+                className="mr-4"
+              ></Image>
+            </div>
+
+            {/* Like Button */}
+            <button onClick={handleLike} className="flex items-center gap-1">
+              <ThumbUp
+                width={20}
+                height={20}
+                className={`[&>path]:stroke ${liked ? 'stroke-blue-500' : 'stroke-[#aeaaab]'}`}
+                fill={liked ? '#3b82f6' : 'none'}
+              />
+              <span className="text-[#aeaaab] text-sm">{likeCount}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Reply Input Box */}
+        {showReplyInput && (
+          <div className="mt-2 flex flex-col gap-2">
+            <textarea
+              className="bg-neutral-800 border border-neutral-600 p-2 rounded-md text-white text-sm"
+              rows={2}
+              placeholder="Write your reply..."
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+            />
+            <button
+              onClick={handleReply}
+              className="self-end  bg-primary  p-3 rounded-full text-sm hover:text-[#1E1E1E] flex items-center gap-1"
+            >
+              {/* <Send size={16} /> */}
+              <Comment
+                width={24}
+                height={24}
+                className="[&>path]:stroke-black "
+              />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
