@@ -5,10 +5,12 @@ import React from 'react';
 import { X } from 'lucide-react';
 import { usePostDraft } from '@/app/(social)/_components/post-draft-context';
 import { route } from '@/route';
+import { useRouter } from 'next/navigation';
 
 export const DraftPopup = () => {
   const popup = usePopup();
   const { status, setStatus } = usePostDraft();
+  const router = useRouter();
 
   if (status !== 'saved') return null;
 
@@ -18,7 +20,7 @@ export const DraftPopup = () => {
   };
 
   const goToDrafts = () => {
-    route.drafts();
+    router.push(route.drafts());
     console.log('Navigating to Drafts...');
     popup.close();
   };
