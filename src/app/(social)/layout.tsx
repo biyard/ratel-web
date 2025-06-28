@@ -1,7 +1,9 @@
 import { Suspense } from 'react';
 import UserSidemenu from './_components/user-sidemenu';
 import Loading from '../loading';
-import { CreatePost, PostDraftProvider } from './_components/create-post';
+// import { CreatePost, PostDraftProvider } from './_components/create-post';
+import { CreatePost } from './_components/create-post';
+import { PostDraftProvider } from './_components/post-draft-context';
 
 export default function SocialLayout({
   children,

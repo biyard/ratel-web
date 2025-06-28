@@ -31,6 +31,9 @@ import FeedEmptyState from './_components/feed-empty-state';
 import FeedEndMessage from './_components/feed-end-message';
 import SuggestionItem from './_components/suggestions-items';
 import PromotionCard from './_components/promotion-card';
+import { usePostDraft } from './_components/post-draft-context';
+import { DraftPopup } from '@/components/popup/draft-popup';
+
 import Loading from '@/app/loading';
 
 const FEED_RESET_TIMEOUT_MS = 10000;
@@ -58,6 +61,7 @@ export interface Post {
 }
 
 export default function Home() {
+  const { status } = usePostDraft();
   const { post } = useApiCall();
   const network = useNetwork();
   const { data: promotion } = usePromotion();
@@ -172,6 +176,7 @@ export default function Home() {
 
   return (
     <div className="flex-1 flex relative">
+      {status === 'saved' && <DraftPopup />}
       <Col className="flex-1 flex max-mobile:px-[10px]">
         {filteredFeeds.length > 0 ? (
           <Col className="flex-1">
