@@ -4,6 +4,7 @@ import SpaceSideMenu from '../_components/space_side_menu';
 import CreateCommentBox from '../_components/create_comment_box';
 import SpaceComments from './_components/space-comments';
 import Provider from './providers';
+// import SpaceComments from '../_components/space_comments';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -37,6 +38,7 @@ export default async function SpaceByIdLayout({
           <SpaceSideMenu spaceId={spaceId} />
         </div>
         <SpaceComments spaceId={spaceId} />
+
         <CreateCommentBox spaceId={spaceId} />
       </div>
     </Provider>
