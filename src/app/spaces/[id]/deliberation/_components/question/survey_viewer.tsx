@@ -3,7 +3,7 @@ import BlackBox from '@/app/(social)/_components/black-box';
 import CustomCheckbox from '@/components/checkbox/custom-checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { SurveyAnswer } from '../..';
+import { SurveyAnswer } from '../../types';
 import { Answer } from '@/lib/api/models/response';
 import { usePopup } from '@/lib/contexts/popup-service';
 import CheckPopup from './check_popup';

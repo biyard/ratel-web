@@ -9,7 +9,7 @@ import SurveyViewer from './question/survey_viewer';
 import { format } from 'date-fns';
 import { Add } from './add';
 import CustomCalendar from '@/components/calendar-picker/calendar-picker';
-import { SurveyAnswer } from '..';
+import { SurveyAnswer } from '../types';
 import { Answer } from '@/lib/api/models/response';
 import { SpaceStatus } from '@/lib/api/models/spaces';
 
