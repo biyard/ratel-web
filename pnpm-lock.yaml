@@ -2510,7 +2510,7 @@ packages:
         integrity: sha512-uTUfJvZL3cYbDKllYXWTZTa353sO6xyyNjG8xrjDNqUIod/V0JSxbMNt/87HT443SeWZzNiWQGoenR4op7fJMA==,
       }
     peerDependencies:
-      storybook: ^9.0.0
+      storybook: ^9.0.14
 
   '@storybook/addon-links@9.0.0':
     resolution:
