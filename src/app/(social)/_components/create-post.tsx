@@ -198,7 +198,7 @@ export function CreatePost() {
               {status === 'publishing' ? (
                 <Loader2 className="animate-spin" />
               ) : (
-                <span className='flex flex-row px-2 gap-2'>
+                <span className="flex flex-row px-2 gap-2">
                   <UserCircleIcon />
                   Post
                 </span>
