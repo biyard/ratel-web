@@ -1,36 +1,31 @@
 'use client';
 
 import BlackBox from '@/app/(social)/_components/black-box';
-import { useSpaceBySpaceId } from '@/app/(social)/_hooks/use-spaces';
 import { getTimeWithFormat } from '@/lib/time-utils';
 import React, { useEffect, useRef, useState } from 'react';
 import Clock from '@/assets/icons/clock.svg';
 import { BottomTriangle, Discuss, Edit1 } from '@/components/icons';
 import { File, Vote, CheckCircle } from 'lucide-react';
-import { DeliberationTab, DeliberationTabType } from '../page.client';
-import { useUserInfo } from '@/lib/api/hooks/users';
+import { DeliberationTab } from '../types';
 import { SpaceStatus } from '@/lib/api/models/spaces';
+import {
+  useDeliberationSpace,
+  useDeliberationSpaceContext,
+} from '../provider.client';
+import { useUserInfo } from '@/app/(social)/_hooks/user';
 
-export default function SpaceSideMenu({
-  spaceId,
-  status,
-  selectedType,
-  setSelectedType,
-  isEdit,
-  postingSpace,
-  onedit,
-  onsave,
-}: {
-  spaceId: number;
-  status: SpaceStatus;
-  selectedType: DeliberationTabType;
-  setSelectedType: (tab: DeliberationTabType) => void;
-  isEdit: boolean;
-  postingSpace: () => void;
-  onedit: () => void;
-  onsave: () => void;
-}) {
-  const { data: space } = useSpaceBySpaceId(spaceId);
+export default function SpaceSideMenu() {
+  const {
+    selectedType,
+    setSelectedType,
+    isEdit,
+    status,
+    handlePostingSpace,
+    handleEdit: onedit,
+    handleSave: onsave,
+  } = useDeliberationSpaceContext();
+  const space = useDeliberationSpace();
+
   const { data: userInfo } = useUserInfo();
   const userId = userInfo ? userInfo.id : 0;
   const created_at = space.created_at;
@@ -41,7 +36,7 @@ export default function SpaceSideMenu({
         <EditSplitButton
           status={status}
           isEdit={isEdit}
-          postingSpace={postingSpace}
+          postingSpace={handlePostingSpace}
           onedit={onedit}
           onsave={onsave}
         />

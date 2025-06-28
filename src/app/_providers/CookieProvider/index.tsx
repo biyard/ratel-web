@@ -26,6 +26,7 @@ export type CookieContext = {
   userId?: string;
   token?: string;
   id?: string;
+  nextSession?: string;
 };
 
 export async function getCookieContext(): Promise<CookieContext> {
@@ -33,6 +34,7 @@ export async function getCookieContext(): Promise<CookieContext> {
   const token = cookieStore.get('auth_token')?.value;
   const userId = cookieStore.get('user_id')?.value;
   const id = cookieStore.get('id')?.value;
+  const nextSession = cookieStore.get('nx_session_id')?.value;
 
-  return { userId, token, id };
+  return { userId, token, id, nextSession };
 }

@@ -4,42 +4,31 @@
 // import TimeDropdown from '@/components/time-dropdown/time-dropdown';
 import React from 'react';
 import SpaceHeader from '../../_components/space_header';
-import { Deliberation, DiscussionInfo } from '../page.client';
+import { DiscussionInfo } from '../types';
 import SpaceDiscussion from './space_discussion';
 import SpaceElearning from './space_elearning';
 import { FileInfo } from '@/lib/api/models/feeds';
-import { Discussion } from '@/lib/api/models/discussion';
-import { SpaceStatus } from '@/lib/api/models/spaces';
+import {
+  useDeliberationSpace,
+  useDeliberationSpaceContext,
+} from '../provider.client';
 
-export default function DeliberationPage({
-  title,
-  status,
-  deliberation,
-  discussions,
-  setTitle,
-  setDeliberation,
+export default function DeliberationPage() {
+  const {
+    isEdit,
+    title,
+    setTitle,
+    deliberation,
+    setDeliberation,
+    handleGoBack,
+    status,
+    proposerImage,
+    proposerName,
+    createdAt,
+    userType,
+  } = useDeliberationSpaceContext();
+  const discussions = useDeliberationSpace().discussions;
 
-  userType,
-  proposerImage,
-  proposerName,
-  createdAt,
-  isEdit,
-
-  onback,
-}: {
-  title: string;
-  status: SpaceStatus;
-  deliberation: Deliberation;
-  discussions: Discussion[];
-  setTitle: (title: string) => void;
-  setDeliberation: (deliberation: Deliberation) => void;
-  userType: number;
-  proposerImage: string;
-  proposerName: string;
-  createdAt: number;
-  isEdit: boolean;
-  onback: () => void;
-}) {
   return (
     <div className="flex flex-col w-full">
       <SpaceHeader
@@ -50,7 +39,7 @@ export default function DeliberationPage({
         proposerImage={proposerImage}
         proposerName={proposerName}
         createdAt={createdAt}
-        onback={onback}
+        onback={handleGoBack}
         setTitle={(title: string) => {
           setTitle(title);
         }}
