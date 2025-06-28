@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import ClientProviders from './providers.client';
-import { getRedeemCode, getSpaceById } from '@/lib/api/ratel_api';
+import { getRedeemCode, getSpaceById } from '@/lib/api/ratel_api.server';
 import { getQueryClient, initData } from '@/providers/getQueryClient';
 
 export default async function Provider({

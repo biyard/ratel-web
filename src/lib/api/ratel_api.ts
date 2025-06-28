@@ -1,9 +1,7 @@
-import { apiFetch } from './apiFetch';
 import { Feed, FeedStatus } from './models/feeds';
 import { FileType } from './models/file-type';
 import { gql } from '@apollo/client';
 import { Space } from './models/spaces';
-import { config } from '@/config';
 import {
   QK_GET_FEED_BY_FEED_ID,
   QK_GET_REDEEM_CODE,
@@ -16,31 +14,6 @@ import {
 import { useApiCall } from './use-send';
 import { RedeemCode } from './models/redeem-code';
 
-export async function getSpaceById(
-  id: number,
-): Promise<{ key: (string | number)[]; data: Space | null }> {
-  // const queryClient = await getServerQueryClient();
-
-  const key = [QK_GET_SPACE_BY_SPACE_ID, id];
-  // const data = queryClient.getQueryData<Space | null>(key);
-
-  // if (data) {
-  //   return { key, data };
-  // }
-
-  const res = await apiFetch<Space | null>(
-    `${config.api_url}${ratelApi.spaces.getSpaceBySpaceId(id)}`,
-    {
-      ignoreError: true,
-    },
-  );
-
-  return {
-    key,
-    data: res.data,
-  };
-}
-
 export function useSpaceById(id: number): UseSuspenseQueryResult<Space> {
   const { get } = useApiCall();
 
@@ -51,21 +24,6 @@ export function useSpaceById(id: number): UseSuspenseQueryResult<Space> {
   });
 
   return query;
-}
-
-export async function getRedeemCode(
-  meta_id: number,
-): Promise<{ key: [string, number]; data: RedeemCode | null }> {
-  const res = await apiFetch<RedeemCode>(
-    `${config.api_url}${ratelApi.spaces.getSpaceRedeemCodes(meta_id)}`,
-    {
-      ignoreError: true,
-    },
-  );
-  return {
-    key: [QK_GET_REDEEM_CODE, meta_id],
-    data: res.data,
-  };
 }
 
 export function useRedeemCode(
@@ -80,22 +38,6 @@ export function useRedeemCode(
   });
 
   return query;
-}
-
-export async function getFeedById(
-  id: number,
-): Promise<{ key: [string, number]; data: Feed | null }> {
-  const res = await apiFetch<Feed | null>(
-    `${config.api_url}${ratelApi.feeds.getFeedsByFeedId(id)}`,
-    {
-      ignoreError: true,
-    },
-  );
-
-  return {
-    key: [QK_GET_FEED_BY_FEED_ID, id],
-    data: res.data,
-  };
 }
 
 export function useFeedById(id: number): UseSuspenseQueryResult<Feed> {

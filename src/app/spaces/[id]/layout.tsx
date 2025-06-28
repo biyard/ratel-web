@@ -1,4 +1,4 @@
-import { getFeedById, getSpaceById } from '@/lib/api/ratel_api';
+import { getFeedById, getSpaceById } from '@/lib/api/ratel_api.server';
 import { Metadata } from 'next';
 import React, { Suspense } from 'react';
 import Provider from './providers';

@@ -1,5 +1,5 @@
 import { SpaceType } from '@/lib/api/models/spaces';
-import { getSpaceById } from '@/lib/api/ratel_api';
+import { getSpaceById } from '@/lib/api/ratel_api.server';
 import { logger } from '@/lib/logger';
 import React from 'react';
 import DeliberationSpacePage from './deliberation/page.client';
