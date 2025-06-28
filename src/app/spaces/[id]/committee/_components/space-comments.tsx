@@ -177,7 +177,6 @@ function CommentInfo({ comment }: { comment: SpaceComment }) {
             <button
               onClick={handleReply}
               className="self-end  bg-primary  p-3 rounded-full text-sm hover:text-[#1E1E1E] flex items-center gap-1"
-              className="self-end  bg-primary  p-3 rounded-full text-sm hover:text-[#1E1E1E] flex items-center gap-1"
             >
               {/* <Send size={16} /> */}
               <Comment
