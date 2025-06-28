@@ -93,7 +93,7 @@ export const PostDraftProvider: React.FC<{ children: React.ReactNode }> = ({
   const resetState = useCallback(() => {
     setDraftId(null);
     setTitle('');
-    setContent('');
+    setContent(null);
     setImage(null);
     setStatus('idle');
     lastSavedRef.current = { title: '', content: '', image: null };
