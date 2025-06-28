@@ -7,18 +7,13 @@ import Provider from './providers';
 
 interface LayoutProps {
   children: React.ReactNode;
-  params: Promise<{
-    id: string;
-  }>;
+  spaceId: number;
 }
 
-export default async function SpaceByIdLayout({
+export default async function CommitteeSpaceLayout({
   children,
-  params,
+  spaceId,
 }: LayoutProps) {
-  const { id } = await params;
-  const spaceId = Number(id);
-
   return (
     <Provider spaceId={spaceId}>
       <div className="flex flex-col w-full min-h-screen justify-between max-w-desktop mx-auto text-white pt-3 gap-5 max-tablet:px-5 mb-8">

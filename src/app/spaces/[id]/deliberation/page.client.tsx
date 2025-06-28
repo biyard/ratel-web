@@ -68,7 +68,7 @@ export interface Deliberation {
   elearnings: ElearningCreateRequest[];
 }
 
-export default function SpaceByIdPage() {
+export default function DeliberationSpacePage() {
   const { post } = useApiCall();
   const params = useParams();
   const spaceId = Number(params.id);

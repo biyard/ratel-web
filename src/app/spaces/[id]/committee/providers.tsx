@@ -2,7 +2,6 @@ import { ReactNode } from 'react';
 import ClientProviders from './providers.client';
 import { getRedeemCode, getSpaceById } from '@/lib/api/ratel_api';
 import { getQueryClient, initData } from '@/providers/getQueryClient';
-import { SSRHydration } from '@/lib/query-utils';
 
 export default async function Provider({
   children,
@@ -27,9 +26,5 @@ export default async function Provider({
     throw error;
   }
 
-  return (
-    <SSRHydration queryClient={queryClient}>
-      <ClientProviders spaceId={spaceId}>{children}</ClientProviders>
-    </SSRHydration>
-  );
+  return <ClientProviders spaceId={spaceId}>{children}</ClientProviders>;
 }

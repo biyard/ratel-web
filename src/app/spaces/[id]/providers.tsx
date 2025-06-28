@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import ClientProviders from './providers.client';
-import { getQueryClient, initData } from '@/providers/getQueryClient';
-import { SSRHydration } from '@/lib/query-utils';
+import { initData } from '@/providers/getQueryClient';
 import { getSpaceById } from '@/lib/api/ratel_api';
+import { getServerQueryClient } from '@/lib/query-utils.server';
 
 export default async function Provider({
   children,
@@ -11,7 +11,7 @@ export default async function Provider({
   children: ReactNode;
   spaceId: number;
 }) {
-  const queryClient = getQueryClient();
+  const queryClient = await getServerQueryClient();
 
   try {
     // Initialize the query client with the space data
@@ -21,9 +21,5 @@ export default async function Provider({
     throw error;
   }
 
-  return (
-    <SSRHydration queryClient={queryClient}>
-      <ClientProviders spaceId={spaceId}>{children}</ClientProviders>
-    </SSRHydration>
-  );
+  return <ClientProviders spaceId={spaceId}>{children}</ClientProviders>;
 }

@@ -18,7 +18,16 @@ import { RedeemCode } from './models/redeem-code';
 
 export async function getSpaceById(
   id: number,
-): Promise<{ key: [string, number]; data: Space | null }> {
+): Promise<{ key: (string | number)[]; data: Space | null }> {
+  // const queryClient = await getServerQueryClient();
+
+  const key = [QK_GET_SPACE_BY_SPACE_ID, id];
+  // const data = queryClient.getQueryData<Space | null>(key);
+
+  // if (data) {
+  //   return { key, data };
+  // }
+
   const res = await apiFetch<Space | null>(
     `${config.api_url}${ratelApi.spaces.getSpaceBySpaceId(id)}`,
     {
@@ -27,7 +36,7 @@ export async function getSpaceById(
   );
 
   return {
-    key: [QK_GET_SPACE_BY_SPACE_ID, id],
+    key,
     data: res.data,
   };
 }

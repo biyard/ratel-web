@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useRedeemCode, useSpaceById } from '@/lib/api/ratel_api';
 import { useCommitteeSpaceByIdContext } from './providers.client';
 
-export default function SpaceByIdPage() {
+export default function CommitteeSpacePage() {
   const { spaceId } = useCommitteeSpaceByIdContext();
   const { data: space } = useSpaceById(spaceId);
   const redeem = useRedeemCode(spaceId);
