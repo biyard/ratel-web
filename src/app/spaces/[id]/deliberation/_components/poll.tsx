@@ -2,57 +2,34 @@
 
 import React from 'react';
 import SpaceHeader from '../../_components/space_header';
-import { Poll, SurveyAnswer } from '..';
 import SpaceSurvey from './space_survey';
 import { Question } from '@/lib/api/models/survey';
 import { AnswerType } from './question/answer_type_select';
-import { SpaceStatus } from '@/lib/api/models/spaces';
-import { Answer } from '@/lib/api/models/response';
+import { useDeliberationSpaceContext } from '../provider.client';
 // import { Poll } from '../page.client';
 
-export default function PollPage({
-  title,
-  status,
-  survey,
-  startDate,
-  endDate,
-  answer,
+export default function PollPage() {
+  const {
+    isEdit,
+    title,
+    setTitle,
+    startedAt: startDate,
+    endedAt: endDate,
+    survey,
+    setSurvey,
+    answer,
+    status,
+    userType,
+    proposerImage,
+    proposerName,
+    createdAt,
+    handleGoBack,
+    handleSetAnswers: setAnswers,
+    handleSetEndDate: setEndDate,
+    handleSetStartDate: setStartDate,
+    handleSend: onsend,
+  } = useDeliberationSpaceContext();
 
-  setAnswers,
-  setStartDate,
-  setEndDate,
-  setTitle,
-  setSurvey,
-  userType,
-  proposerImage,
-  proposerName,
-  createdAt,
-  isEdit,
-
-  onback,
-  onsend,
-}: {
-  title: string;
-  status: SpaceStatus;
-  survey: Poll;
-  startDate: number;
-  endDate: number;
-  answer: SurveyAnswer;
-
-  setAnswers: (answers: Answer[]) => void;
-  setStartDate: (startDate: number) => void;
-  setEndDate: (endDate: number) => void;
-  setTitle: (title: string) => void;
-  setSurvey: (survey: Poll) => void;
-  userType: number;
-  proposerImage: string;
-  proposerName: string;
-  createdAt: number;
-  isEdit: boolean;
-
-  onsend: () => void;
-  onback: () => void;
-}) {
   const questions =
     survey.surveys.length != 0 ? survey.surveys[0].questions : [];
   return (
@@ -65,7 +42,7 @@ export default function PollPage({
         proposerImage={proposerImage}
         proposerName={proposerName}
         createdAt={createdAt}
-        onback={onback}
+        onback={handleGoBack}
         setTitle={(title: string) => {
           setTitle(title);
         }}
