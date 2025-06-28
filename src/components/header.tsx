@@ -19,6 +19,8 @@ import { config } from '@/config';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 import { UserType } from '@/lib/api/models/user';
 import LoginIcon from '@/assets/icons/login.svg';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 export interface HeaderProps {
   mobileExtends: boolean;
   setMobileExtends: (extend: boolean) => void;
@@ -112,8 +114,14 @@ function Header(props: HeaderProps) {
           >
             <Logo width="54" height="54" />
           </Link>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500 w-4 h-4" />
+            <Input
+              placeholder="Search"
+              className="pl-10 bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 w-80"
+            />
+          </div>
         </div>
-
         <div className="flex items-center gap-2.5 max-tablet:hidden">
           {navItems.map((item, index) => (
             <Link
