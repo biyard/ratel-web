@@ -4,12 +4,13 @@ import Providers from '@/providers/providers';
 import CookieProvider from './_providers/CookieProvider';
 import { PopupZone } from '@/components/popupzone';
 import ClientLayout from './(social)/_components/client-layout';
-import { dehydrate } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import 'react-toastify/dist/ReactToastify.css';
 import { prefetchUserInfo } from './(social)/_hooks/user';
-import { getQueryClient } from '@/providers/getQueryClient';
+import Script from 'next/script';
+import { getServerQueryClient } from '@/lib/query-utils.server';
 
 const raleway = Raleway({
   variable: '--font-raleway',
@@ -22,20 +23,24 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const queryClient = getQueryClient();
+  const queryClient = await getServerQueryClient();
 
   await prefetchUserInfo(queryClient);
   const dehydratedState = dehydrate(queryClient);
+
   return (
     <html lang="en">
       <head>
         <link rel="icon" href="/logos/favicon.ico" />
+        <Script src="https://telegram.org/js/telegram-web-app.js?57" />
       </head>
       <body className={`${raleway.variable} antialiased bg-bg`}>
         <CookieProvider>
           <Providers dehydratedState={dehydratedState}>
-            <ClientLayout>{children}</ClientLayout>
-            <PopupZone />
+            <HydrationBoundary state={dehydratedState}>
+              <ClientLayout>{children}</ClientLayout>
+              <PopupZone />
+            </HydrationBoundary>
             <ReactQueryDevtools initialIsOpen={false} />
           </Providers>
         </CookieProvider>

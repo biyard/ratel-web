@@ -23,7 +23,7 @@ export default function UserSidemenu() {
   }
 
   return (
-    <div className="w-64 flex flex-col gap-2.5 max-mobile:hidden shrink-0">
+    <div className="w-62.5 flex flex-col gap-2.5 max-mobile:hidden shrink-0">
       <ProfileSection />
 
       {/* Navigation */}

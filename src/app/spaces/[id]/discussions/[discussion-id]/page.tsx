@@ -7,10 +7,10 @@ import { Feed } from '@/lib/api/models/feeds';
 import { logger } from '@/lib/logger';
 import { config } from '@/config';
 import striptags from 'striptags';
-import SpaceByIdPage from './page.client';
+import DiscussionByIdPage from './page.client';
 
 type Props = {
-  params: Promise<{ id: number }>;
+  params: Promise<{ id: number; discussion_id: number }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -40,8 +40,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function SpacePage({ params }: Props) {
-  logger.debug('SpacePage params', await params);
+export default async function DiscussionPage({ params }: Props) {
+  logger.debug('DiscussionPage params', await params);
 
-  return <SpaceByIdPage />;
+  return <DiscussionByIdPage />;
 }

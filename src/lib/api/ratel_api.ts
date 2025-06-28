@@ -1,6 +1,56 @@
-import { FeedStatus } from './models/feeds';
+import { Feed, FeedStatus } from './models/feeds';
 import { FileType } from './models/file-type';
 import { gql } from '@apollo/client';
+import { Space } from './models/spaces';
+import {
+  QK_GET_FEED_BY_FEED_ID,
+  QK_GET_REDEEM_CODE,
+  QK_GET_SPACE_BY_SPACE_ID,
+} from '@/constants';
+import {
+  useSuspenseQuery,
+  UseSuspenseQueryResult,
+} from '@tanstack/react-query';
+import { useApiCall } from './use-send';
+import { RedeemCode } from './models/redeem-code';
+
+export function useSpaceById(id: number): UseSuspenseQueryResult<Space> {
+  const { get } = useApiCall();
+
+  const query = useSuspenseQuery({
+    queryKey: [QK_GET_SPACE_BY_SPACE_ID, id],
+    queryFn: () => get(ratelApi.spaces.getSpaceBySpaceId(id)),
+    refetchOnWindowFocus: false,
+  });
+
+  return query;
+}
+
+export function useRedeemCode(
+  meta_id: number,
+): UseSuspenseQueryResult<RedeemCode> {
+  const { get } = useApiCall();
+
+  const query = useSuspenseQuery({
+    queryKey: [QK_GET_REDEEM_CODE, meta_id],
+    queryFn: () => get(ratelApi.spaces.getSpaceRedeemCodes(meta_id)),
+    refetchOnWindowFocus: false,
+  });
+
+  return query;
+}
+
+export function useFeedById(id: number): UseSuspenseQueryResult<Feed> {
+  const { get } = useApiCall();
+
+  const query = useSuspenseQuery({
+    queryKey: [QK_GET_FEED_BY_FEED_ID, id],
+    queryFn: () => get(ratelApi.feeds.getFeedsByFeedId(id)),
+    refetchOnWindowFocus: false,
+  });
+
+  return query;
+}
 
 export const ratelApi = {
   users: {
@@ -33,6 +83,9 @@ export const ratelApi = {
   promotions: {
     get_promotions: () => '/v1/promotions?param-type=read&action=hot-promotion',
   },
+  responses: {
+    respond_answer: (spaceId: number) => `/v1/spaces/${spaceId}/responses`,
+  },
   groups: {
     create_group: (team_id: number) => `/v1/teams/${team_id}/groups`,
     invite_member: (team_id: number, group_id: number) =>
@@ -44,6 +97,9 @@ export const ratelApi = {
     getNetworks: () => '/v1/network?param-type=read&action=find-one',
     follow: (user_id: number) => `/v1/my-networks/${user_id}`,
     unfollow: (user_id: number) => `/v1/my-networks/${user_id}`,
+  },
+  news: {
+    getNewsDetails: (news_id: number) => `/v1/news/${news_id}`,
   },
   feeds: {
     comment: () => '/v1/feeds',
@@ -66,6 +122,16 @@ export const ratelApi = {
   },
   redeems: {
     useRedeemCode: (redeem_id: number) => `/v1/redeems/${redeem_id}`,
+  },
+  discussions: {
+    getDiscussionById: (spaceId: number, discussionId: number) =>
+      `/v1/spaces/${spaceId}/discussions/${discussionId}`,
+    actDiscussionById: (spaceId: number, discussionId: number) =>
+      `/v1/spaces/${spaceId}/discussions/${discussionId}`,
+  },
+  meeting: {
+    getMeetingById: (spaceId: number, discussionId: number) =>
+      `/v1/spaces/${spaceId}/meeting/${discussionId}?param-type=read&action=find-one`,
   },
   spaces: {
     createSpace: () => '/v1/spaces',

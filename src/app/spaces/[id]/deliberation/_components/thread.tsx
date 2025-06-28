@@ -4,44 +4,37 @@ import React from 'react';
 import SpaceHeader from '../../_components/space_header';
 import SpaceContents from '../../_components/space_contents';
 import SpaceFiles from './space_files';
-import { Thread } from '../page.client';
 import { FileInfo } from '@/lib/api/models/feeds';
+import { useDeliberationSpaceContext } from '../provider.client';
 
-export default function ThreadPage({
-  title,
-  thread,
-  setTitle,
-  setThread,
+export default function ThreadPage() {
+  const {
+    isEdit,
+    title,
+    setTitle,
+    thread,
+    setThread,
+    handleGoBack,
+    userType,
+    proposerImage,
+    proposerName,
+    createdAt,
+    status,
+  } = useDeliberationSpaceContext();
 
-  userType,
-  proposerImage,
-  proposerName,
-  createdAt,
-  isEdit,
-}: {
-  title: string;
-  thread: Thread;
-  setThread: (thread: Thread) => void;
-  setTitle: (title: string) => void;
-  userType: number;
-  proposerImage: string;
-  proposerName: string;
-  createdAt: number;
-  isEdit: boolean;
-}) {
   return (
     <div className="flex flex-row w-full gap-5">
       <div className="flex flex-col w-full">
         <SpaceHeader
           isEdit={isEdit}
           title={title}
+          status={status}
           userType={userType}
           proposerImage={proposerImage}
           proposerName={proposerName}
           createdAt={createdAt}
-          setTitle={(title: string) => {
-            setTitle(title);
-          }}
+          onback={handleGoBack}
+          setTitle={setTitle}
         />
         <div className="flex flex-col w-full mt-7.5 gap-2.5">
           <SpaceContents

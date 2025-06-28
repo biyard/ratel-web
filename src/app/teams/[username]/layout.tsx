@@ -19,7 +19,7 @@ export default async function TeamLayout({
   logger.debug('TeamLayout: username', username);
 
   return (
-    <div className="flex min-h-screen justify-between max-w-6xl mx-auto text-white pt-3 gap-[20px]">
+    <div className="flex min-h-screen justify-between max-w-desktop mx-auto text-white pt-3 gap-[20px]">
       <TeamSidemenu username={username} />
       <div className="flex-1 flex">
         <Suspense

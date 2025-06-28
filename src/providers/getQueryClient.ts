@@ -31,9 +31,23 @@ export function makeQueryClient() {
   });
 }
 
+const serverClients = new Map<string, QueryClient>();
+
+export function getOrMakeQueryClient(session: string) {
+  // FIXME: implement session cleanup to prevent memory leaks
+  if (serverClients.has(session)) {
+    return serverClients.get(session)!;
+  }
+
+  const queryClient = makeQueryClient();
+  serverClients.set(session, queryClient);
+
+  return queryClient;
+}
+
 let browserQueryClient: QueryClient | undefined = undefined;
 
-export function getQueryClient() {
+export function getQueryClient(): QueryClient {
   if (isServer) {
     // Server: always make a new query client
     return makeQueryClient();
@@ -44,5 +58,17 @@ export function getQueryClient() {
     // have a suspense boundary BELOW the creation of the query client
     if (!browserQueryClient) browserQueryClient = makeQueryClient();
     return browserQueryClient;
+  }
+}
+
+interface InitDataOptions<TData = unknown> {
+  key: unknown[];
+
+  data: TData;
+}
+
+export function initData(cli: QueryClient, options: InitDataOptions[]) {
+  for (const { key, data } of options) {
+    cli.setQueryData(key, data);
   }
 }

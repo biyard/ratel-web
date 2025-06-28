@@ -45,11 +45,13 @@ export const postByUserIdQk = (
   size: number,
   status: FeedStatus = FeedStatus.Published,
 ) => [QK_GET_POSTS_BY_USER_ID, user_id, page, size, status];
+
 export function usePostByUserId(
   user_id: number,
   page: number,
   size: number,
   status: FeedStatus = FeedStatus.Published,
+  initialData?: QueryResponse<Feed>,
 ): UseSuspenseQueryResult<QueryResponse<Feed>> {
   const { get } = useApiCall();
 
@@ -58,6 +60,7 @@ export function usePostByUserId(
     queryFn: () =>
       get(ratelApi.feeds.getPostsByUserId(user_id, page, size, status)),
     refetchOnWindowFocus: false,
+    initialData,
   });
 
   return query;

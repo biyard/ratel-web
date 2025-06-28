@@ -120,7 +120,6 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
           <button
             className="flex flex-row gap-2 justify-center items-center"
             onClick={async () => {
-              console.log('Liking comment:', comment.id);
               if (onLike) {
                 await onLike(comment.id, !comment.is_liked);
               }
@@ -176,7 +175,6 @@ export default function Comment({ comment, onSubmit, onLike }: CommentProps) {
             className="min-h-30"
             onClose={() => setExpand(false)}
             onSubmit={async (content) => {
-              console.log('Submitting reply:', content);
               if (onSubmit) {
                 await onSubmit(comment.id, content);
               }

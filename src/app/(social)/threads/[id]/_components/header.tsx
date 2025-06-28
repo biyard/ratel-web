@@ -14,14 +14,20 @@ import { route } from '@/route';
 import { usePopup } from '@/lib/contexts/popup-service';
 import SpaceCreateModal from './space-create-modal';
 import { SpaceType } from '@/lib/api/models/spaces';
-import { config } from '@/config';
 import { useRouter } from 'next/navigation';
+import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 
 export default function Header({ post_id }: { post_id: number }) {
   const { data: post } = useFeedByID(post_id);
   const popup = usePopup();
   const router = useRouter();
+  const user = useSuspenseUserInfo();
   const space_id = post?.spaces[0]?.id;
+
+  console.log('post author: ', post?.author);
+
+  const author_id = post?.author[0].id;
+  const user_id = user.data.id;
 
   let target;
   if (space_id) {
@@ -35,7 +41,7 @@ export default function Header({ post_id }: { post_id: number }) {
     popup
       .open(<SpaceCreateModal feed_id={post_id} />)
       .withoutBackdropClose()
-      .withTitle('Invite to Committee');
+      .withTitle('Select a Space Type');
   };
   return (
     <div className="flex flex-col w-full gap-2.5">
@@ -59,13 +65,13 @@ export default function Header({ post_id }: { post_id: number }) {
           <Link href={target ?? ''}>
             <Button variant="rounded_secondary">Join Space</Button>
           </Link>
+        ) : author_id == user_id ? (
+          <Button variant="rounded_secondary" onClick={handleCreateSpace}>
+            <Plus className="size-5" />
+            Create Space
+          </Button>
         ) : (
-          (config.experiment ?? (
-            <Button variant="rounded_secondary" onClick={handleCreateSpace}>
-              <Plus className="size-5" />
-              Create Space
-            </Button>
-          ))
+          <></>
         )}
       </div>
 

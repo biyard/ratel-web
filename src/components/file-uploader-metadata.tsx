@@ -10,18 +10,22 @@ import React, { useRef } from 'react';
 
 export interface FileUploaderMetadataProps {
   onUploadSuccess?: (fileInfo: FileInfo) => void;
+  isImage?: boolean; // true: image only / false: PDF only
 }
 
 export default function FileUploaderMetadata({
   children,
   onUploadSuccess,
+  isImage = true,
   ...props
 }: React.ComponentProps<'div'> & FileUploaderMetadataProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { get } = useApiCall();
+
   const handleUpload = async () => {
     inputRef.current?.click();
   };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
@@ -29,8 +33,13 @@ export default function FileUploaderMetadata({
       return;
     }
 
-    if (!file.type.startsWith('image/')) {
-      alert('Only image types are supported.');
+    if (isImage && !file.type.startsWith('image/')) {
+      alert('Only image files are supported.');
+      return;
+    }
+
+    if (!isImage && file.type !== 'application/pdf') {
+      alert('Only PDF files are supported.');
       return;
     }
 
@@ -88,7 +97,7 @@ export default function FileUploaderMetadata({
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept={isImage ? 'image/*' : 'application/pdf'}
         className="hidden"
         onChange={handleFileChange}
       />
