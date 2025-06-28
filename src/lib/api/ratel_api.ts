@@ -1,10 +1,14 @@
 import { apiFetch } from './apiFetch';
-import { FeedStatus } from './models/feeds';
+import { Feed, FeedStatus } from './models/feeds';
 import { FileType } from './models/file-type';
 import { gql } from '@apollo/client';
 import { Space } from './models/spaces';
 import { config } from '@/config';
-import { QK_GET_REDEEM_CODE, QK_GET_SPACE_BY_SPACE_ID } from '@/constants';
+import {
+  QK_GET_FEED_BY_FEED_ID,
+  QK_GET_REDEEM_CODE,
+  QK_GET_SPACE_BY_SPACE_ID,
+} from '@/constants';
 import {
   useSuspenseQuery,
   UseSuspenseQueryResult,
@@ -21,6 +25,7 @@ export async function getSpaceById(
       ignoreError: true,
     },
   );
+
   return {
     key: [QK_GET_SPACE_BY_SPACE_ID, id],
     data: res.data,
@@ -62,6 +67,34 @@ export function useRedeemCode(
   const query = useSuspenseQuery({
     queryKey: [QK_GET_REDEEM_CODE, meta_id],
     queryFn: () => get(ratelApi.spaces.getSpaceRedeemCodes(meta_id)),
+    refetchOnWindowFocus: false,
+  });
+
+  return query;
+}
+
+export async function getFeedById(
+  id: number,
+): Promise<{ key: [string, number]; data: Feed | null }> {
+  const res = await apiFetch<Feed | null>(
+    `${config.api_url}${ratelApi.feeds.getFeedsByFeedId(id)}`,
+    {
+      ignoreError: true,
+    },
+  );
+
+  return {
+    key: [QK_GET_FEED_BY_FEED_ID, id],
+    data: res.data,
+  };
+}
+
+export function useFeedById(id: number): UseSuspenseQueryResult<Feed> {
+  const { get } = useApiCall();
+
+  const query = useSuspenseQuery({
+    queryKey: [QK_GET_FEED_BY_FEED_ID, id],
+    queryFn: () => get(ratelApi.feeds.getFeedsByFeedId(id)),
     refetchOnWindowFocus: false,
   });
 
