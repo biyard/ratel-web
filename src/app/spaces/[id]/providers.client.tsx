@@ -23,7 +23,7 @@ export function useSpaceByIdContext() {
 
   if (!context)
     throw new Error(
-      'Context does not be provided. Please wrap your component with ClientProviders.',
+      'Context has not been provided. Please wrap your component with ClientProviders.',
     );
 
   return context;
