@@ -46,3 +46,15 @@ export function getQueryClient() {
     return browserQueryClient;
   }
 }
+
+interface InitDataOptions<TData = unknown> {
+  key: unknown[];
+
+  data: TData;
+}
+
+export function initData(cli: QueryClient, options: InitDataOptions[]) {
+  for (const { key, data } of options) {
+    cli.setQueryData(key, data);
+  }
+}
