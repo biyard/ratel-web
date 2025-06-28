@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Clock from '@/assets/icons/clock.svg';
 import { BottomTriangle, Discuss, Edit1 } from '@/components/icons';
 import { File, Vote, CheckCircle } from 'lucide-react';
-import { DeliberationTab, DeliberationTabType } from '../page.client';
+import { DeliberationTab, DeliberationTabType } from '..';
 import { useUserInfo } from '@/lib/api/hooks/users';
 import { SpaceStatus } from '@/lib/api/models/spaces';
 

@@ -21,7 +21,7 @@ import { route } from '@/route';
 import { UserGroup } from '@/components/icons';
 import { usePopup } from '@/lib/contexts/popup-service';
 import InviteMemberPopup from './invite_member';
-import { DiscussionInfo } from '../page.client';
+import { DiscussionInfo } from '..';
 import { TotalUser } from '@/lib/api/models/user';
 import { useSuspenseUserInfo } from '@/lib/api/hooks/users';
 

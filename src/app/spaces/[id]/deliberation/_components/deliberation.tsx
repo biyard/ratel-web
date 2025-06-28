@@ -4,7 +4,7 @@
 // import TimeDropdown from '@/components/time-dropdown/time-dropdown';
 import React from 'react';
 import SpaceHeader from '../../_components/space_header';
-import { Deliberation, DiscussionInfo } from '../page.client';
+import { Deliberation, DiscussionInfo } from '..';
 import SpaceDiscussion from './space_discussion';
 import SpaceElearning from './space_elearning';
 import { FileInfo } from '@/lib/api/models/feeds';

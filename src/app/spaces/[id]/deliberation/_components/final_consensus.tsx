@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FinalConsensus } from '../page.client';
+import { FinalConsensus } from '..';
 import SpaceHeader from '../../_components/space_header';
 import SpaceContents from '../../_components/space_contents';
 import SpaceFiles from './space_files';

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import SpaceHeader from '../../_components/space_header';
-import { Poll, SurveyAnswer } from '../page.client';
+import { Poll, SurveyAnswer } from '..';
 import SpaceSurvey from './space_survey';
 import { Question } from '@/lib/api/models/survey';
 import { AnswerType } from './question/answer_type_select';

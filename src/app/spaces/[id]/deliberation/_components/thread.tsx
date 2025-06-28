@@ -4,7 +4,7 @@ import React from 'react';
 import SpaceHeader from '../../_components/space_header';
 import SpaceContents from '../../_components/space_contents';
 import SpaceFiles from './space_files';
-import { Thread } from '../page.client';
+import { Thread } from '..';
 import { FileInfo } from '@/lib/api/models/feeds';
 import { SpaceStatus } from '@/lib/api/models/spaces';
 
