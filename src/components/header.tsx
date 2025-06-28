@@ -28,7 +28,7 @@ export interface HeaderProps {
 function Header(props: HeaderProps) {
   const popup = usePopup();
 
-  const { data } = useSuspenseUserInfo();
+  const { data } = useUserInfo();
   const loggedIn = data && data.user_type !== UserType.Individual;
 
   logger.debug('Header data:', data);
