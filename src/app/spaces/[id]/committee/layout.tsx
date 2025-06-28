@@ -2,7 +2,7 @@ import Loading from '@/app/loading';
 import React, { Suspense } from 'react';
 import SpaceSideMenu from '../_components/space_side_menu';
 import CreateCommentBox from '../_components/create_comment_box';
-import SpaceComments from '../_components/space_comments';
+import SpaceComments from './_components/space-comments';
 import Provider from './providers';
 
 interface LayoutProps {
