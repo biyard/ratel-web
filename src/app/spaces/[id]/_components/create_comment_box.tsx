@@ -11,7 +11,7 @@ import { writeCommentRequest } from '@/lib/api/models/feeds/comment';
 import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';
 import DoubleArrowUp from '@/assets/icons/double-arrow-up.svg';
 import Clear from '@/assets/icons/clear.svg';
-import { useCommiteeSpaceByIdContext } from '../committee/providers.client';
+import { useCommitteeSpaceByIdContext } from '../committee/providers.client';
 
 export interface CreateCommentBoxProps {
   handleSubmit: (value: string) => void;
@@ -32,7 +32,7 @@ export interface SendButtonProps {
 }
 
 export default function CreateCommentBox({ spaceId }: { spaceId: number }) {
-  const { close, setClose, expand, setExpand } = useCommiteeSpaceByIdContext();
+  const { close, setClose, expand, setExpand } = useCommitteeSpaceByIdContext();
   const [description, setDescription] = useState('');
   const { post } = useApiCall();
   const { data: user } = useSuspenseUserInfo();
@@ -48,7 +48,7 @@ export default function CreateCommentBox({ spaceId }: { spaceId: number }) {
   };
 
   const handleExpand = () => {
-    if (description.length == 0) {
+    if (description.length === 0) {
       setClose(true);
       setExpand(false);
     } else {
@@ -57,8 +57,9 @@ export default function CreateCommentBox({ spaceId }: { spaceId: number }) {
   };
 
   const handleClose = () => {
-    setClose(!close);
-    if (close) {
+    const newClose = !close;
+    setClose(newClose);
+    if (newClose) {
       setExpand(true);
     }
   };

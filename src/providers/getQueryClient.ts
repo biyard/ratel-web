@@ -47,11 +47,10 @@ export function getQueryClient() {
   }
 }
 
-interface InitDataOptions {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  key: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
+interface InitDataOptions<TData = unknown> {
+  key: unknown[];
+
+  data: TData;
 }
 
 export function initData(cli: QueryClient, options: InitDataOptions[]) {

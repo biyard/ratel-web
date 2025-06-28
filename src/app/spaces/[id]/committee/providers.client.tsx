@@ -36,6 +36,6 @@ export default function ClientProviders({
   );
 }
 
-export function useCommiteeSpaceByIdContext() {
+export function useCommitteeSpaceByIdContext() {
   return useContext(CommitteeSpaceByIdContext);
 }

@@ -7,10 +7,10 @@ import SpaceContents from '../_components/space_contents';
 import SpaceFiles from '../_components/space_files';
 import { useRouter } from 'next/navigation';
 import { useRedeemCode, useSpaceById } from '@/lib/api/ratel_api';
-import { useCommiteeSpaceByIdContext } from './providers.client';
+import { useCommitteeSpaceByIdContext } from './providers.client';
 
 export default function SpaceByIdPage() {
-  const { spaceId } = useCommiteeSpaceByIdContext();
+  const { spaceId } = useCommitteeSpaceByIdContext();
   const { data: space } = useSpaceById(spaceId);
   const redeem = useRedeemCode(spaceId);
   const router = useRouter();

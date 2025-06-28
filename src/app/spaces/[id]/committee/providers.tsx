@@ -13,11 +13,19 @@ export default async function Provider({
 }) {
   const queryClient = getQueryClient();
 
-  const space = await getSpaceById(spaceId);
-  const redeemCode = await getRedeemCode(spaceId);
+  try {
+    const space = await getSpaceById(spaceId);
+    const redeemCode = await getRedeemCode(spaceId);
 
-  // Initialize the query client with the space data
-  initData(queryClient, [space, redeemCode]);
+    // Initialize the query client with the space data
+    initData(queryClient, [space, redeemCode]);
+  } catch (error) {
+    console.error(
+      `Failed to fetch space or redeem code for spaceId ${spaceId}:`,
+      error,
+    );
+    throw error;
+  }
 
   return (
     <SSRHydration queryClient={queryClient}>
