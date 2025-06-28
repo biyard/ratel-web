@@ -11,7 +11,7 @@ import { writeCommentRequest } from '@/lib/api/models/feeds/comment';
 import DoubleArrowDown from '@/assets/icons/double-arrow-down.svg';
 import DoubleArrowUp from '@/assets/icons/double-arrow-up.svg';
 import Clear from '@/assets/icons/clear.svg';
-import { useCommiteeSpaceByIdContext } from '../commitee/providers.client';
+import { useCommiteeSpaceByIdContext } from '../committee/providers.client';
 
 export interface CreateCommentBoxProps {
   handleSubmit: (value: string) => void;

@@ -19,7 +19,7 @@ export const route = {
   teamMembers: (username: string) => `/teams/${username}/members`,
   teamSettings: (username: string) => `/teams/${username}/settings`,
   teamDrafts: (username: string) => `/teams/${username}/drafts`,
-  commiteeSpaceById: (spaceId: number) => `/spaces/${spaceId}/commitee`,
+  commiteeSpaceById: (spaceId: number) => `/spaces/${spaceId}/committee`,
   deliberationSpaceById: (spaceId: number) => `/spaces/${spaceId}/deliberation`,
   threadByFeedId: (feedId: number) => {
     return `/threads/${feedId}`;
