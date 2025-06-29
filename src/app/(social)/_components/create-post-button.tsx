@@ -1,7 +1,7 @@
 'use client';
 import { Edit1 } from '@/components/icons';
 import React from 'react';
-import { usePostDraft } from './create-post';
+import { usePostDraft } from './post-draft-context';
 import { useLoggedIn } from '@/lib/api/hooks/users';
 
 export default function CreatePostButton() {
