@@ -96,7 +96,7 @@ export default function FeedCard(props: FeedCardProps) {
       // Check if request was aborted
       if (abortController.signal.aborted) return;
 
-      if (res) {
+      if (res?.ok) {
         props.onLikeClick?.(value);
         props.refetch?.();
       } else {
