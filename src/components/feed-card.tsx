@@ -50,6 +50,8 @@ export default function FeedCard(props: FeedCardProps) {
   const [optimisticIsLiked, setOptimisticIsLiked] = React.useState(
     props.is_liked,
   );
+  const [isLikeLoading, setIsLikeLoading] = React.useState(false);
+  const likeRequestRef = React.useRef<AbortController | null>(null);
 
   // Update optimistic state when props change
   React.useEffect(() => {
@@ -57,14 +59,32 @@ export default function FeedCard(props: FeedCardProps) {
     setOptimisticIsLiked(props.is_liked);
   }, [props.likes, props.is_liked]);
 
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      likeRequestRef.current?.abort();
+    };
+  }, []);
+
   const handleLike = async (value: boolean) => {
+    // Prevent multiple simultaneous requests
+    if (isLikeLoading) return;
+
+    // Abort any pending request
+    likeRequestRef.current?.abort();
+
     // Store current state for rollback
     const previousLikes = optimisticLikes;
     const previousIsLiked = optimisticIsLiked;
 
-    // Optimistically update UI
+    // Set loading state and optimistically update UI
+    setIsLikeLoading(true);
     setOptimisticIsLiked(value);
     setOptimisticLikes(value ? optimisticLikes + 1 : optimisticLikes - 1);
+
+    // Create new abort controller for this request
+    const abortController = new AbortController();
+    likeRequestRef.current = abortController;
 
     try {
       const res = await post(ratelApi.feeds.likePost(props.id), {
@@ -72,6 +92,10 @@ export default function FeedCard(props: FeedCardProps) {
           value,
         },
       });
+
+      // Check if request was aborted
+      if (abortController.signal.aborted) return;
+
       if (res) {
         props.onLikeClick?.(value);
         props.refetch?.();
@@ -83,13 +107,27 @@ export default function FeedCard(props: FeedCardProps) {
           value ? 'Failed to like the post' : 'Failed to unlike the post',
         );
       }
-    } catch {
+    } catch (error) {
+      // Don't show error if request was aborted
+      if (abortController.signal.aborted) return;
+
       // Rollback on error
       setOptimisticIsLiked(previousIsLiked);
       setOptimisticLikes(previousLikes);
+
+      // More specific error handling
+      const isNetworkError =
+        error instanceof TypeError && error.message.includes('fetch');
       showErrorToast(
-        value ? 'Failed to like the post' : 'Failed to unlike the post',
+        isNetworkError
+          ? 'Network error. Please check your connection and try again.'
+          : value
+            ? 'Failed to like the post'
+            : 'Failed to unlike the post',
       );
+    } finally {
+      setIsLikeLoading(false);
+      likeRequestRef.current = null;
     }
   };
 
