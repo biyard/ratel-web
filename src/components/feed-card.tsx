@@ -14,6 +14,7 @@ import { UserType } from '@/lib/api/models/user';
 import Image from 'next/image';
 import { route } from '@/route';
 import { SpaceType } from '@/lib/api/models/spaces';
+import { showErrorToast } from '@/lib/toast';
 
 export interface FeedCardProps {
   id: number;
@@ -45,16 +46,88 @@ export interface FeedCardProps {
 export default function FeedCard(props: FeedCardProps) {
   const router = useRouter();
   const { post } = useApiCall();
+  const [optimisticLikes, setOptimisticLikes] = React.useState(props.likes);
+  const [optimisticIsLiked, setOptimisticIsLiked] = React.useState(
+    props.is_liked,
+  );
+  const [isLikeLoading, setIsLikeLoading] = React.useState(false);
+  const likeRequestRef = React.useRef<AbortController | null>(null);
+
+  // Update optimistic state when props change
+  React.useEffect(() => {
+    setOptimisticLikes(props.likes);
+    setOptimisticIsLiked(props.is_liked);
+  }, [props.likes, props.is_liked]);
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      likeRequestRef.current?.abort();
+    };
+  }, []);
 
   const handleLike = async (value: boolean) => {
-    const res = await post(ratelApi.feeds.likePost(props.id), {
-      like: {
-        value,
-      },
-    });
-    if (res) {
-      props.onLikeClick?.(value);
-      props.refetch?.();
+    // Prevent multiple simultaneous requests
+    if (isLikeLoading) return;
+
+    // Abort any pending request
+    likeRequestRef.current?.abort();
+
+    // Store current state for rollback
+    const previousLikes = optimisticLikes;
+    const previousIsLiked = optimisticIsLiked;
+
+    // Set loading state and optimistically update UI
+    setIsLikeLoading(true);
+    setOptimisticIsLiked(value);
+    setOptimisticLikes(value ? optimisticLikes + 1 : optimisticLikes - 1);
+
+    // Create new abort controller for this request
+    const abortController = new AbortController();
+    likeRequestRef.current = abortController;
+
+    try {
+      const res = await post(ratelApi.feeds.likePost(props.id), {
+        like: {
+          value,
+        },
+      });
+
+      // Check if request was aborted
+      if (abortController.signal.aborted) return;
+
+      if (res?.ok) {
+        props.onLikeClick?.(value);
+        props.refetch?.();
+      } else {
+        // Rollback on failure
+        setOptimisticIsLiked(previousIsLiked);
+        setOptimisticLikes(previousLikes);
+        showErrorToast(
+          value ? 'Failed to like the post' : 'Failed to unlike the post',
+        );
+      }
+    } catch (error) {
+      // Don't show error if request was aborted
+      if (abortController.signal.aborted) return;
+
+      // Rollback on error
+      setOptimisticIsLiked(previousIsLiked);
+      setOptimisticLikes(previousLikes);
+
+      // More specific error handling
+      const isNetworkError =
+        error instanceof TypeError && error.message.includes('fetch');
+      showErrorToast(
+        isNetworkError
+          ? 'Network error. Please check your connection and try again.'
+          : value
+            ? 'Failed to like the post'
+            : 'Failed to unlike the post',
+      );
+    } finally {
+      setIsLikeLoading(false);
+      likeRequestRef.current = null;
     }
   };
 
@@ -66,7 +139,12 @@ export default function FeedCard(props: FeedCardProps) {
       }}
     >
       <FeedBody {...props} />
-      <FeedFooter {...props} onLikeClick={handleLike} />
+      <FeedFooter
+        {...props}
+        likes={optimisticLikes}
+        is_liked={optimisticIsLiked}
+        onLikeClick={handleLike}
+      />
     </Col>
   );
 }
