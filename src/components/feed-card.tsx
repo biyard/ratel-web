@@ -14,6 +14,7 @@ import { UserType } from '@/lib/api/models/user';
 import Image from 'next/image';
 import { route } from '@/route';
 import { SpaceType } from '@/lib/api/models/spaces';
+import { showErrorToast } from '@/lib/toast';
 
 export interface FeedCardProps {
   id: number;
@@ -45,16 +46,50 @@ export interface FeedCardProps {
 export default function FeedCard(props: FeedCardProps) {
   const router = useRouter();
   const { post } = useApiCall();
+  const [optimisticLikes, setOptimisticLikes] = React.useState(props.likes);
+  const [optimisticIsLiked, setOptimisticIsLiked] = React.useState(
+    props.is_liked,
+  );
+
+  // Update optimistic state when props change
+  React.useEffect(() => {
+    setOptimisticLikes(props.likes);
+    setOptimisticIsLiked(props.is_liked);
+  }, [props.likes, props.is_liked]);
 
   const handleLike = async (value: boolean) => {
-    const res = await post(ratelApi.feeds.likePost(props.id), {
-      like: {
-        value,
-      },
-    });
-    if (res) {
-      props.onLikeClick?.(value);
-      props.refetch?.();
+    // Store current state for rollback
+    const previousLikes = optimisticLikes;
+    const previousIsLiked = optimisticIsLiked;
+
+    // Optimistically update UI
+    setOptimisticIsLiked(value);
+    setOptimisticLikes(value ? optimisticLikes + 1 : optimisticLikes - 1);
+
+    try {
+      const res = await post(ratelApi.feeds.likePost(props.id), {
+        like: {
+          value,
+        },
+      });
+      if (res) {
+        props.onLikeClick?.(value);
+        props.refetch?.();
+      } else {
+        // Rollback on failure
+        setOptimisticIsLiked(previousIsLiked);
+        setOptimisticLikes(previousLikes);
+        showErrorToast(
+          value ? 'Failed to like the post' : 'Failed to unlike the post',
+        );
+      }
+    } catch {
+      // Rollback on error
+      setOptimisticIsLiked(previousIsLiked);
+      setOptimisticLikes(previousLikes);
+      showErrorToast(
+        value ? 'Failed to like the post' : 'Failed to unlike the post',
+      );
     }
   };
 
@@ -66,7 +101,12 @@ export default function FeedCard(props: FeedCardProps) {
       }}
     >
       <FeedBody {...props} />
-      <FeedFooter {...props} onLikeClick={handleLike} />
+      <FeedFooter
+        {...props}
+        likes={optimisticLikes}
+        is_liked={optimisticIsLiked}
+        onLikeClick={handleLike}
+      />
     </Col>
   );
 }
